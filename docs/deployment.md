@@ -4,6 +4,8 @@ This milestone is local-only. Production deployment and remote resource creation
 
 Before deployment, choose the production hostname, verify source reuse conditions, provision an approved D1 database, replace the local placeholder in the reviewed environment configuration, and apply migrations to that intended environment. Add canonical URLs, `hreflang`, sitemaps, and an expired-edition policy before removing `noindex`. Validate D1 and browser tests on Linux or another supported operating system.
 
+The initial foundation passed [Linux CI](https://github.com/akira28/learnaprop/actions/runs/42078396499), including actual local D1 and desktop/mobile browser tests. This verifies the tested local behavior, not a deployed production environment.
+
 The application uses Astro's current Cloudflare adapter, with sessions disabled and image passthrough. This avoids the adapter's automatic KV session and Images provisioning. `workers_dev` and preview URLs are disabled. Observability is configured, but nothing has been deployed.
 
 ## Free-plan constraints

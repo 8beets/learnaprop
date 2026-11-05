@@ -1,0 +1,14 @@
+.git
+node_modules
+dist
+.astro
+.wrangler
+.env
+.env.*
+.dev.vars*
+coverage
+playwright-report
+test-results
+*.sqlite*
+*.db
+.DS_Store

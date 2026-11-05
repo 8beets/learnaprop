@@ -16,7 +16,17 @@ The Sant Andreu source was live-verified on 2026-11-05: **22 course editions** p
 
 ## Local setup
 
-Use Node 24 and npm. Cloudflare's current local runtime requires a supported operating system: macOS 13.5+ or a supported Linux environment. On older macOS, reopen the repository in the supplied [dev container](.devcontainer/devcontainer.json), using a container runtime available on your machine. The container configuration has not been executed here.
+For this Mac, use the [Docker setup](docs/docker.md) to run the app and all checks inside Linux:
+
+```sh
+docker compose build
+docker compose up -d app
+docker compose run --rm checks
+```
+
+The commands below are for running directly on a supported host.
+
+Use Node 24 and npm. Cloudflare's current local runtime requires a supported operating system: macOS 13.5+ or a supported Linux environment. Docker Compose is verified for this Mac. An alternative [editor dev-container configuration](.devcontainer/devcontainer.json) is supplied but has not been tested here.
 
 ```sh
 npm ci
@@ -28,7 +38,7 @@ npm run dev
 
 Open http://127.0.0.1:4321. On a supported host these commands use **local** D1 at `.wrangler/state/v3`, without Cloudflare credentials. `npm run ingest` only prints instructions; `npm run ingest:live` explicitly opts into fetching the approved public source and writing local D1. `npm run source:verify` fetches and validates without database writes.
 
-On this project's initial machine (macOS 12), type checking, the production build, and Node-based tests can run, but D1 migrations, imports, and the browser test server are blocked by workerd's operating-system requirement.
+On this project's initial machine (macOS 12), native D1 migrations, imports, and the browser test server are blocked by workerd's operating-system requirement. Docker provides the Linux runtime for those commands.
 
 ## Checks
 
@@ -43,7 +53,9 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-`npm test` uses saved source fixtures and real Node SQLite for SQL contract tests. It does **not** emulate or prove the Cloudflare runtime. `test:d1` exercises actual local D1 separately. Routine tests never contact source websites. CI is configured for Linux but has not been run remotely.
+`npm test` uses saved source fixtures and real Node SQLite for SQL contract tests. It does **not** emulate or prove the Cloudflare runtime. `test:d1` exercises actual local D1 separately. Routine tests never contact source websites. [Linux CI passed](https://github.com/akira28/learnaprop/actions/runs/42078396499) for the initial foundation, including D1 and desktop/mobile browser checks.
+
+The full suite also passed locally in Docker: 19 unit/SQLite tests, 1 D1 runtime test, and 6 browser tests, plus formatting, lint, TypeScript, migrations, and the build. A live Docker import persisted 22 Sant Andreu editions and their provenance; the local homepage was verified through the published port. See [Docker verification](docs/docker.md#verified-locally).
 
 ## Documentation
 
@@ -52,6 +64,7 @@ npm run test:e2e
 - [Adapter development](docs/ingestion.md)
 - [Database and migrations](docs/database.md)
 - [Deployment boundaries](docs/deployment.md)
+- [Docker development and testing](docs/docker.md)
 - [Contributing](CONTRIBUTING.md)
 - [Agent instructions](AGENTS.md)
 

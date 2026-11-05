@@ -1,0 +1,10 @@
+{
+  "name": "LearnAprop",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-24-bookworm",
+  "forwardPorts": [4321],
+  "postCreateCommand": "npm ci && npm run db:types && npm run db:migrate",
+  "remoteEnv": {
+    "ASTRO_TELEMETRY_DISABLED": "1",
+    "WRANGLER_SEND_METRICS": "false"
+  }
+}

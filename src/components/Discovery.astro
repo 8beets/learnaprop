@@ -1,0 +1,158 @@
+---
+import { messages, formatLocalDate, type Locale } from '../i18n/ui';
+import type { DiscoveryPageData } from '../lib/courses/page';
+import { santAndreu } from '../lib/sources/sant-andreu';
+import '../styles/global.css';
+
+interface Props {
+  locale: Locale;
+  data: DiscoveryPageData;
+}
+const { locale, data } = Astro.props;
+const t = messages[locale];
+const { courses, filters, hasNext, error } = data;
+const base = locale === 'es' ? '/' : '/ca/';
+function pageUrl(page: number) {
+  const params = new URLSearchParams(Astro.url.searchParams);
+  params.set('page', String(page));
+  return `${base}?${params}`;
+}
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={t.description} />
+    <meta name="robots" content="noindex,follow" />
+    <title>{t.pageTitle}</title>
+  </head>
+  <body>
+    <a class="skip" href="#main">
+      {t.skip}
+    </a>
+    <header class="shell header">
+      <a href={base} class="brand">
+        LearnAprop<span aria-hidden="true">↗</span>
+      </a>
+      <nav aria-label={t.language}>
+        <a
+          href={`/${Astro.url.search}`}
+          lang="es"
+          aria-current={locale === 'es' ? 'page' : undefined}
+        >
+          Español
+        </a>
+        <a
+          href={`/ca/${Astro.url.search}`}
+          lang="ca"
+          aria-current={locale === 'ca' ? 'page' : undefined}
+        >
+          Català
+        </a>
+      </nav>
+    </header>
+    <main id="main" class="shell">
+      <section class="hero" aria-labelledby="title">
+        <p class="eyebrow">Barcelona · {t.mission}</p>
+        <h1 id="title">{t.title}</h1>
+        <p class="intro">{t.description}</p>
+      </section>
+      <form action={base} method="get" class="search" aria-label={t.submit}>
+        <div>
+          <label for="q">{t.search}</label>
+          <input
+            id="q"
+            name="q"
+            type="search"
+            value={filters.q}
+            aria-describedby={error === 'invalid' ? 'filter-error' : undefined}
+          />
+        </div>
+        <div>
+          <label for="maxPrice">{t.price}</label>
+          <input
+            id="maxPrice"
+            name="maxPrice"
+            type="number"
+            min="0"
+            max="9999.99"
+            step="0.01"
+            value={
+              filters.maxPriceCents === null ? '' : filters.maxPriceCents / 100
+            }
+          />
+        </div>
+        <button type="submit">{t.submit}</button>
+        <a href={base}>{t.clear}</a>
+      </form>
+      {error && (
+        <p role="alert" id="filter-error" class="error">
+          {t[error]}
+        </p>
+      )}
+      <section aria-labelledby="results" class="results">
+        <h2 id="results">{t.results}</h2>
+        {!error && courses.length === 0 && (
+          <div class="empty">
+            <h3>{t.empty}</h3>
+            <p>{t.emptyHelp}</p>
+            <a href={santAndreu.listingUrl}>{t.sourceName} ↗</a>
+          </div>
+        )}
+        <div class="grid">
+          {courses.map((course) => (
+            <article class="course">
+              <p class="institution">{course.institution}</p>
+              <h3>{course.title}</h3>
+              <p>
+                {course.start_date
+                  ? formatLocalDate(course.start_date, locale)
+                  : t.unknownDates}
+                {course.end_date &&
+                  ` – ${formatLocalDate(course.end_date, locale)}`}
+              </p>
+              {course.schedule_text && <p>{course.schedule_text}</p>}
+              <p class="price">
+                {course.price_cents === null
+                  ? t.unknownPrice
+                  : new Intl.NumberFormat(locale, {
+                      style: 'currency',
+                      currency: course.currency ?? 'EUR',
+                    }).format(course.price_cents / 100)}
+              </p>
+              <a href={course.official_url}>{t.source} ↗</a>
+              <p class="verified">
+                {t.verified}{' '}
+                <time datetime={course.last_successfully_verified_at}>
+                  {formatLocalDate(
+                    course.last_successfully_verified_at.slice(0, 10),
+                    locale,
+                  )}
+                </time>
+              </p>
+            </article>
+          ))}
+        </div>
+        <nav class="pagination" aria-label={t.pagination}>
+          {filters.page > 1 && (
+            <a href={pageUrl(filters.page - 1)} rel="prev">
+              ← {t.previous}
+            </a>
+          )}
+          {hasNext && filters.page < 1000 && (
+            <a href={pageUrl(filters.page + 1)} rel="next">
+              {t.next} →
+            </a>
+          )}
+        </nav>
+      </section>
+      <aside class="notice">{t.notice}</aside>
+    </main>
+    <footer class="shell footer">
+      <p>LearnAprop</p>
+      <p>{t.footer}</p>
+    </footer>
+  </body>
+</html>

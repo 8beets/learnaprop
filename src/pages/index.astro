@@ -1,0 +1,11 @@
+---
+import { env } from 'cloudflare:workers';
+import Discovery from '../components/Discovery.astro';
+import { loadDiscoveryPage } from '../lib/courses/page';
+
+const data = await loadDiscoveryPage(env.DB, Astro.url.searchParams);
+Astro.response.status = data.status;
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+<Discovery locale="es" data={data} />

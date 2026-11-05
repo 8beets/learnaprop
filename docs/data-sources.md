@@ -19,7 +19,28 @@ No blanket redistribution license was established for registration-site content.
 
 Availability and course language remain unknown. Prices refer to the explicitly labelled base price; concessions and materials supplements are not represented. Listings must not be advertised as confirmed available, free when unpriced, or translated. Some observed weekday summaries and individual session dates disagree. We preserve the summary verbatim and do not generate recurring sessions or resolve those contradictions by inference.
 
+## Centre Cívic Can Basté
+
+Verified on 2026-11-06:
+
+- Official centre: https://www.canbaste.com/
+- Registration: https://canbaste.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=30&t=AC
+- Address: Pg. de Fabra i Puig, 274, 08031 Barcelona, confirmed on the official site.
+- `robots.txt` returned 404; the existing adapter's per-run check applies.
+- The shared Miram adapter fetched and persisted **29 course editions** across nine course categories.
+- The `ALTRES` category (code `14`) includes concerts and is explicitly excluded in institution configuration.
+- A two-record excerpt of the real language listing is saved in `tests/fixtures/miram-can-baste-languages.html` and tested with the shared parser.
+- The metadata-only, attribution, unknown-field, and pre-publication reuse-review limitations documented above also apply here. Descriptions and images are not published.
+
+Local D1 contains 22 Sant Andreu editions and 29 Can Basté editions. Discovery omits expired editions; stored totals can exceed visible totals.
+
 ## Investigated and deferred
+
+### Can Verdaguer
+
+https://canverdaguer.com/
+
+Investigated on 2026-11-06. The official site links to `canverdaguer.inscripcionscc.com`, but its Miram course listing (`g=1&c=24&t=AC`) was empty. It was not added as a course source; cultural events were not substituted for courses.
 
 ### Barcelona Open Data: civic-centre training
 

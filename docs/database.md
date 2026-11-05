@@ -2,6 +2,8 @@
 
 Canonical storage is Cloudflare D1. `migrations/0001_initial.sql` defines institutions, sources, reusable courses, course editions, individual schedules, source records, and ingestion runs with foreign keys and indexes.
 
+`0002_course_categories.sql` adds an index for category navigation. The original applied migration remains unchanged. Centre filtering uses the existing institution index.
+
 Use `npm run db:migrate` to apply migrations to **local** D1. The configured all-zero database ID is a deliberate local-only placeholder, not an existing remote resource. Local import and Astro development both use `.wrangler/state/v3`.
 
 Use a new numbered migration for every subsequent schema change. Applied migrations are immutable. Queries use bound parameters. D1 `batch()` supplies atomic rollback; do not issue unsupported interactive SQL transactions through the D1 binding.

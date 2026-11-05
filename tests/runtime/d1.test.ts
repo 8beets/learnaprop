@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { getPlatformProxy } from 'wrangler';
 import { expect, it } from 'vitest';
 import { runIngestion } from '../../src/lib/ingestion/run';
@@ -12,10 +12,12 @@ it('applies the migration and imports idempotently in the actual local D1 runtim
   });
   try {
     const db = platform.env.DB;
-    const migration = readFileSync(
-      new URL('../../migrations/0001_initial.sql', import.meta.url),
-      'utf8',
-    );
+    const directory = new URL('../../migrations/', import.meta.url);
+    const migration = readdirSync(directory)
+      .filter((name) => name.endsWith('.sql'))
+      .sort()
+      .map((name) => readFileSync(new URL(name, directory), 'utf8'))
+      .join('\n');
     await db.batch(
       migration
         .split(';')

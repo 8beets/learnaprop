@@ -39,6 +39,8 @@ docker compose run --rm checks
 
 This runs formatting, linting, binding generation, TypeScript checks, deterministic tests, actual local D1 tests, migrations, a production build, and desktop/mobile Playwright tests. Its temporary database is separate from the app's database, so the suite can run without importing test fixtures into browsing data. It does not fetch live course websites.
 
+Browser tests additionally use `.wrangler/e2e-state` and port 4322, with synthetic fixture records for centre/category navigation and pagination. This test state is distinct from `.wrangler/state`, even when running tests natively alongside the browsing app.
+
 You can also run a focused command:
 
 ```sh
@@ -67,5 +69,7 @@ On 2026-11-05, using the existing Docker Desktop Linux daemon on this Mac:
 - The host's published port returned HTTP 200, and the Spanish homepage rendered 12 real course cards with a link to the next page.
 
 The app's local state remains in the Docker volume. Nothing was deployed to Cloudflare.
+
+On 2026-11-06, the expanded navigation suite passed 21 unit/SQLite tests, 1 D1 runtime test, and 10 browser tests. Can Basté imported 29 course editions; the combined centre/category URL returned HTTP 200 and three Can Basté language listings.
 
 References: [Playwright Docker setup](https://playwright.dev/docs/docker), [Docker bind mounts](https://docs.docker.com/engine/storage/bind-mounts/).

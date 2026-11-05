@@ -1,8 +1,25 @@
-import { listCourses, type DiscoveryFilters } from '../db/courses';
+import {
+  listCourses,
+  listCategories,
+  listCentres,
+  type DiscoveryFilters,
+} from '../db/courses';
 
 export function parseFilters(params: URLSearchParams): DiscoveryFilters {
   const page = params.get('page') ?? '1';
   const q = (params.get('q') ?? '').trim();
+  const category = (params.get('category') ?? '').trim();
+  const centre = params.get('centre') ?? '';
+  if (centre && !/^[a-z0-9-]{1,100}$/.test(centre))
+    throw new Error('Invalid centre');
+  if (
+    category.length > 200 ||
+    [...category].some(
+      (character) =>
+        character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127,
+    )
+  )
+    throw new Error('Invalid category');
   if (!/^\d{1,4}$/.test(page) || Number(page) < 1 || Number(page) > 1000)
     throw new Error('Invalid page');
   // D1 LIKE patterns have a 50-byte limit, including wildcard delimiters.
@@ -13,6 +30,8 @@ export function parseFilters(params: URLSearchParams): DiscoveryFilters {
     throw new Error('Invalid price');
   return {
     q,
+    category,
+    centre,
     page: Number(page),
     maxPriceCents: maxPrice ? Math.round(Number(maxPrice) * 100) : null,
   };
@@ -20,5 +39,10 @@ export function parseFilters(params: URLSearchParams): DiscoveryFilters {
 
 export async function discoverCourses(db: D1Database, params: URLSearchParams) {
   const filters = parseFilters(params);
-  return { filters, ...(await listCourses(db, filters)) };
+  const [listing, categories, centres] = await Promise.all([
+    listCourses(db, filters),
+    listCategories(db),
+    listCentres(db),
+  ]);
+  return { filters, ...listing, categories, centres };
 }

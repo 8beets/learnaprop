@@ -1,8 +1,14 @@
 import { discoverCourses, parseFilters } from './discovery';
-import type { CourseListing, DiscoveryFilters } from '../db/courses';
+import type {
+  CourseListing,
+  DiscoveryFilters,
+  CentreListing,
+} from '../db/courses';
 
 export interface DiscoveryPageData {
   courses: CourseListing[];
+  categories: string[];
+  centres: CentreListing[];
   filters: DiscoveryFilters;
   hasNext: boolean;
   error: 'invalid' | 'unavailable' | null;
@@ -19,7 +25,15 @@ export async function loadDiscoveryPage(
   } catch {
     return {
       courses: [],
-      filters: { q: '', page: 1, maxPriceCents: null },
+      categories: [],
+      centres: [],
+      filters: {
+        q: '',
+        page: 1,
+        maxPriceCents: null,
+        category: '',
+        centre: '',
+      },
       hasNext: false,
       error: 'invalid',
       status: 400,
@@ -31,6 +45,8 @@ export async function loadDiscoveryPage(
     console.error(JSON.stringify({ event: 'discovery_unavailable' }));
     return {
       courses: [],
+      categories: [],
+      centres: [],
       filters,
       hasNext: false,
       error: 'unavailable',

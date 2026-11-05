@@ -110,6 +110,12 @@ export function createMiramAdapter(options: FetchOptions = {}): SourceAdapter {
           records.set(record.externalId, existing ?? record);
         }
         for (const link of page.links) {
+          if (
+            source.excludedCategoryCodes?.includes(
+              new URL(link).searchParams.get('f') ?? '',
+            )
+          )
+            continue;
           if (!approvedPage(link, root))
             throw new Error('Listing links outside approved source scope');
           if (!visited.has(link) && !queue.includes(link)) queue.push(link);

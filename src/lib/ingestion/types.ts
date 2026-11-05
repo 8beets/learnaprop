@@ -2,6 +2,7 @@ export interface SourceConfig {
   id: string;
   name: string;
   listingUrl: string;
+  excludedCategoryCodes?: string[];
   institution: {
     id: string;
     name: string;

@@ -10,9 +10,12 @@ LearnAprop helps people discover courses and visit the organizer's official list
 - Reusable Miram adapter with institution configuration separated from extraction.
 - Versioned relational schema, atomic imports, stable identifiers, provenance, and failed-run tracking.
 - Server-rendered Spanish (`/`) and Catalan (`/ca/`) discovery with title search, maximum price, and pagination.
+- Browse by civic centre and course category; combine both with search and price, using shareable URLs.
 - Deterministic unit/SQLite contract tests, a separate D1 runtime suite, Playwright tests, and CI.
 
 The Sant Andreu source was live-verified on 2026-11-05: **22 course editions** parsed successfully. This verifies extraction, not production availability or enrollment status. No courses are bundled into the public application. The database starts empty until a live import runs.
+
+Can Basté was added and live-imported on 2026-11-06: **29 course editions** after excluding its concerts category. Both centres use the same reusable Miram adapter. The local database contains 51 stored editions across the two centres; expired editions do not appear in discovery.
 
 ## Local setup
 
@@ -55,7 +58,7 @@ npm run test:e2e
 
 `npm test` uses saved source fixtures and real Node SQLite for SQL contract tests. It does **not** emulate or prove the Cloudflare runtime. `test:d1` exercises actual local D1 separately. Routine tests never contact source websites. [Linux CI passed](https://github.com/akira28/learnaprop/actions/runs/42078396499) for the initial foundation, including D1 and desktop/mobile browser checks.
 
-The full suite also passed locally in Docker: 19 unit/SQLite tests, 1 D1 runtime test, and 6 browser tests, plus formatting, lint, TypeScript, migrations, and the build. A live Docker import persisted 22 Sant Andreu editions and their provenance; the local homepage was verified through the published port. See [Docker verification](docs/docker.md#verified-locally).
+The current suite passed locally in Docker: 21 unit/SQLite tests, 1 D1 runtime test, and 10 browser tests, plus formatting, lint, TypeScript, migrations, and the build. Live Docker imports persisted 22 Sant Andreu editions and 29 Can Basté editions with provenance; combined centre/category filtering was verified through the published port. See [Docker verification](docs/docker.md#verified-locally).
 
 ## Documentation
 

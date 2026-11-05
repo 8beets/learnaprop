@@ -19,6 +19,24 @@ const fixture = readFileSync(
 const url = `${santAndreu.listingUrl}&f=ID`;
 
 describe('Miram source fixture', () => {
+  it('reuses the adapter for actual Can Basté markup', () => {
+    const html = readFileSync(
+      new URL('../fixtures/miram-can-baste-languages.html', import.meta.url),
+      'utf8',
+    );
+    const { records } = parseMiramPage(
+      html,
+      'https://canbaste.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=30&t=AC&f=07',
+    );
+    expect(records).toHaveLength(2);
+    expect(records[0]).toMatchObject({
+      externalId: '3825',
+      title: 'ANGLÈS CONTINUACIÓ',
+      category: 'IDIOMES',
+      startDate: '2026-09-15',
+      endDate: '2026-11-10',
+    });
+  });
   it('extracts real IDs, base prices, dates, and original titles', () => {
     const { records } = parseMiramPage(fixture, url);
     expect(records).toHaveLength(4);
@@ -82,9 +100,18 @@ describe('normalization', () => {
   it('bounds and validates search filters', () => {
     expect(
       parseFilters(new URLSearchParams('q=anglès&maxPrice=56.48&page=2')),
-    ).toEqual({ q: 'anglès', maxPriceCents: 5648, page: 2 });
+    ).toEqual({
+      q: 'anglès',
+      maxPriceCents: 5648,
+      page: 2,
+      category: '',
+      centre: '',
+    });
     for (const query of [
       'page=0',
+      'category=%00',
+      'centre=%27SQL',
+      `category=${'x'.repeat(201)}`,
       'page=1001',
       'page=1.5',
       'maxPrice=-1',

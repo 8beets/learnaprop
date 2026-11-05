@@ -1,15 +1,22 @@
 import { DatabaseSync } from 'node:sqlite';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { runIngestion } from '../../src/lib/ingestion/run';
 import { parseMiramPage } from '../../src/lib/ingestion/adapters/miram';
 import { santAndreu } from '../../src/lib/sources/sant-andreu';
-import { listCourses } from '../../src/lib/db/courses';
+import { canBaste } from '../../src/lib/sources/can-baste';
+import {
+  listCourses,
+  listCategories,
+  listCentres,
+} from '../../src/lib/db/courses';
 
-const migration = readFileSync(
-  new URL('../../migrations/0001_initial.sql', import.meta.url),
-  'utf8',
-);
+const migrationDirectory = new URL('../../migrations/', import.meta.url);
+const migration = readdirSync(migrationDirectory)
+  .filter((name) => name.endsWith('.sql'))
+  .sort()
+  .map((name) => readFileSync(new URL(name, migrationDirectory), 'utf8'))
+  .join('\n');
 const fixture = readFileSync(
   new URL('../fixtures/miram-sant-andreu-languages.html', import.meta.url),
   'utf8',
@@ -64,6 +71,64 @@ describe('SQLite migration and ingestion contract', () => {
     db = sqliteContract(sqlite);
   });
   afterEach(() => sqlite.close());
+  it('lists real categories and centres, and composes both filters without identity collisions', async () => {
+    await runIngestion(db, { fetchRecords: async () => records }, santAndreu);
+    await runIngestion(
+      db,
+      { fetchRecords: async () => [{ ...records[0]!, category: 'DANSA' }] },
+      canBaste,
+    );
+    expect(await listCategories(db, '2026-11-05')).toEqual([
+      'DANSA',
+      'IDIOMES',
+    ]);
+    expect(await listCentres(db, '2026-11-05')).toEqual([
+      { id: canBaste.institution.id, name: canBaste.institution.name },
+      { id: santAndreu.institution.id, name: santAndreu.institution.name },
+    ]);
+    const filters = {
+      q: '',
+      page: 1,
+      maxPriceCents: null,
+      category: 'IDIOMES',
+      centre: santAndreu.institution.id,
+    };
+    expect((await listCourses(db, filters, '2026-11-05')).courses).toHaveLength(
+      4,
+    );
+    expect(
+      (
+        await listCourses(
+          db,
+          { ...filters, centre: canBaste.institution.id },
+          '2026-11-05',
+        )
+      ).courses,
+    ).toHaveLength(0);
+    expect(
+      (
+        await listCourses(
+          db,
+          { ...filters, category: 'DANSA', centre: canBaste.institution.id },
+          '2026-11-05',
+        )
+      ).courses,
+    ).toHaveLength(1);
+    expect(
+      (
+        await listCourses(
+          db,
+          { ...filters, category: "' OR 1=1 --" },
+          '2026-11-05',
+        )
+      ).courses,
+    ).toHaveLength(0);
+    expect(await listCategories(db, '2028-01-01')).toEqual([]);
+    expect(await listCentres(db, '2028-01-01')).toEqual([]);
+    expect(
+      sqlite.prepare('SELECT count(*) AS n FROM course_editions').get()?.n,
+    ).toBe(5);
+  });
   it('imports twice without duplicates, preserves provenance and reviewed titles', async () => {
     const adapter = { fetchRecords: async () => records };
     await runIngestion(db, adapter, santAndreu);
@@ -197,7 +262,13 @@ describe('SQLite migration and ingestion contract', () => {
       (
         await listCourses(
           db,
-          { q: 'ANGLÈS', page: 1, maxPriceCents: 2000 },
+          {
+            q: 'ANGLÈS',
+            page: 1,
+            maxPriceCents: 2000,
+            category: '',
+            centre: '',
+          },
           '2026-11-05',
         )
       ).courses,
@@ -206,7 +277,7 @@ describe('SQLite migration and ingestion contract', () => {
       (
         await listCourses(
           db,
-          { q: '%', page: 1, maxPriceCents: null },
+          { q: '%', page: 1, maxPriceCents: null, category: '', centre: '' },
           '2026-11-05',
         )
       ).courses,
@@ -215,7 +286,13 @@ describe('SQLite migration and ingestion contract', () => {
       (
         await listCourses(
           db,
-          { q: "' OR 1=1 --", page: 1, maxPriceCents: null },
+          {
+            q: "' OR 1=1 --",
+            page: 1,
+            maxPriceCents: null,
+            category: '',
+            centre: '',
+          },
           '2026-11-05',
         )
       ).courses,
@@ -224,7 +301,7 @@ describe('SQLite migration and ingestion contract', () => {
       (
         await listCourses(
           db,
-          { q: '', page: 1, maxPriceCents: null },
+          { q: '', page: 1, maxPriceCents: null, category: '', centre: '' },
           '2028-01-01',
         )
       ).courses,

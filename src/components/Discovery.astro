@@ -1,7 +1,12 @@
 ---
-import { messages, formatLocalDate, type Locale } from '../i18n/ui';
+import {
+  messages,
+  formatLocalDate,
+  categoryLabel,
+  type Locale,
+} from '../i18n/ui';
 import type { DiscoveryPageData } from '../lib/courses/page';
-import { santAndreu } from '../lib/sources/sant-andreu';
+import { sources } from '../lib/sources';
 import '../styles/global.css';
 
 interface Props {
@@ -10,12 +15,25 @@ interface Props {
 }
 const { locale, data } = Astro.props;
 const t = messages[locale];
-const { courses, filters, hasNext, error } = data;
+const { courses, categories, centres, filters, hasNext, error } = data;
+const officialSources = sources.filter(
+  (source) => !filters.centre || source.institution.id === filters.centre,
+);
 const base = locale === 'es' ? '/' : '/ca/';
 function pageUrl(page: number) {
   const params = new URLSearchParams(Astro.url.searchParams);
   params.set('page', String(page));
   return `${base}?${params}`;
+}
+function categoryUrl(category: string) {
+  return filterUrl('category', category);
+}
+function filterUrl(key: string, value: string) {
+  const params = new URLSearchParams(Astro.url.searchParams);
+  params.delete('page');
+  if (value) params.set(key, value);
+  else params.delete(key);
+  return params.size ? `${base}?${params}` : base;
 }
 ---
 
@@ -59,7 +77,49 @@ function pageUrl(page: number) {
         <h1 id="title">{t.title}</h1>
         <p class="intro">{t.description}</p>
       </section>
+      {(centres.length > 0 || filters.centre) && (
+        <nav class="categories" aria-label={t.centres}>
+          <a
+            href={filterUrl('centre', '')}
+            aria-current={!filters.centre ? 'true' : undefined}
+          >
+            {t.allCentres}
+          </a>
+          {centres.map((centre) => (
+            <a
+              href={filterUrl('centre', centre.id)}
+              aria-current={filters.centre === centre.id ? 'true' : undefined}
+            >
+              {centre.name}
+            </a>
+          ))}
+        </nav>
+      )}
+      {(categories.length > 0 || filters.category) && (
+        <nav class="categories" aria-label={t.categories}>
+          <a
+            href={categoryUrl('')}
+            aria-current={!filters.category ? 'true' : undefined}
+          >
+            {t.allCategories}
+          </a>
+          {categories.map((category) => (
+            <a
+              href={categoryUrl(category)}
+              aria-current={filters.category === category ? 'true' : undefined}
+            >
+              {categoryLabel(category, locale)}
+            </a>
+          ))}
+        </nav>
+      )}
       <form action={base} method="get" class="search" aria-label={t.submit}>
+        {filters.category && (
+          <input type="hidden" name="category" value={filters.category} />
+        )}
+        {filters.centre && (
+          <input type="hidden" name="centre" value={filters.centre} />
+        )}
         <div>
           <label for="q">{t.search}</label>
           <input
@@ -98,13 +158,28 @@ function pageUrl(page: number) {
           <div class="empty">
             <h3>{t.empty}</h3>
             <p>{t.emptyHelp}</p>
-            <a href={santAndreu.listingUrl}>{t.sourceName} ↗</a>
+            {officialSources.map((source) => (
+              <p>
+                <a href={source.listingUrl}>
+                  {t.programming}: {source.institution.name} ↗
+                </a>
+              </p>
+            ))}
           </div>
         )}
         <div class="grid">
           {courses.map((course) => (
             <article class="course">
-              <p class="institution">{course.institution}</p>
+              <p class="institution">
+                <a href={filterUrl('centre', course.institution_id)}>
+                  {course.institution}
+                </a>
+              </p>
+              {course.category && (
+                <a class="course-category" href={categoryUrl(course.category)}>
+                  {categoryLabel(course.category, locale)}
+                </a>
+              )}
               <h3>{course.title}</h3>
               <p>
                 {course.start_date

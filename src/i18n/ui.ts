@@ -10,11 +10,15 @@ export const messages = {
     submit: 'Buscar cursos',
     clear: 'Limpiar filtros',
     results: 'Cursos y talleres',
+    categories: 'Explorar por categoría',
+    allCategories: 'Todas las categorías',
+    centres: 'Explorar por centro',
+    allCentres: 'Todos los centros',
+    programming: 'Programación oficial',
     empty: 'Todavía no hay cursos que coincidan con tu búsqueda.',
     emptyHelp:
       'Estamos preparando el directorio con información de fuentes oficiales. Puedes consultar la programación del centro.',
     source: 'Consultar fuente oficial',
-    sourceName: 'Programación del Centre Cívic Sant Andreu',
     unknownPrice: 'Precio por confirmar',
     unknownDates: 'Fechas por confirmar',
     verified: 'Consultado el',
@@ -24,7 +28,7 @@ export const messages = {
     next: 'Siguiente',
     pagination: 'Páginas de resultados',
     invalid:
-      'Revisa los filtros: búsqueda de hasta 40 bytes, precio entre 0 y 9999,99 y página entre 1 y 1000.',
+      'Revisa los filtros: comprueba la búsqueda, el precio, la categoría y el centro.',
     unavailable:
       'El directorio no está disponible temporalmente. Vuelve a intentarlo más tarde.',
     language: 'Idioma',
@@ -43,11 +47,15 @@ export const messages = {
     submit: 'Cerca cursos',
     clear: 'Neteja els filtres',
     results: 'Cursos i tallers',
+    categories: 'Explora per categoria',
+    allCategories: 'Totes les categories',
+    centres: 'Explora per centre',
+    allCentres: 'Tots els centres',
+    programming: 'Programació oficial',
     empty: 'Encara no hi ha cursos que coincideixin amb la teva cerca.',
     emptyHelp:
       'Estem preparant el directori amb informació de fonts oficials. Pots consultar la programació del centre.',
     source: 'Consulta la font oficial',
-    sourceName: 'Programació del Centre Cívic Sant Andreu',
     unknownPrice: 'Preu per confirmar',
     unknownDates: 'Dates per confirmar',
     verified: 'Consultat el',
@@ -57,7 +65,7 @@ export const messages = {
     next: 'Següent',
     pagination: 'Pàgines de resultats',
     invalid:
-      'Revisa els filtres: cerca de fins a 40 bytes, preu entre 0 i 9999,99 i pàgina entre 1 i 1000.',
+      'Revisa els filtres: comprova la cerca, el preu, la categoria i el centre.',
     unavailable:
       'El directori no està disponible temporalment. Torna-ho a provar més tard.',
     language: 'Idioma',
@@ -68,6 +76,38 @@ export const messages = {
 } as const;
 
 export type Locale = keyof typeof messages;
+
+// Interface labels for verified source categories; original values stay in D1 and URLs.
+const categoryLabels: Record<string, Record<Locale, string>> = {
+  'ACTIVITAT FÍSICA I BENESTAR': {
+    es: 'Actividad física y bienestar',
+    ca: 'Activitat física i benestar',
+  },
+  BALL: { es: 'Baile', ca: 'Ball' },
+  'ESPECIAL GENT GRAN': { es: 'Personas mayores', ca: 'Gent gran' },
+  IDIOMES: { es: 'Idiomas', ca: 'Idiomes' },
+  "ISA: FESTIVAL D'IL·LUSTRACIÓ": {
+    es: 'ISA: Festival de ilustración',
+    ca: 'ISA: Festival d’il·lustració',
+  },
+  'RECURSOS I CREATIVITAT': {
+    es: 'Recursos y creatividad',
+    ca: 'Recursos i creativitat',
+  },
+  ALTRES: { es: 'Otros', ca: 'Altres' },
+  'ART I CREATIVITAT': { es: 'Arte y creatividad', ca: 'Art i creativitat' },
+  CUINA: { es: 'Cocina', ca: 'Cuina' },
+  DANSA: { es: 'Danza', ca: 'Dansa' },
+  'ESPAI FOTOGRÀFIC': { es: 'Fotografía', ca: 'Fotografia' },
+  'INFANTILS i JUVENILS': { es: 'Infancia y juventud', ca: 'Infants i joves' },
+  MÚSICA: { es: 'Música', ca: 'Música' },
+  'NOVES TECNOLOGIES': { es: 'Nuevas tecnologías', ca: 'Noves tecnologies' },
+  'SALUT I ESPORT': { es: 'Salud y deporte', ca: 'Salut i esport' },
+};
+
+export function categoryLabel(category: string, locale: Locale): string {
+  return categoryLabels[category]?.[locale] ?? category;
+}
 
 export function formatLocalDate(value: string, locale: Locale): string {
   return new Intl.DateTimeFormat(locale, {

@@ -5,6 +5,7 @@ import {
   categoryLabel,
   type Locale,
 } from '../i18n/ui';
+import { formatCourseTitle } from '../lib/courses/title';
 import { formatSchedule } from '../i18n/schedule';
 import type { CourseListing } from '../lib/db/courses';
 interface Props {
@@ -14,6 +15,9 @@ interface Props {
 }
 const { locale, course, filterParams } = Astro.props;
 const t = messages[locale];
+const title = course.title_reviewed
+  ? course.title
+  : formatCourseTitle(course.title, locale);
 const base = `/${locale}/`;
 const centreBase = locale === 'es' ? '/es/centros' : '/ca/centres';
 const categoryParams = new URLSearchParams(filterParams);
@@ -32,7 +36,7 @@ if (course.category) categoryParams.set('category', course.category);
       {categoryLabel(course.category, locale)}
     </a>
   )}
-  <h3>{course.title}</h3>
+  <h3 title={title !== course.title ? course.title : undefined}>{title}</h3>
   <p>
     {course.start_date
       ? formatLocalDate(course.start_date, locale)

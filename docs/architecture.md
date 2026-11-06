@@ -66,3 +66,18 @@ Single-centre pages reuse the same component with one verified point and retain
 municipal provenance. This change needs no schema migration or additional cloud
 resource. Tile requests use the browser cache and Referer; there is no tile proxy,
 bulk download or offline prefetch.
+
+Course title casing is presentation-only. `src/lib/courses/title.ts` formats titles
+only when all their cased letters are uppercase. It uses Spanish/Catalan-aware
+sentence casing and an explicit spelling table for known acronyms and names such
+as IA, API, HTML, Arduino, ESP32 and TouchDesigner. Correctly cased, mixed-case and
+lowercase titles remain unchanged. Unknown proper names cannot be recovered from
+uppercase text; extend the reviewed spelling table or use a manual title correction
+when needed. Do not use this formatter for ingestion, identity or persistence.
+
+The shared `CourseCard.astro` applies formatting consistently in discovery and
+centre listings, exposing the original title as a native title attribute when its
+casing changes. Database queries expose whether a title was manually reviewed;
+reviewed titles bypass formatting. Original titles and source-record payloads stay
+unchanged. Future course detail pages should reuse the formatter and preserve
+manual review intent in the same way.

@@ -187,6 +187,12 @@ async function setup() {
         source,
       );
     }
+    // Isolated reviewed-title fixture: display must preserve the maintainer's explicit casing.
+    await db
+      .prepare(
+        "UPDATE courses SET reviewed_title='TEST REVIEWED COURSE: JOAN' WHERE title='TEST dance workshop'",
+      )
+      .run();
   } finally {
     await platform.dispose();
   }

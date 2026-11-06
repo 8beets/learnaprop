@@ -10,6 +10,7 @@ export interface DiscoveryFilters {
 export interface CourseListing {
   id: string;
   title: string;
+  title_reviewed: number;
   category: string | null;
   institution: string;
   institution_id: string;
@@ -53,7 +54,7 @@ export async function listCourses(
   values.push(today);
   const result = await db
     .prepare(
-      `SELECT e.id, coalesce(c.reviewed_title, c.title) AS title, c.category,
+      `SELECT e.id, coalesce(c.reviewed_title, c.title) AS title, c.reviewed_title IS NOT NULL AS title_reviewed, c.category,
     i.name AS institution, i.id AS institution_id, coalesce(p.slug, i.id) AS institution_slug, e.start_date, e.end_date, e.schedule_text, e.price_cents, e.currency,
     sr.official_url, sr.last_successfully_verified_at FROM course_editions e
     JOIN courses c ON c.id=e.course_id JOIN institutions i ON i.id=c.institution_id

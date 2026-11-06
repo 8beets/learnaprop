@@ -1,3 +1,4 @@
+import { formatCourseTitle } from '../../src/lib/courses/title';
 import { registerSource } from '../../src/lib/db/ingestion';
 import {
   listInstitutions,
@@ -239,6 +240,47 @@ describe('SQLite migration and ingestion contract', () => {
     const map = await listMapCentres(db);
     expect(map.mapCentres).toHaveLength(MAP_CENTRES_LIMIT);
     expect(map.mapHasMore).toBe(true);
+  });
+  it('preserves raw titles and provenance while exposing reviewed-title intent', async () => {
+    await runIngestion(db, { fetchRecords: async () => records }, santAndreu);
+    const filters = {
+      q: '',
+      category: '',
+      centre: santAndreu.institution.id,
+      maxPriceCents: null,
+      page: 1,
+    };
+    const listing = await listCourses(db, filters, '2026-11-06');
+    const original = listing.courses.find(
+      (c) => c.title === 'CONVERSA EN ANGLÈS',
+    )!;
+    expect(original.title_reviewed).toBe(0);
+    expect(formatCourseTitle(original.title, 'ca')).toBe('Conversa en anglès');
+    const stored = sqlite
+      .prepare(
+        'SELECT title FROM courses WHERE id=(SELECT course_id FROM course_editions WHERE id=?)',
+      )
+      .get(original.id);
+    expect(stored?.title).toBe('CONVERSA EN ANGLÈS');
+    const payload = sqlite
+      .prepare('SELECT payload_json FROM source_records WHERE edition_id=?')
+      .get(original.id);
+    expect(JSON.parse(String(payload?.payload_json)).title).toBe(
+      'CONVERSA EN ANGLÈS',
+    );
+    sqlite
+      .prepare('UPDATE courses SET reviewed_title=? WHERE title=?')
+      .run('FOTOGRAFIA AMB JOAN', 'CONVERSA EN ANGLÈS');
+    const reviewed = (
+      await listCourses(db, filters, '2026-11-06')
+    ).courses.find((c) => c.id === original.id)!;
+    expect(reviewed.title_reviewed).toBe(1);
+    expect(reviewed.title).toBe('FOTOGRAFIA AMB JOAN');
+    expect(
+      sqlite
+        .prepare('SELECT title FROM courses WHERE title=?')
+        .get('CONVERSA EN ANGLÈS')?.title,
+    ).toBe('CONVERSA EN ANGLÈS');
   });
   it('backfills stable centre slugs when upgrading existing data', () => {
     const legacy = new DatabaseSync(':memory:');

@@ -140,7 +140,7 @@ test('categories compose with search, pagination, and locale switching without J
   await submit(page);
   await expect(page.locator('article.course')).toHaveCount(1);
   await expect(page.locator('article.course h3')).toHaveText(
-    'TERTÚLIA LITERÀRIA EN ANGLÈS',
+    'Tertúlia literària en anglès',
   );
   await page.getByLabel('Categoria', { exact: true }).selectOption('BALL');
   await submit(page);

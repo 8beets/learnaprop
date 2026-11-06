@@ -6,13 +6,14 @@ LearnAprop helps people discover courses and visit the organizer's official list
 
 **Public preview:** https://learnaprop.learnaprop.workers.dev/es/ — 777 source-verified course editions across 11 Barcelona centres. This is a preview; availability remains unconfirmed and automated refresh is not configured.
 
-## Current milestone
+## Features
 
 - Astro + strict TypeScript, Tailwind CSS, Cloudflare Workers, and D1 configuration.
 - Reusable Miram adapter with institution configuration separated from extraction.
 - Versioned relational schema, atomic imports, stable identifiers, provenance, and failed-run tracking.
 - Server-rendered Spanish (`/es/`) and Catalan (`/ca/`) discovery with title search, maximum price, and pagination.
-- Browse by civic centre and normalized course category; category pills reflect the selected centre, and equivalent provider categories share one filter. Combine both with search and price using shareable URLs.
+- Browse by civic centre and normalized course category; category options reflect the selected centre, and equivalent provider categories share one filter. Combine both with search and price using shareable URLs.
+- Localized centre directories and individual centre pages with verified contact details, embedded OpenStreetMap maps, and upcoming courses.
 - Deterministic unit/SQLite contract tests, a separate D1 runtime suite, Playwright tests, and CI.
 
 Sources verified on 2026-11-06:
@@ -37,29 +38,60 @@ The interface includes locally served stock photographs, a generated logo, reada
 
 ## Local setup
 
-For this Mac, use the [Docker setup](docs/docker.md) to run the app and all checks inside Linux:
+Clone the repository:
+
+```sh
+git clone https://github.com/8beets/learnaprop.git
+cd learnaprop
+```
+
+Choose Docker Compose or a native Node.js environment. Both use local D1 storage;
+Cloudflare credentials are not needed for local development.
+
+### Docker Compose
+
+Install Docker with Compose support and start its engine. Then run:
 
 ```sh
 docker compose build
 docker compose up -d app
-docker compose run --rm checks
 ```
 
-The commands below are for running directly on a supported host.
+Open http://127.0.0.1:4321/es/. The app applies local migrations automatically.
+To import real course data from one approved source:
 
-Use Node 24 and npm. Cloudflare's current local runtime requires a supported operating system: macOS 13.5+ or a supported Linux environment. Docker Compose is verified for this Mac. An alternative [editor dev-container configuration](.devcontainer/devcontainer.json) is supplied but has not been tested here.
+```sh
+docker compose exec app npm run ingest:live -- --source miram-sant-andreu
+```
+
+Run the full check suite with `docker compose run --rm checks`. See the
+[Docker guide](docs/docker.md) for persistent storage and dependency updates.
+An [editor dev-container configuration](.devcontainer/devcontainer.json) is also
+provided; its setup has not been verified separately from Docker Compose.
+
+### Native Node.js
+
+Use Node.js 24, npm, and an operating system supported by the project's Cloudflare
+runtime. If the runtime cannot start on your host, use the Docker setup above.
 
 ```sh
 npm ci
 npm run db:types
 npm run db:migrate
-npm run ingest:live
 npm run dev
 ```
 
-Open http://127.0.0.1:4321/es/. On a supported host these commands use **local** D1 at `.wrangler/state/v3`, without Cloudflare credentials. `npm run ingest` only prints instructions; `npm run ingest:live` explicitly opts into fetching the approved public source and writing local D1. `npm run source:verify` fetches and validates without database writes.
+Open http://127.0.0.1:4321/es/. Local D1 data is stored at `.wrangler/state/v3`.
+The database starts empty; in another terminal, import an approved source when needed:
 
-On this project's initial machine (macOS 12), native D1 migrations, imports, and the browser test server are blocked by workerd's operating-system requirement. Docker provides the Linux runtime for those commands.
+```sh
+npm run ingest:live -- --source miram-sant-andreu
+```
+
+`npm run ingest` only prints instructions. `npm run ingest:live` explicitly opts
+into fetching approved public sources and writing local D1. `npm run source:verify`
+fetches and validates without database writes. See [source research](docs/data-sources.md)
+for supported sources and access policies.
 
 ## Checks
 
@@ -74,9 +106,16 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-`npm test` uses saved source fixtures and real Node SQLite for SQL contract tests. It does **not** emulate or prove the Cloudflare runtime. `test:d1` exercises actual local D1 separately. Routine tests never contact source websites. [Linux CI passed](https://github.com/8beets/learnaprop/actions/runs/42078396499) for the initial foundation, including D1 and desktop/mobile browser checks.
+`npm test` uses saved source fixtures and real Node SQLite for SQL contract tests.
+`npm run test:d1` exercises the actual local D1 runtime separately. Playwright covers
+Spanish and Catalan discovery, filtering, pagination, centre pages, embedded-map
+URLs, language switching, legacy redirects, and desktop/mobile behaviour. Routine
+tests do not contact source websites or map services.
 
-The expanded suite is covered by 74 unit/SQLite tests, 1 D1 runtime test, and 28 desktop/mobile browser tests. The Docker suite also checks formatting, lint, TypeScript, migrations, and the build. Browser tests cover image delivery, localized captions and weekdays, stable search width after filtering, and navigation across all 11 imported centres. See [Docker verification](docs/docker.md#verified-locally).
+The [CI workflow](https://github.com/8beets/learnaprop/actions/workflows/ci.yml)
+runs the repository checks on Linux. The [Docker check suite](docs/docker.md#run-checks)
+also includes binding generation and local migrations. For hosts without Chromium's
+system dependencies, use Docker or follow Playwright's browser installation guidance.
 
 ## Documentation
 
@@ -92,6 +131,6 @@ The expanded suite is covered by 74 unit/SQLite tests, 1 D1 runtime test, and 28
 
 ## Not implemented yet
 
-Course detail and institution pages, normalized individual sessions, scheduled ingestion, stale-record policies, administration, submissions, full-text/accent-insensitive search, and public SEO configuration. The public preview deliberately retains `noindex` while canonical URLs, sitemaps, source reuse conditions, and complete expired-edition behavior remain under review. Cloudflare Workers and D1 are deployed with Free-plan-compatible configuration; no paid services or plan upgrades were enabled. See [deployment instructions](docs/deployment.md).
+Individual course detail pages, normalized individual sessions, scheduled ingestion, stale-record policies, administration, submissions, full-text/accent-insensitive search, and public SEO configuration. The public preview deliberately retains `noindex` while canonical URLs, sitemaps, source reuse conditions, and complete expired-edition behavior remain under review. Cloudflare Workers and D1 are deployed with Free-plan-compatible configuration; no paid services or plan upgrades were enabled. See [deployment instructions](docs/deployment.md).
 
 Licensed under the [MIT License](LICENSE). Third-party photographs and icons retain their respective licenses; see [asset credits](docs/assets.md).

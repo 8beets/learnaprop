@@ -45,7 +45,7 @@ npm run ingest:production -- --live
 npm run ingest:production -- --live --source miram-pati-llimona
 ```
 
-Without `--live`, the command makes no requests. It uses the same adapter, validation, snapshot persistence, identities, and reviewed-correction handling as local ingestion. A minimal database port allows the Node-only Wrangler bridge to reuse the authoritative persistence code. This bridge is never imported by the Worker; authentication stays in Wrangler. It works on this Mac without native workerd or mounting Cloudflare credentials into Docker.
+Without `--live`, the command makes no requests. It uses the same adapter, validation, snapshot persistence, identities, and reviewed-correction handling as local ingestion. A minimal database port allows the Node-only Wrangler bridge to reuse the authoritative persistence code. This bridge is never imported by the Worker; authentication stays in Wrangler. It runs through the host Wrangler CLI without starting local workerd or mounting Cloudflare credentials into Docker.
 
 Prepared values are serialized as escaped SQL literals for Wrangler's file-import transport and tested with real SQLite. Each snapshot uses D1's atomic file import; a failed import rolls back, though the database can be briefly unavailable during an import. The runner validates CLI JSON results, including file-import progress prefixes, and records a failed run without advancing previous verification timestamps when a source fetch fails. Run only one remote importer at a time. No scheduler is configured.
 

@@ -23,8 +23,8 @@ upsert reviewed profiles from `src/lib/institutions/profiles.ts`. Missing option
 metadata preserves existing values; an explicit `notice: null` clears a reviewed notice.
 
 After applying migrations, use `npm run centres:sync` to populate approved local
-centre profiles without fetching or reimporting courses (on macOS 12, run this in
-Docker: `docker compose exec app npm run centres:sync`). For an explicitly approved
+centre profiles without fetching or reimporting courses. With Docker, use
+`docker compose exec app npm run centres:sync`. For an explicitly approved
 production update, use `npm run db:migrate:production` followed by
 `npm run centres:sync:production`. These commands update centre metadata only and
 preserve existing course data and provenance. New source imports also register

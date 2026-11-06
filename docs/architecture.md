@@ -8,7 +8,7 @@ The ingestion adapter handles fetching and extraction, returning validated domai
 
 D1 is the only canonical persistent store. Node SQLite validates SQL and transaction behavior in tests and was also used in memory to prepare the initial verified cloud-data seed. Runtime tests use actual local D1 separately.
 
-Local Docker development uses a Linux Node 24 image with separate volumes for dependencies and the app's D1 state. The checks service has its own temporary state and includes Chromium, so runtime and browser checks do not depend on host macOS support. See [Docker setup](docker.md).
+Local Docker development uses a Linux Node 24 image with separate volumes for dependencies and the app's D1 state. The checks service has its own temporary state and includes Chromium, so runtime and browser checks run in the same Linux environment across supported Docker hosts. See [Docker setup](docker.md).
 
 The initial UI provides title search, price filtering, and bounded pages of 12 editions. Search uses parameterized `LIKE`, escaping literal patterns and respecting D1's pattern byte limit. SQLite's default `LIKE` has limited Unicode case folding: accent-insensitive and comprehensive language-aware matching are deferred. Substring search can scan candidates and is suitable only for the initial small dataset. Reassess query plans and a supported indexed search strategy before expanding significantly.
 

@@ -8,4 +8,4 @@ Build one reusable Miram adapter and one explicit institution configuration. Kee
 
 Use Astro server-rendered pages with native GET forms, Spanish/Catalan dictionaries, strict TypeScript, Tailwind, and Wrangler, following the requested stable stack. Avoid client UI frameworks, sessions, additional Cloudflare storage, scheduling, and paid services in this milestone.
 
-The current machine cannot run workerd because of its macOS version. Node SQLite SQL contract checks remain separate from actual D1 runtime tests, with a Linux CI workflow and dev-container configuration supplied. These do not establish remote CI success until run. Public release and source reuse review remain separate work.
+Node SQLite SQL contract checks remain separate from actual D1 runtime tests, with a Linux CI workflow and dev-container configuration supplied. Each test suite must be executed before its results are reported. Public release and source reuse review remain separate work.

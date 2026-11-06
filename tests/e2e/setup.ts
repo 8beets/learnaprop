@@ -42,6 +42,17 @@ async function setup() {
         ]);
       }
     }
+    // Deliberately missing location, isolated in E2E state to exercise the honest fallback.
+    await db
+      .prepare(
+        "INSERT OR IGNORE INTO institutions (id,name,official_url,city,country,address,timezone) VALUES ('test-no-location','TEST unverified location','https://example.org','Barcelona','ES','TEST address','Europe/Madrid')",
+      )
+      .run();
+    await db
+      .prepare(
+        "INSERT OR IGNORE INTO institution_profiles (institution_id,slug) VALUES ('test-no-location','test-no-location')",
+      )
+      .run();
     const fixture = readFileSync(
       new URL('../fixtures/miram-sant-andreu-languages.html', import.meta.url),
       'utf8',

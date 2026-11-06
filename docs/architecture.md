@@ -33,3 +33,12 @@ Search, centre, category, and price controls share one GET form in `CourseFilter
 Centre/category selects retain combined filter values, including a visible current-selection fallback when a category is unavailable at the selected centre. Submitting the GET form omits `page`, resetting pagination. Removing one applied filter also resets the page and retains other parameters. Language links and result pagination retain the query string. Extra query parameters survive form submissions so issue #2 can place region/city controls in this same component without introducing a second form. Geographic filtering itself remains pending issue #2; unknown parameters do not currently filter the database.
 
 Future location/date/time fields belong in the existing sidebar form and must be added to its `formFields` set, validated by the service, and reflected in the applied-filter summary. Do not add placeholder controls for unimplemented filters. Mobile validation errors leave the panel open, labels use native associations, and keyboard disclosure/focus works with and without JavaScript. Browser coverage exercises both layouts, combined filters, centre-specific options, legacy category URLs, incompatible selections, pagination, clear/remove actions, locale switching, and responsive disclosure.
+
+Centre navigation uses `/centros` and `/centros/[slug]` in Spanish, and `/ca/centres`
+and `/ca/centres/[slug]` in Catalan. A shared native Astro layout provides primary
+navigation and switches locale while retaining the centre and pagination. Directory
+queries include institutions without courses, with 24-item pagination. Detail pages
+reuse bounded course queries scoped to the selected institution (12 per page), and
+show verified contact information and an embedded OpenStreetMap map. Unknown slugs
+return 404; invalid pagination returns 400; database outages return 503. Profile
+metadata and provenance are separate from external course parsing.

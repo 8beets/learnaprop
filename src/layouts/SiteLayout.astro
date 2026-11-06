@@ -1,0 +1,99 @@
+---
+import { messages, type Locale } from '../i18n/ui';
+import '../styles/global.css';
+interface Props {
+  locale: Locale;
+  title: string;
+  description?: string;
+  languagePaths: Record<Locale, string>;
+  section?: 'courses' | 'centres';
+}
+const {
+  locale,
+  title,
+  description,
+  languagePaths,
+  section = 'courses',
+} = Astro.props;
+const t = messages[locale];
+const base = locale === 'es' ? '/' : '/ca/';
+const centreBase = locale === 'es' ? '/centros' : '/ca/centres';
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description ?? t.description} />
+    <meta name="robots" content="noindex,follow" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="/images/brand/learnaprop-logo.png"
+    />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip" href="#main">
+      {t.skip}
+    </a>
+    <header class="shell header">
+      <a href={base} class="brand">
+        <img
+          src="/images/brand/learnaprop-logo.png"
+          alt=""
+          width="56"
+          height="56"
+        />
+        LearnAprop
+      </a>
+      <div class="header-actions">
+        <nav aria-label={t.primaryNavigation}>
+          <a
+            href={base}
+            aria-current={section === 'courses' ? 'page' : undefined}
+          >
+            {t.coursesNav}
+          </a>
+          <a
+            href={centreBase}
+            aria-current={section === 'centres' ? 'page' : undefined}
+          >
+            {t.centresNav}
+          </a>
+        </nav>
+        <nav aria-label={t.language}>
+          <a
+            href={languagePaths.es}
+            lang="es"
+            aria-current={locale === 'es' ? 'page' : undefined}
+          >
+            Español
+          </a>
+          <a
+            href={languagePaths.ca}
+            lang="ca"
+            aria-current={locale === 'ca' ? 'page' : undefined}
+          >
+            Català
+          </a>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class="shell">
+      <slot />
+    </main>
+    <footer class="shell footer">
+      <p>LearnAprop</p>
+      <p>{t.footer}</p>
+      <a class="github-link" href="https://github.com/8beets/learnaprop">
+        <img src="/icons/github.svg" alt="" width="20" height="20" />
+        {t.githubRepo}
+      </a>
+      <p class="photo-credit">
+        {t.photoNote} <a href="https://www.pexels.com/">{t.photoCredits}</a>.
+      </p>
+    </footer>
+  </body>
+</html>

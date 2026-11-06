@@ -1,12 +1,14 @@
 import type { CourseRecord, SourceConfig } from '../ingestion/types';
 import { cleanText, hash } from '../ingestion/normalization/values';
 import type { IngestionDatabase, IngestionStatement } from './ingestion-port';
+import { centreProfile } from '../institutions/profiles';
 
 export async function registerSource(
   db: IngestionDatabase,
   source: SourceConfig,
 ): Promise<void> {
   const institution = source.institution;
+  const profile = centreProfile(institution.id);
   await db.batch([
     db
       .prepare(
@@ -30,6 +32,39 @@ export async function registerSource(
       ON CONFLICT(id) DO UPDATE SET name=excluded.name, listing_url=excluded.listing_url`,
       )
       .bind(source.id, institution.id, source.name, source.listingUrl),
+    db
+      .prepare(
+        `INSERT INTO institution_profiles
+      (institution_id, slug, description, description_language, phone, email, details_source_url, details_verified_at, notice,
+       latitude, longitude, coordinates_source_url, coordinates_verified_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(institution_id) DO UPDATE SET slug=excluded.slug,
+      description=coalesce(excluded.description, institution_profiles.description),
+      description_language=coalesce(excluded.description_language, institution_profiles.description_language),
+      phone=coalesce(excluded.phone, institution_profiles.phone), email=coalesce(excluded.email, institution_profiles.email),
+      details_source_url=coalesce(excluded.details_source_url, institution_profiles.details_source_url),
+      details_verified_at=coalesce(excluded.details_verified_at, institution_profiles.details_verified_at),
+      notice=CASE WHEN ?=1 THEN excluded.notice ELSE institution_profiles.notice END,
+      latitude=coalesce(excluded.latitude, institution_profiles.latitude), longitude=coalesce(excluded.longitude, institution_profiles.longitude),
+      coordinates_source_url=coalesce(excluded.coordinates_source_url, institution_profiles.coordinates_source_url),
+      coordinates_verified_at=coalesce(excluded.coordinates_verified_at, institution_profiles.coordinates_verified_at)`,
+      )
+      .bind(
+        institution.id,
+        profile.slug,
+        profile.description ?? null,
+        profile.descriptionLanguage ?? null,
+        profile.phone ?? null,
+        profile.email ?? null,
+        profile.detailsSourceUrl ?? null,
+        profile.detailsVerifiedAt ?? null,
+        profile.notice ?? null,
+        profile.location?.latitude ?? null,
+        profile.location?.longitude ?? null,
+        profile.location?.sourceUrl ?? null,
+        profile.location?.verifiedAt ?? null,
+        profile.notice === undefined ? 0 : 1,
+      ),
   ]);
 }
 

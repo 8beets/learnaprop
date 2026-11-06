@@ -86,3 +86,20 @@ The production build and dry run passed with only DB/ASSETS bindings. Docker pas
 The discovery controls moved into one native GET form in `CourseFilters.astro`, with a desktop sidebar and a keyboard-accessible mobile disclosure. Applied filters can be removed individually or cleared outside the disclosure. Combined query values, pagination resets, aliases, centre-specific categories, and locale switching are preserved. Extra parameters survive submissions for the future location-filter work in issue #2; geographic filtering is not implemented by this change.
 
 Formatting, lint, TypeScript, 74 deterministic tests, D1 runtime checks, the production build/dry run, and 28 desktop/mobile browser cases were validated. The pagination cases were rerun successfully after updating their Next-link selector. Visual review confirmed the sidebar/collapsed mobile layout and no horizontal overflow. No source data, database schema, or infrastructure changed.
+
+## Centre directory and embedded maps — issue #1
+
+Migration `0003_institution_profiles.sql` adds centre profiles and backfills stable
+slugs. Apply it before deploying this version, then run `npm run
+centres:sync:production` to populate reviewed profiles for all 11 existing centres.
+The metadata-only sync preserves the 777 course editions and source records; it
+does not fetch course providers or create new course records. Profiles carry
+municipal provenance and verification dates. No new cloud resource is required.
+
+Both locales have directory and detail routes, header navigation and paginated
+centre-specific courses. Maps are embedded through OpenStreetMap's standard iframe
+with verified markers, attribution and a larger-map link. Missing coordinates have
+an explicit fallback. Real embed rendering was checked in Chrome separately from
+the deterministic suite. Docker validated formatting, lint, types, 79 deterministic
+tests, 1 actual D1 runtime test, migrations, build, and 36 desktop/mobile browser
+cases. An additional directory-pagination/outage regression passed after that run.

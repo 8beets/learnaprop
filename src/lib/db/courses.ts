@@ -13,6 +13,7 @@ export interface CourseListing {
   category: string | null;
   institution: string;
   institution_id: string;
+  institution_slug: string;
   start_date: string | null;
   end_date: string | null;
   schedule_text: string | null;
@@ -53,9 +54,10 @@ export async function listCourses(
   const result = await db
     .prepare(
       `SELECT e.id, coalesce(c.reviewed_title, c.title) AS title, c.category,
-    i.name AS institution, i.id AS institution_id, e.start_date, e.end_date, e.schedule_text, e.price_cents, e.currency,
+    i.name AS institution, i.id AS institution_id, coalesce(p.slug, i.id) AS institution_slug, e.start_date, e.end_date, e.schedule_text, e.price_cents, e.currency,
     sr.official_url, sr.last_successfully_verified_at FROM course_editions e
     JOIN courses c ON c.id=e.course_id JOIN institutions i ON i.id=c.institution_id
+    LEFT JOIN institution_profiles p ON p.institution_id=i.id
     JOIN source_records sr ON sr.edition_id=e.id
     WHERE ${conditions.join(' AND ')}
     ORDER BY e.start_date IS NULL, e.start_date, e.id LIMIT ? OFFSET ?`,

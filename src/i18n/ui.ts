@@ -2,6 +2,31 @@ import { canonicalCategory } from '../lib/courses/categories';
 
 export const messages = {
   es: {
+    primaryNavigation: 'Navegación principal',
+    coursesNav: 'Cursos',
+    centresNav: 'Centros',
+    directoryTitle: 'Centros de aprendizaje en Barcelona',
+    directoryIntro:
+      'Descubre los centros, su ubicación y sus próximos cursos y talleres.',
+    centreDetails: 'Información del centro',
+    website: 'Web oficial',
+    address: 'Dirección',
+    phone: 'Teléfono',
+    email: 'Correo electrónico',
+    location: 'Ubicación',
+    mapOf: 'Mapa de',
+    largerMap: 'Ampliar mapa',
+    mapUnavailable: 'La ubicación exacta todavía no está verificada.',
+    searchAddress: 'Buscar dirección en OpenStreetMap',
+    locationSource: 'Fuente de la ubicación',
+    detailsSource: 'Fuente de los datos del centro',
+    centreCourses: 'Próximos cursos y talleres',
+    noCentreCourses:
+      'No hay próximas ediciones publicadas para este centro. Consulta su web oficial.',
+    notFound: 'No hemos encontrado este centro.',
+    noCentres: 'Todavía no hay centros publicados.',
+    closureNotice:
+      'La guía municipal indica que este equipamiento está cerrado temporalmente. Confirma con el centro dónde se realizan sus actividades.',
     title: 'Aprende cerca de casa',
     description:
       'Cursos y talleres presenciales de organizaciones de Barcelona. Información de fuentes oficiales, con enlaces para consultar los detalles.',
@@ -54,6 +79,31 @@ export const messages = {
       'Un proyecto gratuito y de código abierto para descubrir oportunidades de aprendizaje en la comunidad.',
   },
   ca: {
+    primaryNavigation: 'Navegació principal',
+    coursesNav: 'Cursos',
+    centresNav: 'Centres',
+    directoryTitle: 'Centres d’aprenentatge a Barcelona',
+    directoryIntro:
+      'Descobreix els centres, la seva ubicació i els pròxims cursos i tallers.',
+    centreDetails: 'Informació del centre',
+    website: 'Web oficial',
+    address: 'Adreça',
+    phone: 'Telèfon',
+    email: 'Correu electrònic',
+    location: 'Ubicació',
+    mapOf: 'Mapa de',
+    largerMap: 'Amplia el mapa',
+    mapUnavailable: 'La ubicació exacta encara no està verificada.',
+    searchAddress: 'Cerca l’adreça a OpenStreetMap',
+    locationSource: 'Font de la ubicació',
+    detailsSource: 'Font de les dades del centre',
+    centreCourses: 'Pròxims cursos i tallers',
+    noCentreCourses:
+      'No hi ha pròximes edicions publicades per a aquest centre. Consulta’n el web oficial.',
+    notFound: 'No hem trobat aquest centre.',
+    noCentres: 'Encara no hi ha centres publicats.',
+    closureNotice:
+      'La guia municipal indica que aquest equipament està tancat temporalment. Confirma amb el centre on es fan les seves activitats.',
     title: 'Aprèn a prop de casa',
     description:
       'Cursos i tallers presencials d’organitzacions de Barcelona. Informació de fonts oficials, amb enllaços per consultar-ne els detalls.',

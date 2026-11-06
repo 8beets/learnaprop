@@ -1,0 +1,65 @@
+---
+import {
+  messages,
+  formatLocalDate,
+  categoryLabel,
+  type Locale,
+} from '../i18n/ui';
+import { formatSchedule } from '../i18n/schedule';
+import type { CourseListing } from '../lib/db/courses';
+interface Props {
+  locale: Locale;
+  course: CourseListing;
+  filterParams: URLSearchParams;
+}
+const { locale, course, filterParams } = Astro.props;
+const t = messages[locale];
+const base = locale === 'es' ? '/' : '/ca/';
+const centreBase = locale === 'es' ? '/centros' : '/ca/centres';
+const categoryParams = new URLSearchParams(filterParams);
+categoryParams.delete('page');
+if (course.category) categoryParams.set('category', course.category);
+---
+
+<article class="course">
+  <p class="institution">
+    <a href={`${centreBase}/${course.institution_slug}`}>
+      {course.institution}
+    </a>
+  </p>
+  {course.category && (
+    <a class="course-category" href={`${base}?${categoryParams}`}>
+      {categoryLabel(course.category, locale)}
+    </a>
+  )}
+  <h3>{course.title}</h3>
+  <p>
+    {course.start_date
+      ? formatLocalDate(course.start_date, locale)
+      : t.unknownDates}
+    {course.end_date &&
+      course.end_date !== course.start_date &&
+      ` – ${formatLocalDate(course.end_date, locale)}`}
+  </p>
+  {course.schedule_text && (
+    <p class="schedule">{formatSchedule(course.schedule_text, locale)}</p>
+  )}
+  <p class="price">
+    {course.price_cents === null
+      ? t.unknownPrice
+      : new Intl.NumberFormat(locale, {
+          style: 'currency',
+          currency: course.currency ?? 'EUR',
+        }).format(course.price_cents / 100)}
+  </p>
+  <a href={course.official_url}>{t.source} ↗</a>
+  <p class="verified">
+    {t.verified}{' '}
+    <time datetime={course.last_successfully_verified_at}>
+      {formatLocalDate(
+        course.last_successfully_verified_at.slice(0, 10),
+        locale,
+      )}
+    </time>
+  </p>
+</article>

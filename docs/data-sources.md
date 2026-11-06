@@ -116,3 +116,23 @@ The dataset metadata describes annual aggregate statistics (activities, attendan
 ## Adding an institution
 
 Verify its official website, registration-platform ownership, public-access rules, reuse conditions, and field semantics first. Reuse Miram extraction only after testing a small saved fixture against that institution's actual markup. A configuration-only addition is the target, not an unverified compatibility claim.
+
+## Centre directory locations and contacts
+
+All 11 centre locations and contacts were manually verified on 2026-11-06 against
+Barcelona City Council's public municipal directory (`guia.barcelona.cat`). Exact
+source URLs, coordinates and verification dates live in
+`src/lib/institutions/profiles.ts`. Coordinates come from each official detail
+page's `loadmapdetall(latitude, longitude, ...)` map configuration, without geocoding
+or estimating an address. Public detail pages were fetched respecting the guide's
+10-second crawl delay. Profile updates are reviewed explicitly, separately from
+course extraction. FAB Casa del Mig's municipal entry currently reports temporary
+closure; its page displays that notice without assuming courses are cancelled.
+
+Centre pages embed OpenStreetMap's standard export iframe with the verified marker,
+OSM attribution, a larger-map link and the municipal location source. Unknown
+locations show an address-search link and an explicit unverified-location message.
+There is no runtime geocoding, map API key, paid service or map JavaScript dependency.
+The embedded map loads from OpenStreetMap when the browser approaches it; its
+standard map scripts and tiles run within the third-party iframe. Routine E2E tests
+intercept that iframe request and assert URLs/markers without using live services.

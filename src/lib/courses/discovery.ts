@@ -5,9 +5,10 @@ import {
   type DiscoveryFilters,
 } from '../db/courses';
 import { canonicalCategory } from './categories';
+import { parsePage } from '../pagination';
 
 export function parseFilters(params: URLSearchParams): DiscoveryFilters {
-  const page = params.get('page') ?? '1';
+  const page = parsePage(params);
   const q = (params.get('q') ?? '').trim();
   const category = (params.get('category') ?? '').trim();
   const centre = params.get('centre') ?? '';
@@ -21,8 +22,6 @@ export function parseFilters(params: URLSearchParams): DiscoveryFilters {
     )
   )
     throw new Error('Invalid category');
-  if (!/^\d{1,4}$/.test(page) || Number(page) < 1 || Number(page) > 1000)
-    throw new Error('Invalid page');
   // D1 LIKE patterns have a 50-byte limit, including wildcard delimiters.
   if (new TextEncoder().encode(q).length > 40)
     throw new Error('Search too long');
@@ -33,7 +32,7 @@ export function parseFilters(params: URLSearchParams): DiscoveryFilters {
     q,
     category: canonicalCategory(category),
     centre,
-    page: Number(page),
+    page,
     maxPriceCents: maxPrice ? Math.round(Number(maxPrice) * 100) : null,
   };
 }

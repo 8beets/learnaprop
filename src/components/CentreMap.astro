@@ -1,0 +1,51 @@
+---
+import { messages, formatLocalDate, type Locale } from '../i18n/ui';
+import type { Centre } from '../lib/db/institutions';
+import {
+  openStreetMapLocation,
+  openStreetMapSearch,
+} from '../lib/institutions/maps';
+interface Props {
+  locale: Locale;
+  centre: Centre;
+}
+const { locale, centre } = Astro.props;
+const t = messages[locale];
+const map =
+  centre.coordinates_source_url && centre.coordinates_verified_at
+    ? openStreetMapLocation(centre.latitude, centre.longitude)
+    : null;
+---
+
+<section class="centre-map" aria-labelledby="location">
+  <h2 id="location">{t.location}</h2>
+  {map ? (
+    <>
+      <iframe
+        src={map.embedUrl}
+        title={`${t.mapOf} ${centre.name}`}
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"
+        width="800"
+        height="340"
+      ></iframe>
+      <p>
+        <a href={map.mapUrl}>{t.largerMap} ↗</a> · ©{' '}
+        <a href="https://www.openstreetmap.org/copyright">
+          OpenStreetMap contributors
+        </a>
+      </p>
+      <p class="verified">
+        <a href={centre.coordinates_source_url!}>{t.locationSource}</a> ·{' '}
+        {t.verified} {formatLocalDate(centre.coordinates_verified_at!, locale)}
+      </p>
+    </>
+  ) : (
+    <>
+      <p>{t.mapUnavailable}</p>
+      <a href={openStreetMapSearch(centre.address, centre.city)}>
+        {t.searchAddress} ↗
+      </a>
+    </>
+  )}
+</section>

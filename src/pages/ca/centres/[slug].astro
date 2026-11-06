@@ -1,0 +1,14 @@
+---
+import { env } from 'cloudflare:workers';
+import CentreDetail from '../../../components/CentreDetail.astro';
+import { loadCentrePage } from '../../../lib/institutions/pages';
+const data = await loadCentrePage(
+  env.DB,
+  Astro.params.slug ?? '',
+  Astro.url.searchParams,
+);
+Astro.response.status = data.status;
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+<CentreDetail locale="ca" data={data} />

@@ -4,6 +4,10 @@ import { expect, it } from 'vitest';
 import { runIngestion } from '../../src/lib/ingestion/run';
 import { parseMiramPage } from '../../src/lib/ingestion/adapters/miram';
 import { santAndreu } from '../../src/lib/sources/sant-andreu';
+import {
+  findInstitution,
+  listInstitutions,
+} from '../../src/lib/db/institutions';
 import { listCategories, listCourses } from '../../src/lib/db/courses';
 
 it('applies the migration and imports idempotently in the actual local D1 runtime', async () => {
@@ -36,6 +40,10 @@ it('applies the migration and imports idempotently in the actual local D1 runtim
     ).records;
     const adapter = { fetchRecords: async () => records };
     await runIngestion(db, adapter, santAndreu);
+    expect((await findInstitution(db, 'sant-andreu'))?.latitude).toBe(
+      41.43088018380354,
+    );
+    expect((await listInstitutions(db, 1)).centres).toHaveLength(1);
     await runIngestion(db, adapter, santAndreu);
     expect(
       await db.prepare('SELECT count(*) AS n FROM source_records').first('n'),

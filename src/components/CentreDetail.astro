@@ -1,0 +1,122 @@
+---
+import { messages, formatLocalDate, type Locale } from '../i18n/ui';
+import type { CentrePageData } from '../lib/institutions/pages';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import CentreMap from './CentreMap.astro';
+import CourseCard from './CourseCard.astro';
+interface Props {
+  locale: Locale;
+  data: CentrePageData;
+}
+const { locale, data } = Astro.props;
+const { centre } = data;
+const t = messages[locale];
+const base = locale === 'es' ? '/centros' : '/ca/centres';
+const paths = {
+  es: `/centros/${centre?.slug ?? Astro.params.slug}${Astro.url.search}`,
+  ca: `/ca/centres/${centre?.slug ?? Astro.params.slug}${Astro.url.search}`,
+};
+const courseParams = new URLSearchParams(centre ? { centre: centre.id } : {});
+---
+
+<SiteLayout
+  locale={locale}
+  title={`${centre?.name ?? t.notFound} · LearnAprop`}
+  section="centres"
+  languagePaths={paths}
+>
+  <p class="breadcrumb">
+    <a href={base}>← {t.centresNav}</a>
+  </p>
+  {data.error && (
+    <>
+      <h1>{t[data.error]}</h1>
+      <p>
+        <a href={base}>{t.directoryTitle}</a>
+      </p>
+    </>
+  )}
+  {centre && (
+    <>
+      <section class="centre-heading">
+        <h1>{centre.name}</h1>
+        {centre.description && (
+          <p class="intro" lang={centre.description_language ?? undefined}>
+            {centre.description}
+          </p>
+        )}
+        {centre.notice === 'temporary_closure' && (
+          <p class="error">{t.closureNotice}</p>
+        )}
+        <h2>{t.centreDetails}</h2>
+        <dl class="centre-contact">
+          <dt>{t.address}</dt>
+          <dd>
+            {centre.address}, {centre.city}
+          </dd>
+          <dt>{t.website}</dt>
+          <dd>
+            <a href={centre.official_url}>{centre.name} ↗</a>
+          </dd>
+          {centre.phone && (
+            <>
+              <dt>{t.phone}</dt>
+              <dd>
+                <a href={`tel:${centre.phone.replace(/[^+0-9]/g, '')}`}>
+                  {centre.phone}
+                </a>
+              </dd>
+            </>
+          )}
+          {centre.email && (
+            <>
+              <dt>{t.email}</dt>
+              <dd>
+                <a href={`mailto:${centre.email}`}>{centre.email}</a>
+              </dd>
+            </>
+          )}
+        </dl>
+        {centre.details_source_url && (
+          <p class="verified">
+            <a href={centre.details_source_url}>{t.detailsSource}</a>
+            {centre.details_verified_at && (
+              <>
+                {' '}
+                · {t.verified}{' '}
+                {formatLocalDate(centre.details_verified_at, locale)}
+              </>
+            )}
+          </p>
+        )}
+      </section>
+      <CentreMap locale={locale} centre={centre} />
+      <section class="centre-courses" aria-labelledby="centre-courses">
+        <h2 id="centre-courses">{t.centreCourses}</h2>
+        {!data.courses.length && <p>{t.noCentreCourses}</p>}
+        <div class="grid">
+          {data.courses.map((course) => (
+            <CourseCard
+              locale={locale}
+              course={course}
+              filterParams={courseParams}
+            />
+          ))}
+        </div>
+        <nav class="pagination" aria-label={t.pagination}>
+          {data.page > 1 && (
+            <a href={`${base}/${centre.slug}?page=${data.page - 1}`} rel="prev">
+              ← {t.previous}
+            </a>
+          )}
+          {data.hasNext && data.page < 1000 && (
+            <a href={`${base}/${centre.slug}?page=${data.page + 1}`} rel="next">
+              {t.next} →
+            </a>
+          )}
+        </nav>
+        <aside class="notice">{t.notice}</aside>
+      </section>
+    </>
+  )}
+</SiteLayout>

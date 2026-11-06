@@ -1,3 +1,12 @@
+import { registerSource } from '../../src/lib/db/ingestion';
+import {
+  listInstitutions,
+  findInstitution,
+} from '../../src/lib/db/institutions';
+import {
+  loadCentrePage,
+  loadDirectoryPage,
+} from '../../src/lib/institutions/pages';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, readdirSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -71,6 +80,127 @@ describe('SQLite migration and ingestion contract', () => {
     db = sqliteContract(sqlite);
   });
   afterEach(() => sqlite.close());
+  it('registers verified profiles independently of courses and preserves reviewed descriptions', async () => {
+    await registerSource(db, santAndreu);
+    await registerSource(db, canBaste);
+    expect((await listInstitutions(db, 1)).centres).toHaveLength(2);
+    const centre = await findInstitution(db, 'sant-andreu');
+    expect(centre?.latitude).toBe(41.43088018380354);
+    expect(centre?.coordinates_source_url).toContain('guia.barcelona.cat');
+    sqlite.exec(
+      "UPDATE institution_profiles SET description='Reviewed description', description_language='ca' WHERE institution_id='cc-sant-andreu'",
+    );
+    await registerSource(db, santAndreu);
+    expect((await findInstitution(db, 'sant-andreu'))?.description).toBe(
+      'Reviewed description',
+    );
+    const data = await loadCentrePage(db, 'sant-andreu', new URLSearchParams());
+    expect(data.status).toBe(200);
+    expect(data.courses).toEqual([]);
+    expect(
+      (await loadCentrePage(db, 'unknown', new URLSearchParams())).status,
+    ).toBe(404);
+    expect(
+      (await loadCentrePage(db, 'sant-andreu', new URLSearchParams('page=-1')))
+        .status,
+    ).toBe(400);
+    expect(
+      (await loadDirectoryPage(db, new URLSearchParams('page=1001'))).status,
+    ).toBe(400);
+    expect(() =>
+      sqlite
+        .prepare(
+          'UPDATE institution_profiles SET latitude=91 WHERE institution_id=?',
+        )
+        .run('cc-sant-andreu'),
+    ).toThrow();
+    expect(() =>
+      sqlite
+        .prepare(
+          'UPDATE institution_profiles SET longitude=NULL WHERE institution_id=?',
+        )
+        .run('cc-sant-andreu'),
+    ).toThrow();
+    expect(() =>
+      sqlite
+        .prepare(
+          'UPDATE institution_profiles SET slug=? WHERE institution_id=?',
+        )
+        .run('can-baste', 'cc-sant-andreu'),
+    ).toThrow();
+  });
+  it('paginates the full directory and distinguishes outages from missing centres', async () => {
+    for (let index = 0; index < 25; index++) {
+      await registerSource(db, {
+        ...santAndreu,
+        id: `test-source-${index}`,
+        listingUrl: `https://example.org/test-source-${index}`,
+        institution: {
+          ...santAndreu.institution,
+          id: `test-centre-${index}`,
+          name: `Centre ${String(index).padStart(2, '0')}`,
+        },
+      });
+    }
+    const first = await listInstitutions(db, 1);
+    const next = await listInstitutions(db, 2);
+    expect(first.centres).toHaveLength(24);
+    expect(first.hasNext).toBe(true);
+    expect(next.centres).toHaveLength(1);
+    expect(next.hasNext).toBe(false);
+    expect(
+      new Set([...first.centres, ...next.centres].map((c) => c.id)).size,
+    ).toBe(25);
+    const unavailable = {
+      prepare: () => {
+        throw new Error('database unavailable');
+      },
+    } as unknown as D1Database;
+    expect(
+      (await loadCentrePage(unavailable, 'test-centre', new URLSearchParams()))
+        .status,
+    ).toBe(503);
+    expect(
+      (await loadDirectoryPage(unavailable, new URLSearchParams())).status,
+    ).toBe(503);
+  });
+  it('backfills stable centre slugs when upgrading existing data', () => {
+    const legacy = new DatabaseSync(':memory:');
+    try {
+      const files = readdirSync(migrationDirectory)
+        .filter((n) => n.endsWith('.sql'))
+        .sort();
+      for (const file of files.slice(0, 2))
+        legacy.exec(readFileSync(new URL(file, migrationDirectory), 'utf8'));
+      legacy
+        .prepare(
+          'INSERT INTO institutions (id,name,official_url,city,country,address,timezone) VALUES (?,?,?,?,?,?,?)',
+        )
+        .run(
+          'cc-old',
+          'Existing centre',
+          'https://example.org',
+          'Barcelona',
+          'ES',
+          'Existing address',
+          'Europe/Madrid',
+        );
+      legacy.exec(
+        readFileSync(
+          new URL('0003_institution_profiles.sql', migrationDirectory),
+          'utf8',
+        ),
+      );
+      expect(
+        legacy.prepare('SELECT slug,latitude FROM institution_profiles').get(),
+      ).toMatchObject({ slug: 'old', latitude: null });
+      expect(
+        legacy.prepare('SELECT name FROM institutions').get(),
+      ).toMatchObject({ name: 'Existing centre' });
+    } finally {
+      legacy.close();
+    }
+  });
   it('lists real categories and centres, and composes both filters without identity collisions', async () => {
     await runIngestion(db, { fetchRecords: async () => records }, santAndreu);
     await runIngestion(

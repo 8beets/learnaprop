@@ -28,7 +28,9 @@
     "source:verify": "tsx scripts/verify-source.ts",
     "ingest": "tsx scripts/ingest.ts",
     "ingest:live": "tsx scripts/ingest.ts --live",
-    "ingest:production": "tsx scripts/ingest-production.ts"
+    "ingest:production": "tsx scripts/ingest-production.ts",
+    "centres:sync": "tsx scripts/sync-centres.ts",
+    "centres:sync:production": "tsx scripts/sync-centres.ts --remote"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.5",

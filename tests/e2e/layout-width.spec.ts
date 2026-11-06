@@ -11,7 +11,7 @@ test('page layouts fill desktop widths while retaining gutters and mobile bounds
       `${locale === 'es' ? '/es/centros' : '/ca/centres'}/sant-andreu`,
     ]) {
       await page.goto(path);
-      for (const width of [1440, 1920, 2560, 390]) {
+      for (const width of [1440, 1920, 2560, 390, 320]) {
         await page.setViewportSize({ width, height: 1000 });
         const clientWidth = await page.evaluate(
           () => document.documentElement.clientWidth,

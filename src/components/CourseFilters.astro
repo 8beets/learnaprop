@@ -1,6 +1,7 @@
 ---
 import { messages, categoryLabel, type Locale } from '../i18n/ui';
 import type { DiscoveryPageData } from '../lib/courses/page';
+import Icon from './Icon.astro';
 
 interface Props {
   locale: Locale;
@@ -35,6 +36,7 @@ const preservedParams = [...Astro.url.searchParams].filter(
           id="q"
           name="q"
           type="search"
+          placeholder={t.searchExample}
           value={filters.q}
           aria-describedby={error === 'invalid' ? 'filter-error' : undefined}
         />
@@ -93,7 +95,10 @@ const preservedParams = [...Astro.url.searchParams].filter(
           />
         </div>
       </fieldset>
-      <button type="submit">{t.submit}</button>
+      <button type="submit">
+        <Icon name="search" />
+        {t.submit}
+      </button>
     </form>
   </details>
 </aside>

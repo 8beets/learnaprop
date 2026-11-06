@@ -4,6 +4,8 @@ A free, open-source directory of affordable, in-person courses and workshops fro
 
 LearnAprop helps people discover courses and visit the organizer's official listing. It does not handle bookings, payments, or learning management.
 
+**Public preview:** https://learnaprop.learnaprop.workers.dev/ — deployed on 2026-11-06 with 51 verified course editions from Sant Andreu and Can Basté. This is a preview; availability remains unconfirmed and automated refresh is not configured.
+
 ## Current milestone
 
 - Astro + strict TypeScript, Tailwind CSS, Cloudflare Workers, and D1 configuration.
@@ -73,6 +75,6 @@ The current suite passed locally in Docker: 21 unit/SQLite tests, 1 D1 runtime t
 
 ## Not implemented yet
 
-Course detail and institution pages, normalized individual sessions, scheduled ingestion, stale-record policies, administration, submissions, full-text/accent-insensitive search, and public SEO configuration. The site deliberately emits `noindex` until publication, source reuse conditions, a real canonical origin, and expired-edition behavior have been reviewed. No production resources have been created or modified.
+Course detail and institution pages, normalized individual sessions, scheduled ingestion, stale-record policies, administration, submissions, full-text/accent-insensitive search, and public SEO configuration. The public preview deliberately retains `noindex` while canonical URLs, sitemaps, source reuse conditions, and complete expired-edition behavior remain under review. Cloudflare Workers and D1 are deployed with Free-plan-compatible configuration; no paid services or plan upgrades were enabled. See [deployment instructions](docs/deployment.md).
 
 An open-source license has not yet been selected by the maintainer; no license grant should be assumed.

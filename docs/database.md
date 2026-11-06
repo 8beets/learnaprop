@@ -12,4 +12,4 @@ Use a new numbered migration for every subsequent schema change. Applied migrati
 
 `npm test` checks the migration and repository SQL against real Node SQLite with a small D1-method contract harness. It verifies constraints, idempotency, rollback, provenance, overrides, query behavior, and failed ingestion recovery. It does not prove the D1 runtime. Run `npm run test:d1` on a supported host for the separate actual D1 test.
 
-No remote database has been created or migrated. No destructive production command is part of setup or CI.
+The approved cloud preview uses the `production` environment's D1 database `learnaprop`, created in Western Europe. Both migrations were applied on 2026-11-06, followed by an initial import of 51 verified course editions and their provenance. No destructive production command is part of setup or CI. Local development retains its all-zero placeholder binding; production commands must explicitly select the production environment.

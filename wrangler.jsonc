@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "learnaprop",
+  "account_id": "3e956f73c2ce2c6bad7638a31ab76d99",
   "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_date": "2026-11-05",
   "compatibility_flags": ["nodejs_compat"],
@@ -15,4 +16,19 @@
     },
   ],
   "observability": { "enabled": true, "traces": { "enabled": true } },
+  "env": {
+    "production": {
+      "name": "learnaprop",
+      "workers_dev": true,
+      "preview_urls": false,
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "learnaprop",
+          "database_id": "1b9916a8-60ff-4d90-8e10-94216c4e9723",
+          "migrations_dir": "migrations",
+        },
+      ],
+    },
+  },
 }

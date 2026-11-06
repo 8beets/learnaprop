@@ -1,12 +1,48 @@
 # Deployment
 
-This milestone is local-only. Production deployment and remote resource creation require explicit approval. There is intentionally no deployment script or automatic deployment workflow.
+## Public preview
 
-Before deployment, choose the production hostname, verify source reuse conditions, provision an approved D1 database, replace the local placeholder in the reviewed environment configuration, and apply migrations to that intended environment. Add canonical URLs, `hreflang`, sitemaps, and an expired-edition policy before removing `noindex`. Validate D1 and browser tests on Linux or another supported operating system.
+URL: https://learnaprop.learnaprop.workers.dev/
 
-The initial foundation passed [Linux CI](https://github.com/akira28/learnaprop/actions/runs/42078396499), including actual local D1 and desktop/mobile browser tests. This verifies the tested local behavior, not a deployed production environment.
+First deployed with explicit user approval on 2026-11-06. Worker: `learnaprop`. Cloudflare environment: `production`. D1: `learnaprop` (`1b9916a8-60ff-4d90-8e10-94216c4e9723`), created in Western Europe. Initial Worker version: `cd1613a8-547f-4b5c-be35-c36a047d267c`.
 
-The application uses Astro's current Cloudflare adapter, with sessions disabled and image passthrough. This avoids the adapter's automatic KV session and Images provisioning. `workers_dev` and preview URLs are disabled. Observability is configured, but nothing has been deployed.
+The preview is public and retains `noindex`. It is not a production-readiness claim: custom domains, canonical URLs, sitemaps, comprehensive expired-edition handling, source reuse review, and scheduled refresh remain incomplete. No paid service, plan upgrade, or automatic deployment workflow was enabled.
+
+## Explicit deployment commands
+
+Sign in to the intended Cloudflare account with `npx wrangler login`, then inspect `npx wrangler whoami`. Credentials stay in Wrangler's user configuration, outside the repository. Account and database IDs in `wrangler.jsonc` are identifiers, not credentials.
+
+After approval for any new remote schema/resource changes:
+
+```sh
+npm run db:migrate:production
+npm run build:production
+npx wrangler deploy --config dist/server/wrangler.json --dry-run
+```
+
+Review the generated configuration: Worker `learnaprop`, `workers_dev: true`, and `DB` pointing to the cloud database above. Then deploy the same artifact:
+
+```sh
+npx wrangler deploy --config dist/server/wrangler.json
+```
+
+For subsequent explicitly authorized deployments, `npm run deploy:production` builds and deploys. Astro's Cloudflare Vite adapter selects the production environment **at build time** via `CLOUDFLARE_ENV=production`; changing the environment only during deployment does not retarget a build. See [Cloudflare environments](https://developers.cloudflare.com/workers/vite-plugin/reference/cloudflare-environments/).
+
+The base environment remains local-only with `workers_dev: false` and a placeholder D1 ID. Local migration/type-generation scripts explicitly read `wrangler.jsonc`; the production binding is defined separately under `env.production`. Never point local test fixtures at the production database. Sessions and image transformation are disabled, so the build has only D1 and static asset bindings, without automatic KV or Images provisioning.
+
+## Initial data import
+
+The cloud database was empty before initialization. Docker stopped responding during the attempted local export, so a fresh snapshot was fetched from both approved sources with the existing bounded adapters. The authoritative ingestion runner wrote into temporary in-memory Node SQLite, and SQLite's `quote()` produced a data-only initialization export outside the repository. Wrangler imported that export into the already migrated remote D1 database. No fixture data or descriptions were published.
+
+The initial import contains 22 Sant Andreu and 29 Can Basté editions, with 51 source records and new cloud first-seen/verification timestamps. It does not copy the earlier Docker first-seen history. Cloud D1 is the canonical store; the temporary SQLite database was only an initialization aid. The SQL import processed 159 statements and produced a database of approximately 0.20 MB. No test records or foreign-key violations were present after import.
+
+The initial seed is not a refresh mechanism. Do not replay data-only `INSERT` exports into an existing production database: a production refresh workflow must preserve identities and reviewed corrections through the normal ingestion rules. `npm run ingest:live` continues to target **local** D1 only.
+
+## Verification
+
+The production-specific build, binding generation, TypeScript checks, lint, and 21 deterministic tests passed. The deployment dry run showed a 163.77 KiB gzip Worker package, with only `DB` and `ASSETS` bindings. Remote migration state and data integrity were checked directly against D1.
+
+Read-only live checks passed for Spanish and Catalan homepages, combined centre/category filtering, search plus maximum price, pagination, HTTP 400 validation errors, and the built CSS asset. No tracking cookies were set. The earlier [Linux CI](https://github.com/akira28/learnaprop/actions/runs/42078396499) and local Docker runs validated actual D1 behavior and desktop/mobile browser interactions; Docker was not available for a repeat browser run during this deployment.
 
 ## Free-plan constraints
 
@@ -19,4 +55,4 @@ Official limits reviewed 2026-11-05:
 
 Only D1 and Workers are configured. Discovery returns at most 12 rows plus a next-page sentinel. Substring search and offset pagination suit the initial dataset; they do not guarantee cheap queries at larger scale. Monitor real query plans and row reads before expansion.
 
-Ingestion currently runs as an explicit local CLI operation. A scheduled Worker or GitHub Actions importer needs separate workload measurements and approval for its remote resources and credentials. No claim is made that the entire ingestion workload fits Free-plan CPU limits.
+Ingestion currently runs as an explicit local CLI operation, apart from the approved one-time cloud initialization. A scheduled Worker or GitHub Actions importer needs separate workload measurements and approval for its remote resources and credentials. No claim is made that the entire ingestion workload fits Free-plan CPU limits.

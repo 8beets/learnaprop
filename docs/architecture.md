@@ -6,7 +6,7 @@ Requests flow from pages to discovery services to the centralized database repos
 
 The ingestion adapter handles fetching and extraction, returning validated domain records without knowing about persistence. The runner registers the source and records an ingestion attempt, fetches the entire bounded snapshot, validates it, and commits courses, editions, provenance, and successful-run status in one D1 batch transaction. Failed attempts record an error while preserving existing course data.
 
-D1 is the only canonical persistent store. Node SQLite is used exclusively in tests to validate SQL and transaction behavior. Runtime tests use actual local D1 separately.
+D1 is the only canonical persistent store. Node SQLite validates SQL and transaction behavior in tests and was also used in memory to prepare the initial verified cloud-data seed. Runtime tests use actual local D1 separately.
 
 Local Docker development uses a Linux Node 24 image with separate volumes for dependencies and the app's D1 state. The checks service has its own temporary state and includes Chromium, so runtime and browser checks do not depend on host macOS support. See [Docker setup](docker.md).
 

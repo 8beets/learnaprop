@@ -6,6 +6,7 @@ import {
   type Locale,
 } from '../i18n/ui';
 import type { DiscoveryPageData } from '../lib/courses/page';
+import { formatSchedule } from '../i18n/schedule';
 import { sources } from '../lib/sources';
 import '../styles/global.css';
 
@@ -20,6 +21,12 @@ const officialSources = sources.filter(
   (source) => !filters.centre || source.institution.id === filters.centre,
 );
 const base = locale === 'es' ? '/' : '/ca/';
+const themes = [
+  { image: 'music', label: t.photoMusic },
+  { image: 'pottery', label: t.photoPottery },
+  { image: 'electronics', label: t.photoElectronics },
+  { image: 'woodworking', label: t.photoWoodworking },
+];
 function pageUrl(page: number) {
   const params = new URLSearchParams(Astro.url.searchParams);
   params.set('page', String(page));
@@ -44,6 +51,11 @@ function filterUrl(key: string, value: string) {
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={t.description} />
     <meta name="robots" content="noindex,follow" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="/images/brand/learnaprop-logo.png"
+    />
     <title>{t.pageTitle}</title>
   </head>
   <body>
@@ -52,7 +64,13 @@ function filterUrl(key: string, value: string) {
     </a>
     <header class="shell header">
       <a href={base} class="brand">
-        LearnAprop<span aria-hidden="true">↗</span>
+        <img
+          src="/images/brand/learnaprop-logo.png"
+          alt=""
+          width="56"
+          height="56"
+        />
+        LearnAprop
       </a>
       <nav aria-label={t.language}>
         <a
@@ -73,10 +91,31 @@ function filterUrl(key: string, value: string) {
     </header>
     <main id="main" class="shell">
       <section class="hero" aria-labelledby="title">
-        <p class="eyebrow">Barcelona · {t.mission}</p>
-        <h1 id="title">{t.title}</h1>
-        <p class="intro">{t.description}</p>
+        <div class="hero-copy">
+          <p class="eyebrow">Barcelona · {t.mission}</p>
+          <h1 id="title">{t.title}</h1>
+          <p class="intro">{t.description}</p>
+          <a class="hero-link" href="#discovery">
+            {t.explore} <span aria-hidden="true">↓</span>
+          </a>
+        </div>
+        <div class="hero-photos" role="group" aria-label={t.photoNote}>
+          {themes.map((theme, index) => (
+            <figure class={`theme-photo theme-photo-${index}`}>
+              <img
+                src={`/images/categories/${theme.image}.jpg`}
+                alt=""
+                width="800"
+                height="600"
+                loading={index === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+              <figcaption>{theme.label}</figcaption>
+            </figure>
+          ))}
+        </div>
       </section>
+      <div id="discovery" class="discovery-anchor"></div>
       {(centres.length > 0 || filters.centre) && (
         <nav class="categories" aria-label={t.centres}>
           <a
@@ -120,7 +159,7 @@ function filterUrl(key: string, value: string) {
         {filters.centre && (
           <input type="hidden" name="centre" value={filters.centre} />
         )}
-        <div>
+        <div class="search-query">
           <label for="q">{t.search}</label>
           <input
             id="q"
@@ -188,7 +227,11 @@ function filterUrl(key: string, value: string) {
                 {course.end_date &&
                   ` – ${formatLocalDate(course.end_date, locale)}`}
               </p>
-              {course.schedule_text && <p>{course.schedule_text}</p>}
+              {course.schedule_text && (
+                <p class="schedule">
+                  {formatSchedule(course.schedule_text, locale)}
+                </p>
+              )}
               <p class="price">
                 {course.price_cents === null
                   ? t.unknownPrice
@@ -228,6 +271,9 @@ function filterUrl(key: string, value: string) {
     <footer class="shell footer">
       <p>LearnAprop</p>
       <p>{t.footer}</p>
+      <p class="photo-credit">
+        {t.photoNote} <a href="https://www.pexels.com/">{t.photoCredits}</a>.
+      </p>
     </footer>
   </body>
 </html>

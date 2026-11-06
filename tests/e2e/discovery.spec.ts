@@ -9,12 +9,49 @@ test('Spanish homepage and Catalan language switching work without client JavaSc
   await expect(
     page.getByRole('heading', { name: 'Aprende cerca de casa' }),
   ).toBeVisible();
+  await expect(page.locator('.schedule').first()).toHaveText(
+    /^(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo)\b/,
+  );
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await expect(page.locator('.hero-photos figure')).toHaveCount(4);
+  await expect(page.locator('.hero-photos figcaption')).toHaveText([
+    'Música',
+    'Cerámica',
+    'Electrónica',
+    'Bricolaje',
+  ]);
+  await expect
+    .poll(() =>
+      page
+        .locator('.hero-photos img')
+        .evaluateAll((images) =>
+          images.every(
+            (image) =>
+              image instanceof HTMLImageElement &&
+              image.complete &&
+              image.naturalWidth > 0,
+          ),
+        ),
+    )
+    .toBe(true);
+  await expect(page.locator('.brand img')).toHaveAttribute(
+    'src',
+    '/images/brand/learnaprop-logo.png',
+  );
   await page.getByRole('link', { name: 'Català' }).click();
   await expect(
     page.getByRole('heading', { name: 'Aprèn a prop de casa' }),
   ).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('lang', 'ca');
+  await expect(page.locator('.hero-photos figcaption')).toHaveText([
+    'Música',
+    'Ceràmica',
+    'Electrònica',
+    'Bricolatge',
+  ]);
+  await expect(page.locator('.schedule').first()).toHaveText(
+    /^(Dilluns|Dimarts|Dimecres|Dijous|Divendres|Dissabte|Diumenge)\b/,
+  );
 });
 
 test('search uses shareable URL filters and an honest empty state', async ({
@@ -54,11 +91,16 @@ test('categories compose with search, pagination, and locale switching without J
   page,
 }) => {
   await page.goto('/?page=2');
+  const searchWidth = (await page.locator('#q').boundingBox())!.width;
   const navigation = page.getByRole('navigation', {
     name: 'Explorar por categoría',
   });
   await navigation.getByRole('link', { name: 'Idiomas', exact: true }).click();
   await expect(page).toHaveURL(/category=IDIOMES$/);
+  expect((await page.locator('#q').boundingBox())!.width).toBeCloseTo(
+    searchWidth,
+    1,
+  );
   await expect(
     page
       .getByRole('navigation', { name: 'Explorar por categoría' })
@@ -128,4 +170,17 @@ test('centre navigation combines with categories and survives search and languag
   expect(new URL(page.url()).searchParams.has('centre')).toBe(false);
   expect(new URL(page.url()).searchParams.get('category')).toBe('IDIOMES');
   await expect(page.locator('article.course')).toHaveCount(12);
+  await page.getByRole('link', { name: 'Neteja els filtres' }).click();
+  await page
+    .getByRole('navigation', { name: 'Explora per centre' })
+    .getByRole('link', { name: 'Centre Cívic Pati Llimona', exact: true })
+    .click();
+  await page
+    .getByRole('navigation', { name: 'Explora per categoria' })
+    .getByRole('link', { name: 'Cinema', exact: true })
+    .click();
+  await expect(page.locator('article.course')).toHaveCount(1);
+  await expect(page.locator('article.course .institution')).toHaveText(
+    'Centre Cívic Pati Llimona',
+  );
 });

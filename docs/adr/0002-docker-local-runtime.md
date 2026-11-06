@@ -6,4 +6,4 @@ The developer's Mac runs macOS 12, below the minimum supported by the current wo
 
 Use one Debian Bookworm development image with Chromium installed by the project's locked Playwright package. Bind-mount source code but keep Linux dependencies in a named volume. Persist app D1 state separately; checks use temporary state so fixtures never enter the browsing database. Bind the development port to host loopback only. No Docker daemon socket or cloud credentials are exposed to the containers.
 
-The Docker CLI bundled with Docker Desktop is used directly when it is not on the shell PATH. Initial image downloads are expected; ongoing cloud infrastructure and paid services are not introduced.
+The Docker CLI is now configured on the user's shell PATH. Invoke `docker` directly; existing editor/agent processes may need a new shell or restart to inherit a changed PATH. Initial image downloads are expected; ongoing cloud infrastructure and paid services are not introduced.

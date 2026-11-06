@@ -1,6 +1,6 @@
 # Architecture
 
-This is one Astro application, not a monorepo. Native Astro renders HTML; GET forms work without client JavaScript. Translation dictionaries contain interface text. Source titles and schedule text stay in their original language.
+This is one Astro application, not a monorepo. Native Astro renders HTML; GET forms work without client JavaScript. Translation dictionaries contain interface text. Source titles stay in their original language. Original schedule text remains stored unchanged; the Spanish interface translates known Catalan weekday names and weekday-list conjunctions without changing times, translating arbitrary prose, or inferring sessions.
 
 Requests flow from pages to discovery services to the centralized database repository. Components receive view data and do not query D1. External HTML is escaped by Astro; the importer does not publish source descriptions or execute scripts.
 

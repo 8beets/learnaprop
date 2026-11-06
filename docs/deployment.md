@@ -36,7 +36,7 @@ The cloud database was empty before initialization. Docker stopped responding du
 
 The initial import contains 22 Sant Andreu and 29 Can Basté editions, with 51 source records and new cloud first-seen/verification timestamps. It does not copy the earlier Docker first-seen history. Cloud D1 is the canonical store; the temporary SQLite database was only an initialization aid. The SQL import processed 159 statements and produced a database of approximately 0.20 MB. No test records or foreign-key violations were present after import.
 
-The initial seed is not a refresh mechanism. Do not replay data-only `INSERT` exports into an existing production database: a production refresh workflow must preserve identities and reviewed corrections through the normal ingestion rules. `npm run ingest:live` continues to target **local** D1 only.
+The initial seed is not a refresh mechanism. Do not replay data-only `INSERT` exports into an existing production database: the production refresh command preserves identities and reviewed corrections through the normal ingestion rules (see below). `npm run ingest:live` continues to target **local** D1 only.
 
 ## Verification
 
@@ -55,4 +55,10 @@ Official limits reviewed 2026-11-05:
 
 Only D1 and Workers are configured. Discovery returns at most 12 rows plus a next-page sentinel. Substring search and offset pagination suit the initial dataset; they do not guarantee cheap queries at larger scale. Monitor real query plans and row reads before expansion.
 
-Ingestion currently runs as an explicit local CLI operation, apart from the approved one-time cloud initialization. A scheduled Worker or GitHub Actions importer needs separate workload measurements and approval for its remote resources and credentials. No claim is made that the entire ingestion workload fits Free-plan CPU limits.
+Ingestion runs as an explicit local or authorized remote CLI operation. A scheduled Worker or GitHub Actions importer needs separate workload measurements and approval for its remote resources and credentials. No claim is made that the entire ingestion workload fits Free-plan CPU limits.
+
+## 2026-11-06 refresh and interface update
+
+An authorized refresh using `npm run ingest:production -- --live` persisted 37 Sant Andreu, 99 Can Basté, and 56 Pati Llimona editions with the authoritative importer. The first Can Basté attempt hit the old 30-page bound, was recorded as failed, and retained previous records; a subsequent successful run used the documented 60-page bound. The final database has 192 editions with provenance. The remote command supports `--source` and requires explicit `--live`; `ingest:live` remains local-only.
+
+The accompanying interface adds illustrative stock photos and the generated logo, fixes search-input width after choosing filters, and translates weekday labels for the Spanish interface while retaining original stored source text. Asset licenses and the logo prompt are documented in [assets](assets.md).

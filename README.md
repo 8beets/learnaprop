@@ -4,7 +4,7 @@ A free, open-source directory of affordable, in-person courses and workshops fro
 
 LearnAprop helps people discover courses and visit the organizer's official listing. It does not handle bookings, payments, or learning management.
 
-**Public preview:** https://learnaprop.learnaprop.workers.dev/ — deployed on 2026-11-06 with 51 verified course editions from Sant Andreu and Can Basté. This is a preview; availability remains unconfirmed and automated refresh is not configured.
+**Public preview:** https://learnaprop.learnaprop.workers.dev/ — deployed on 2026-11-06 with 192 source-verified course editions from Sant Andreu, Can Basté, and Pati Llimona. This is a preview; availability remains unconfirmed and automated refresh is not configured.
 
 ## Current milestone
 
@@ -15,9 +15,9 @@ LearnAprop helps people discover courses and visit the organizer's official list
 - Browse by civic centre and course category; combine both with search and price, using shareable URLs.
 - Deterministic unit/SQLite contract tests, a separate D1 runtime suite, Playwright tests, and CI.
 
-The Sant Andreu source was live-verified on 2026-11-05: **22 course editions** parsed successfully. This verifies extraction, not production availability or enrollment status. No courses are bundled into the public application. The database starts empty until a live import runs.
+The sources were live-verified and refreshed on 2026-11-06: **37 Sant Andreu**, **99 Can Basté**, and **56 Pati Llimona** course editions. All use the reusable Miram adapter. The pagination fix discovers numbered links that the initial importer missed. Explicitly reviewed concerts, film screenings, and cancelled activities are excluded. Stored totals include expired editions; availability remains unknown. Local D1 starts empty until a live import runs.
 
-Can Basté was added and live-imported on 2026-11-06: **29 course editions** after excluding its concerts category. Both centres use the same reusable Miram adapter. The local database contains 51 stored editions across the two centres; expired editions do not appear in discovery.
+The interface includes locally served stock photographs, a generated logo, and localized weekday labels. Course titles and stored source text retain their original language. See [asset credits and logo prompt](docs/assets.md).
 
 ## Local setup
 
@@ -60,10 +60,11 @@ npm run test:e2e
 
 `npm test` uses saved source fixtures and real Node SQLite for SQL contract tests. It does **not** emulate or prove the Cloudflare runtime. `test:d1` exercises actual local D1 separately. Routine tests never contact source websites. [Linux CI passed](https://github.com/akira28/learnaprop/actions/runs/42078396499) for the initial foundation, including D1 and desktop/mobile browser checks.
 
-The current suite passed locally in Docker: 21 unit/SQLite tests, 1 D1 runtime test, and 10 browser tests, plus formatting, lint, TypeScript, migrations, and the build. Live Docker imports persisted 22 Sant Andreu editions and 29 Can Basté editions with provenance; combined centre/category filtering was verified through the published port. See [Docker verification](docs/docker.md#verified-locally).
+The expanded suite is covered by 44 unit/SQLite tests, 1 D1 runtime test, and 10 desktop/mobile browser tests. The Docker suite also checks formatting, lint, TypeScript, migrations, and the build. Browser tests cover image delivery, localized captions and weekdays, stable search width after filtering, and navigation across all three centres. See [Docker verification](docs/docker.md#verified-locally).
 
 ## Documentation
 
+- [Asset credits and logo](docs/assets.md)
 - [Source research](docs/data-sources.md)
 - [Architecture](docs/architecture.md)
 - [Adapter development](docs/ingestion.md)

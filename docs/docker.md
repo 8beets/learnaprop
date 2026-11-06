@@ -4,13 +4,16 @@ Docker runs the current Cloudflare runtime on Linux, even when the Mac host cann
 
 ## Start
 
-On this machine, Docker Desktop is installed but its CLI directory is not on `PATH`. For the current terminal:
+Docker Desktop must be installed and running, with its CLI on your shell's `PATH`. Confirm it is available:
 
 ```sh
-export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
+docker --version
+docker compose version
 ```
 
-Make sure Docker Desktop is running, then from the repository:
+The CLI is configured on this Mac. Use `docker` directly, without an application-internal executable path. After changing `PATH`, open a new terminal; already-running editor or agent sessions may need a restart to inherit it. If a new terminal still cannot find the existing user CLI link, add `export PATH="$HOME/.docker/bin:$PATH"` to `~/.zshrc`.
+
+From the repository:
 
 ```sh
 docker compose build
@@ -73,3 +76,5 @@ The app's local state remains in the Docker volume. Nothing was deployed to Clou
 On 2026-11-06, the expanded navigation suite passed 21 unit/SQLite tests, 1 D1 runtime test, and 10 browser tests. Can Basté imported 29 course editions; the combined centre/category URL returned HTTP 200 and three Can Basté language listings.
 
 References: [Playwright Docker setup](https://playwright.dev/docs/docker), [Docker bind mounts](https://docs.docker.com/engine/storage/bind-mounts/).
+
+After updating to Docker Desktop 4.41.2 on 2026-11-06, `docker` resolves through the user's shell PATH (CLI 28.1.1, Linux engine 28.1.1, Compose v2.36.0-desktop.1). The complete refreshed suite passed: 44 unit/SQLite tests, 1 actual D1 test, and 10 desktop/mobile browser tests, plus formatting, lint, binding generation, TypeScript, migrations, and build. A separate native production build and Wrangler deployment dry run also passed. Visual review confirmed all four local photographs and the logo load without horizontal overflow at 1440px and 390px widths.

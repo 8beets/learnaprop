@@ -43,7 +43,7 @@ test('Spanish homepage and Catalan language switching work without client JavaSc
     .getByRole('link', { name: 'Código en GitHub', exact: true });
   await expect(repository).toHaveAttribute(
     'href',
-    'https://github.com/akira28/learnaprop',
+    'https://github.com/8beets/learnaprop',
   );
   await expect(repository.locator('img')).toHaveAttribute(
     'src',
@@ -57,7 +57,7 @@ test('Spanish homepage and Catalan language switching work without client JavaSc
     page
       .getByRole('contentinfo')
       .getByRole('link', { name: 'Codi a GitHub', exact: true }),
-  ).toHaveAttribute('href', 'https://github.com/akira28/learnaprop');
+  ).toHaveAttribute('href', 'https://github.com/8beets/learnaprop');
   await expect(page.locator('html')).toHaveAttribute('lang', 'ca');
   await expect(page.locator('.hero-photos figcaption')).toHaveText([
     'Música',

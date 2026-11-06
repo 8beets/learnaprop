@@ -42,7 +42,7 @@ The initial seed is not a refresh mechanism. Do not replay data-only `INSERT` ex
 
 The production-specific build, binding generation, TypeScript checks, lint, and 21 deterministic tests passed. The deployment dry run showed a 163.77 KiB gzip Worker package, with only `DB` and `ASSETS` bindings. Remote migration state and data integrity were checked directly against D1.
 
-Read-only live checks passed for Spanish and Catalan homepages, combined centre/category filtering, search plus maximum price, pagination, HTTP 400 validation errors, and the built CSS asset. No tracking cookies were set. The earlier [Linux CI](https://github.com/akira28/learnaprop/actions/runs/42078396499) and local Docker runs validated actual D1 behavior and desktop/mobile browser interactions; Docker was not available for a repeat browser run during this deployment.
+Read-only live checks passed for Spanish and Catalan homepages, combined centre/category filtering, search plus maximum price, pagination, HTTP 400 validation errors, and the built CSS asset. No tracking cookies were set. The earlier [Linux CI](https://github.com/8beets/learnaprop/actions/runs/42078396499) and local Docker runs validated actual D1 behavior and desktop/mobile browser interactions; Docker was not available for a repeat browser run during this deployment.
 
 ## Free-plan constraints
 

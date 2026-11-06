@@ -1,14 +1,6 @@
 ---
-import { env } from 'cloudflare:workers';
-import CentreDetail from '../../components/CentreDetail.astro';
-import { loadCentrePage } from '../../lib/institutions/pages';
-const data = await loadCentrePage(
-  env.DB,
-  Astro.params.slug ?? '',
-  Astro.url.searchParams,
+return Astro.redirect(
+  `/es/centros/${encodeURIComponent(Astro.params.slug ?? '')}${Astro.url.search}`,
+  308,
 );
-Astro.response.status = data.status;
-Astro.response.headers.set('Cache-Control', 'no-store');
 ---
-
-<CentreDetail locale="es" data={data} />

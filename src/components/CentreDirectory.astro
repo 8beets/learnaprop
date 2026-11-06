@@ -8,7 +8,7 @@ interface Props {
 }
 const { locale, data } = Astro.props;
 const t = messages[locale];
-const base = locale === 'es' ? '/centros' : '/ca/centres';
+const base = locale === 'es' ? '/es/centros' : '/ca/centres';
 ---
 
 <SiteLayout
@@ -17,7 +17,7 @@ const base = locale === 'es' ? '/centros' : '/ca/centres';
   description={t.directoryIntro}
   section="centres"
   languagePaths={{
-    es: `/centros${Astro.url.search}`,
+    es: `/es/centros${Astro.url.search}`,
     ca: `/ca/centres${Astro.url.search}`,
   }}
 >

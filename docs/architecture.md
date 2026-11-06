@@ -34,7 +34,7 @@ Centre/category selects retain combined filter values, including a visible curre
 
 Future location/date/time fields belong in the existing sidebar form and must be added to its `formFields` set, validated by the service, and reflected in the applied-filter summary. Do not add placeholder controls for unimplemented filters. Mobile validation errors leave the panel open, labels use native associations, and keyboard disclosure/focus works with and without JavaScript. Browser coverage exercises both layouts, combined filters, centre-specific options, legacy category URLs, incompatible selections, pagination, clear/remove actions, locale switching, and responsive disclosure.
 
-Centre navigation uses `/centros` and `/centros/[slug]` in Spanish, and `/ca/centres`
+Centre navigation uses `/es/centros` and `/es/centros/[slug]` in Spanish, and `/ca/centres`
 and `/ca/centres/[slug]` in Catalan. A shared native Astro layout provides primary
 navigation and switches locale while retaining the centre and pagination. Directory
 queries include institutions without courses, with 24-item pagination. Detail pages
@@ -42,3 +42,9 @@ reuse bounded course queries scoped to the selected institution (12 per page), a
 show verified contact information and an embedded OpenStreetMap map. Unknown slugs
 return 404; invalid pagination returns 400; database outages return 503. Profile
 metadata and provenance are separate from external course parsing.
+
+All page navigation includes a locale prefix: Spanish discovery is `/es/` and
+Catalan discovery is `/ca/`. Filters, pagination, centre links and language
+switching retain that prefix. Legacy `/`, `/centros` and `/centros/[slug]` routes
+return HTTP 308 redirects to their Spanish equivalents, preserving query strings.
+Static assets and third-party source/map URLs retain their own paths.

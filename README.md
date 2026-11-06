@@ -4,14 +4,14 @@ A free, open-source directory of affordable, in-person courses and workshops fro
 
 LearnAprop helps people discover courses and visit the organizer's official listing. It does not handle bookings, payments, or learning management.
 
-**Public preview:** https://learnaprop.learnaprop.workers.dev/ — 777 source-verified course editions across 11 Barcelona centres. This is a preview; availability remains unconfirmed and automated refresh is not configured.
+**Public preview:** https://learnaprop.learnaprop.workers.dev/es/ — 777 source-verified course editions across 11 Barcelona centres. This is a preview; availability remains unconfirmed and automated refresh is not configured.
 
 ## Current milestone
 
 - Astro + strict TypeScript, Tailwind CSS, Cloudflare Workers, and D1 configuration.
 - Reusable Miram adapter with institution configuration separated from extraction.
 - Versioned relational schema, atomic imports, stable identifiers, provenance, and failed-run tracking.
-- Server-rendered Spanish (`/`) and Catalan (`/ca/`) discovery with title search, maximum price, and pagination.
+- Server-rendered Spanish (`/es/`) and Catalan (`/ca/`) discovery with title search, maximum price, and pagination.
 - Browse by civic centre and normalized course category; category pills reflect the selected centre, and equivalent provider categories share one filter. Combine both with search and price using shareable URLs.
 - Deterministic unit/SQLite contract tests, a separate D1 runtime suite, Playwright tests, and CI.
 
@@ -57,7 +57,7 @@ npm run ingest:live
 npm run dev
 ```
 
-Open http://127.0.0.1:4321. On a supported host these commands use **local** D1 at `.wrangler/state/v3`, without Cloudflare credentials. `npm run ingest` only prints instructions; `npm run ingest:live` explicitly opts into fetching the approved public source and writing local D1. `npm run source:verify` fetches and validates without database writes.
+Open http://127.0.0.1:4321/es/. On a supported host these commands use **local** D1 at `.wrangler/state/v3`, without Cloudflare credentials. `npm run ingest` only prints instructions; `npm run ingest:live` explicitly opts into fetching the approved public source and writing local D1. `npm run source:verify` fetches and validates without database writes.
 
 On this project's initial machine (macOS 12), native D1 migrations, imports, and the browser test server are blocked by workerd's operating-system requirement. Docker provides the Linux runtime for those commands.
 

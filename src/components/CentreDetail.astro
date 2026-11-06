@@ -11,9 +11,9 @@ interface Props {
 const { locale, data } = Astro.props;
 const { centre } = data;
 const t = messages[locale];
-const base = locale === 'es' ? '/centros' : '/ca/centres';
+const base = locale === 'es' ? '/es/centros' : '/ca/centres';
 const paths = {
-  es: `/centros/${centre?.slug ?? Astro.params.slug}${Astro.url.search}`,
+  es: `/es/centros/${centre?.slug ?? Astro.params.slug}${Astro.url.search}`,
   ca: `/ca/centres/${centre?.slug ?? Astro.params.slug}${Astro.url.search}`,
 };
 const courseParams = new URLSearchParams(centre ? { centre: centre.id } : {});

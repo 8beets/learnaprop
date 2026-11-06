@@ -14,11 +14,11 @@ test.beforeEach(async ({ page }) => {
   );
 });
 for (const locale of ['es', 'ca'] as const) {
-  const base = locale === 'es' ? '/centros' : '/ca/centres';
+  const base = locale === 'es' ? '/es/centros' : '/ca/centres';
   test(`${locale}: directory links to all centres and exact embedded verified markers`, async ({
     page,
   }) => {
-    await page.goto(locale === 'es' ? '/' : '/ca/');
+    await page.goto(locale === 'es' ? '/es/' : '/ca/');
     await page
       .getByRole('navigation', {
         name: locale === 'es' ? 'Navegación principal' : 'Navegació principal',
@@ -87,7 +87,7 @@ for (const locale of ['es', 'ca'] as const) {
       .getByRole('link', { name: locale === 'es' ? 'Català' : 'Español' })
       .click();
     await expect(page).toHaveURL(
-      `${locale === 'es' ? '/ca/centres' : '/centros'}/sant-andreu?page=2`,
+      `${locale === 'es' ? '/ca/centres' : '/es/centros'}/sant-andreu?page=2`,
     );
     await page.goto(`${base}/test-no-location`);
     await expect(page.locator('.centre-map iframe')).toHaveCount(0);

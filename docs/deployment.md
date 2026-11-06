@@ -103,3 +103,16 @@ an explicit fallback. Real embed rendering was checked in Chrome separately from
 the deterministic suite. Docker validated formatting, lint, types, 79 deterministic
 tests, 1 actual D1 runtime test, migrations, build, and 36 desktop/mobile browser
 cases. An additional directory-pagination/outage regression passed after that run.
+
+## Explicit locale URLs — issue #6
+
+Spanish discovery and centre pages now live at `/es/`, `/es/centros` and
+`/es/centros/[slug]`. Catalan keeps `/ca/` and `/ca/centres`. Navigation, filter
+forms, pagination, course-category links and language switching all use explicit
+locale prefixes. Existing unprefixed Spanish URLs return HTTP 308 redirects,
+preserving query strings; browser checks also verify fragment preservation.
+
+Docker checks passed formatting, lint, TypeScript, 80 unit/SQLite tests, 1 actual
+D1 runtime test, the build and 40 desktop/mobile browser cases. The production
+build and Wrangler deployment dry run passed. This release requires no database
+migration or data refresh.

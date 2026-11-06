@@ -1,0 +1,61 @@
+import { expect, test } from '@playwright/test';
+
+test.use({ javaScriptEnabled: false });
+test.beforeEach(async ({ page }) => {
+  await page.route('https://www.openstreetmap.org/**', (route) =>
+    route.fulfill({
+      contentType: 'text/html',
+      body: '<!doctype html><title>Offline map fixture</title>',
+    }),
+  );
+});
+
+test('legacy Spanish URLs redirect permanently and retain query parameters', async ({
+  request,
+  page,
+}) => {
+  const query =
+    '?category=IDIOMES&centre=cc-sant-andreu&page=2&q=TEST%20workshop';
+  for (const [oldPath, newPath] of [
+    ['/', '/es/'],
+    ['/centros', '/es/centros'],
+    ['/centros/sant-andreu', '/es/centros/sant-andreu'],
+  ]) {
+    const response = await request.get(oldPath + query, { maxRedirects: 0 });
+    expect(response.status()).toBe(308);
+    expect(response.headers().location).toBe(newPath + query);
+  }
+  await page.goto('/?centre=cc-sant-andreu#discovery');
+  await expect(page).toHaveURL('/es/?centre=cc-sant-andreu#discovery');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await expect(page.locator('#centre')).toHaveValue('cc-sant-andreu');
+});
+
+test('all page links and search forms use explicit locale prefixes', async ({
+  page,
+}) => {
+  for (const locale of ['es', 'ca']) {
+    const centres = locale === 'es' ? 'centros' : 'centres';
+    for (const path of [
+      `/${locale}/?centre=cc-sant-andreu`,
+      `/${locale}/${centres}`,
+      `/${locale}/${centres}/sant-andreu?page=2`,
+    ]) {
+      await page.goto(path);
+      await expect(page.locator('html')).toHaveAttribute('lang', locale);
+      const navigation = await page
+        .locator('a[href], form[action]')
+        .evaluateAll((nodes) =>
+          nodes
+            .map((node) =>
+              node.getAttribute(node.tagName === 'FORM' ? 'action' : 'href')!,
+            )
+            .filter((href) => href.startsWith('/') && !href.startsWith('//')),
+        );
+      expect(navigation.length).toBeGreaterThan(3);
+      for (const href of navigation) expect(href).toMatch(/^\/(es|ca)(\/|$)/);
+      const brand = page.locator('.brand');
+      await expect(brand).toHaveAttribute('href', `/${locale}/`);
+    }
+  }
+});

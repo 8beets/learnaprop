@@ -14,8 +14,8 @@ interface Props {
 }
 const { locale, course, filterParams } = Astro.props;
 const t = messages[locale];
-const base = locale === 'es' ? '/' : '/ca/';
-const centreBase = locale === 'es' ? '/centros' : '/ca/centres';
+const base = `/${locale}/`;
+const centreBase = locale === 'es' ? '/es/centros' : '/ca/centres';
 const categoryParams = new URLSearchParams(filterParams);
 categoryParams.delete('page');
 if (course.category) categoryParams.set('category', course.category);

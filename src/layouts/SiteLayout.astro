@@ -16,8 +16,8 @@ const {
   section = 'courses',
 } = Astro.props;
 const t = messages[locale];
-const base = locale === 'es' ? '/' : '/ca/';
-const centreBase = locale === 'es' ? '/centros' : '/ca/centres';
+const base = `/${locale}/`;
+const centreBase = locale === 'es' ? '/es/centros' : '/ca/centres';
 ---
 
 <!doctype html>

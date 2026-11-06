@@ -16,7 +16,7 @@ const { courses, centres, filters, hasNext, error } = data;
 const officialSources = sources.filter(
   (source) => !filters.centre || source.institution.id === filters.centre,
 );
-const base = locale === 'es' ? '/' : '/ca/';
+const base = `/${locale}/`;
 const themes = [
   { image: 'music', label: t.photoMusic },
   { image: 'pottery', label: t.photoPottery },
@@ -58,7 +58,10 @@ function filterUrl(key: string, value: string) {
 <SiteLayout
   locale={locale}
   title={t.pageTitle}
-  languagePaths={{ es: `/${Astro.url.search}`, ca: `/ca/${Astro.url.search}` }}
+  languagePaths={{
+    es: `/es/${Astro.url.search}`,
+    ca: `/ca/${Astro.url.search}`,
+  }}
 >
   <section class="hero" aria-labelledby="title">
     <div class="hero-copy">

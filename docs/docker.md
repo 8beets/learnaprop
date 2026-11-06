@@ -20,7 +20,7 @@ docker compose build
 docker compose up -d app
 ```
 
-Open http://127.0.0.1:4321. The app applies local migrations before starting and shows an honest empty state until data is imported. Source edits are bind-mounted for Astro's development reload.
+Open http://127.0.0.1:4321/es/. The app applies local migrations before starting and shows an honest empty state until data is imported. Source edits are bind-mounted for Astro's development reload.
 
 Fetch the approved public source into the container's local D1:
 

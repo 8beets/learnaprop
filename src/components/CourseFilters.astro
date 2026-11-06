@@ -9,7 +9,7 @@ interface Props {
 const { locale, data } = Astro.props;
 const { filters, centres, categories, error } = data;
 const t = messages[locale];
-const base = locale === 'es' ? '/' : '/ca/';
+const base = `/${locale}/`;
 // New filter controls belong in this same GET form. Omit page on submit to reset pagination.
 const formFields = new Set(['q', 'centre', 'category', 'maxPrice', 'page']);
 const preservedParams = [...Astro.url.searchParams].filter(

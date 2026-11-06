@@ -48,6 +48,9 @@ export const messages = {
     skip: 'Saltar al contenido',
     mission: 'Aprendizaje local, abierto a todo el mundo.',
     search: 'Buscar por título',
+    searchExample: 'Ej. fotografía, yoga…',
+    resultsIntro:
+      'Encuentra una actividad y consulta los detalles en la web del centro.',
     price: 'Precio máximo (€)',
     submit: 'Buscar cursos',
     filters: 'Filtros de búsqueda',
@@ -140,6 +143,9 @@ export const messages = {
     skip: 'Salta al contingut',
     mission: 'Aprenentatge local, obert a tothom.',
     search: 'Cerca per títol',
+    searchExample: 'P. ex. fotografia, ioga…',
+    resultsIntro:
+      'Troba una activitat i consulta els detalls al web del centre.',
     price: 'Preu màxim (€)',
     submit: 'Cerca cursos',
     filters: 'Filtres de cerca',

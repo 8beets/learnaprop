@@ -5,6 +5,7 @@ import { sources } from '../lib/sources';
 import CourseFilters from './CourseFilters.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import CourseCard from './CourseCard.astro';
+import Icon from './Icon.astro';
 
 interface Props {
   locale: Locale;
@@ -65,12 +66,15 @@ function filterUrl(key: string, value: string) {
 >
   <section class="hero" aria-labelledby="title">
     <div class="hero-copy">
-      <p class="eyebrow">Barcelona · {t.mission}</p>
+      <p class="hero-location">
+        <Icon name="pin" /> Barcelona
+      </p>
       <h1 id="title">{t.title}</h1>
       <p class="intro">{t.description}</p>
       <a class="hero-link" href="#discovery">
-        {t.explore} <span aria-hidden="true">↓</span>
+        {t.explore} <Icon name="arrow" />
       </a>
+      <p class="hero-mission">{t.mission}</p>
     </div>
     <div class="hero-photos" role="group" aria-label={t.photoNote}>
       {themes.map((theme, index) => (
@@ -98,7 +102,10 @@ function filterUrl(key: string, value: string) {
       )}
       <section aria-labelledby="results" class="results">
         <div class="results-heading">
-          <h2 id="results">{t.results}</h2>
+          <div>
+            <h2 id="results">{t.results}</h2>
+            <p class="results-intro">{t.resultsIntro}</p>
+          </div>
           {(appliedFilters.length > 0 ||
             filters.page > 1 ||
             error === 'invalid') && <a href={base}>{t.clear}</a>}
@@ -162,5 +169,8 @@ function filterUrl(key: string, value: string) {
       </section>
     </div>
   </div>
-  <aside class="notice">{t.notice}</aside>
+  <aside class="notice">
+    <Icon name="info" />
+    <p>{t.notice}</p>
+  </aside>
 </SiteLayout>

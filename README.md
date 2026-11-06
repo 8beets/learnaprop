@@ -34,7 +34,7 @@ Sources verified on 2026-11-06:
 
 All use the reusable Miram adapter, with deterministic category grouping and separate institution/source configuration. Online-only workshops, reviewed shows/meetups, and unidentified advance previews are excluded. Stored totals include expired editions; availability remains unknown. Local D1 starts empty until a real import runs.
 
-The interface includes locally served stock photographs, a generated logo, readable weekday labels, a responsive filter sidebar, removable applied filters, and an accessible GitHub footer link. All-uppercase course titles use readable sentence casing with known acronyms preserved; manually reviewed titles retain their casing. Original source text and language are preserved. See [asset credits](docs/assets.md).
+The interface uses a blue and yellow palette, locally served Bricolage Grotesque headings, and an illustrative workshop photo mosaic. Course cards group the category, centre, dates, price, and official source link for easy scanning. Navigation, filters, and cards adapt to narrow mobile screens. The responsive filter sidebar, removable applied filters, and language links also work without JavaScript. All-uppercase course titles use readable sentence casing with known acronyms preserved; manually reviewed titles retain their casing. Original source text and language are preserved. See [asset credits](docs/assets.md).
 
 ## Local setup
 

@@ -1,5 +1,9 @@
 # Visual assets
 
+## Typography
+
+Headings and the wordmark use Bricolage Grotesque by Mathieu Triay, distributed under the SIL Open Font License 1.1. The Latin variable WOFF2 subset is served from `public/fonts/bricolage-grotesque-latin.woff2`; the full license is in `public/fonts/OFL.txt`. Retrieved from [Google Fonts](https://fonts.google.com/specimen/Bricolage+Grotesque) on 2026-11-07. Body text uses system fonts. No external font requests are made when browsing, and `font-display: swap` keeps text visible while the heading font loads.
+
 ## Stock photographs
 
 Retrieved on 2026-11-06 from the free collection on Pexels. The [Pexels license](https://www.pexels.com/license/) permits free website use and modification without required attribution. These photographs retain their separate Pexels license; they are not relicensed as project code. Do not use them as trademarks or imply an endorsement.

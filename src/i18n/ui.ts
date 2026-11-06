@@ -23,9 +23,7 @@ export const messages = {
     explore: 'Encuentra tu próximo taller',
     centres: 'Explorar por centro',
     allCentres: 'Todos los centros',
-    linkedCentres: 'Otros espacios para aprender',
-    linkedCentreHelp:
-      'Consulta sus talleres y capacitaciones en la web oficial del centro.',
+    githubRepo: 'Código en GitHub',
     programming: 'Programación oficial',
     empty: 'Todavía no hay cursos que coincidan con tu búsqueda.',
     emptyHelp:
@@ -70,9 +68,7 @@ export const messages = {
     explore: 'Troba el teu pròxim taller',
     centres: 'Explora per centre',
     allCentres: 'Tots els centres',
-    linkedCentres: 'Altres espais per aprendre',
-    linkedCentreHelp:
-      'Consulta els seus tallers i capacitacions al web oficial del centre.',
+    githubRepo: 'Codi a GitHub',
     programming: 'Programació oficial',
     empty: 'Encara no hi ha cursos que coincideixin amb la teva cerca.',
     emptyHelp:
@@ -128,7 +124,35 @@ const categoryLabels: Record<string, Record<Locale, string>> = {
     es: 'Ciencias y humanidades',
     ca: 'Ciències i humanitats',
   },
-  EXPRESSIÓ: { es: 'Expresión', ca: 'Expressió' },
+  EXPRESSIÓ: { es: 'Expresión y creatividad', ca: 'Expressió i creativitat' },
+  HUMANITATS: { es: 'Humanidades', ca: 'Humanitats' },
+  'Actualitat i història': {
+    es: 'Actualidad e historia',
+    ca: 'Actualitat i història',
+  },
+  Antropologia: { es: 'Antropología', ca: 'Antropologia' },
+  'Art i pensament': { es: 'Arte y pensamiento', ca: 'Art i pensament' },
+  'Natura i ciència': { es: 'Naturaleza y ciencia', ca: 'Natura i ciència' },
+  'Creixement personal': {
+    es: 'Crecimiento personal',
+    ca: 'Creixement personal',
+  },
+  'HABILITATS I COMPETÈNCIES': {
+    es: 'Habilidades y competencias',
+    ca: 'Habilitats i competències',
+  },
+  'Art tèxtil': { es: 'Arte textil', ca: 'Art tèxtil' },
+  Ciència: { es: 'Ciencia', ca: 'Ciència' },
+  'Ràdio i pòdcast': { es: 'Radio y pódcast', ca: 'Ràdio i pòdcast' },
+  FAMILIARS: { es: 'Talleres familiares', ca: 'Tallers familiars' },
+  'INFORMÀTICA PER A GENT GRAN': {
+    es: 'Informática para personas mayores',
+    ca: 'Informàtica per a gent gran',
+  },
+  'FABRICACIÓ DIGITAL I ROBÒTICA': {
+    es: 'Fabricación digital y robótica',
+    ca: 'Fabricació digital i robòtica',
+  },
   'MÉS ECO': { es: 'Más eco', ca: 'Més eco' },
   PARAULA: { es: 'Palabra', ca: 'Paraula' },
   "ReGENERA'T": { es: 'ReGENERA’T', ca: 'ReGENERA’T' },

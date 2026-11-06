@@ -21,6 +21,37 @@ const fixture = readFileSync(
 const url = `${santAndreu.listingUrl}&f=ID`;
 
 describe('Miram source fixture', () => {
+  it('omits explicitly unpublished previews without inventing an external ID or dates', () => {
+    const html = readFileSync(
+      new URL('../fixtures/miram-urania-unpublished.html', import.meta.url),
+      'utf8',
+    );
+    expect(parseMiramPage(html, url)).toMatchObject({
+      records: [],
+      unpublishedPreviews: 1,
+    });
+    expect(() =>
+      parseMiramPage(
+        html.replace('Podreu realitzar', 'Unexpected layout'),
+        url,
+      ),
+    ).toThrow('identifier');
+  });
+  it('extracts the explicit free price and single date of a real family cooking workshop', () => {
+    const html = readFileSync(
+      new URL('../fixtures/miram-sortidor-family.html', import.meta.url),
+      'utf8',
+    );
+    expect(parseMiramPage(html, url).records[0]).toMatchObject({
+      externalId: '3412',
+      title: 'Fem galetes de gingebre per Nadal!',
+      startDate: '2026-12-11',
+      endDate: '2026-12-11',
+      priceCents: 0,
+      currency: 'EUR',
+      availability: null,
+    });
+  });
   it('extracts actual Golferichs photography facts without changing their source category', () => {
     const html = readFileSync(
       new URL('../fixtures/miram-golferichs-photography.html', import.meta.url),
@@ -163,6 +194,13 @@ describe('normalization', () => {
   ])('parses explicit euro base price %s', (value, expected) => {
     expect(parseEuroPrice(value)).toBe(expected);
   });
+  it('does not turn incomplete single-date ranges or ambiguous free-price prose into confirmed facts', () => {
+    expect(
+      parseDateRange('11 de març de 2026 al 12 de mes desconegut de 2026'),
+    ).toEqual([null, null]);
+    expect(parseDateRange('31 de febrer de 2026')).toEqual([null, null]);
+    expect(parseEuroPrice('Preu: Gratuït per a menors')).toBeNull();
+  });
   it('validates calendar dates and leaves local dates independent of DST', () => {
     expect(
       parseDateRange('Del 28 de març de 2027 al 31 de març de 2027'),
@@ -200,6 +238,41 @@ describe('normalization', () => {
 });
 
 describe('bounded fetching', () => {
+  it('keeps zero-indexed p=1 distinct and avoids re-fetching the default page as p=0', async () => {
+    const source = {
+      ...santAndreu,
+      listingUrl:
+        'https://albareda.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=13&t=AC&f=02',
+    };
+    const requests: string[] = [];
+    const adapter = createMiramAdapter({
+      intervalMs: 0,
+      sleep: async () => {},
+      fetch: async (input) => {
+        const requested = String(input);
+        requests.push(requested);
+        if (requested.endsWith('/robots.txt'))
+          return new Response('', { status: 404 });
+        const file =
+          new URL(requested).searchParams.get('p') === '1' ? 'next' : 'first';
+        return new Response(
+          readFileSync(
+            new URL(
+              `../fixtures/miram-albareda-music-${file}.html`,
+              import.meta.url,
+            ),
+            'utf8',
+          ),
+        );
+      },
+    });
+    expect(
+      (await adapter.fetchRecords(source)).map((record) => record.externalId),
+    ).toEqual(['2264', '2267']);
+    expect(requests).toHaveLength(3);
+    expect(requests.some((request) => request.includes('p=1'))).toBe(true);
+    expect(requests.some((request) => request.includes('p=0'))).toBe(false);
+  });
   it('stops an endless pagination chain at the explicit page bound', async () => {
     let calls = 0;
     const adapter = createMiramAdapter({

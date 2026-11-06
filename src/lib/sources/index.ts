@@ -2,8 +2,27 @@ import { santAndreu } from './sant-andreu';
 import { canBaste } from './can-baste';
 import { patiLlimona } from './pati-llimona';
 import { golferichs } from './golferichs';
+import { casaElizalde } from './casa-elizalde';
+import { albareda } from './albareda';
+import { elSortidor } from './el-sortidor';
+import { vilLaUrania } from './vil-la-urania';
+import { urgell } from './urgell';
+import { fabCasaDelRellotge } from './fab-casa-del-rellotge';
+import { fabCasaDelMig } from './fab-casa-del-mig';
 
-export const sources = [santAndreu, canBaste, patiLlimona, golferichs];
+export const sources = [
+  santAndreu,
+  canBaste,
+  patiLlimona,
+  golferichs,
+  casaElizalde,
+  albareda,
+  elSortidor,
+  vilLaUrania,
+  urgell,
+  fabCasaDelRellotge,
+  fabCasaDelMig,
+];
 
 export function selectSources(sourceId?: string) {
   if (!sourceId) return sources;

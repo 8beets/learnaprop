@@ -10,7 +10,7 @@ test('Spanish homepage and Catalan language switching work without client JavaSc
     page.getByRole('heading', { name: 'Aprende cerca de casa' }),
   ).toBeVisible();
   await expect(page.locator('.schedule').first()).toHaveText(
-    /^(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo)\b/,
+    /^(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo)\b/i,
   );
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
   await expect(page.locator('.hero-photos figure')).toHaveCount(4);
@@ -38,10 +38,26 @@ test('Spanish homepage and Catalan language switching work without client JavaSc
     'src',
     '/images/brand/learnaprop-logo.png',
   );
+  const repository = page
+    .getByRole('contentinfo')
+    .getByRole('link', { name: 'Código en GitHub', exact: true });
+  await expect(repository).toHaveAttribute(
+    'href',
+    'https://github.com/akira28/learnaprop',
+  );
+  await expect(repository.locator('img')).toHaveAttribute(
+    'src',
+    '/icons/github.svg',
+  );
   await page.getByRole('link', { name: 'Català' }).click();
   await expect(
     page.getByRole('heading', { name: 'Aprèn a prop de casa' }),
   ).toBeVisible();
+  await expect(
+    page
+      .getByRole('contentinfo')
+      .getByRole('link', { name: 'Codi a GitHub', exact: true }),
+  ).toHaveAttribute('href', 'https://github.com/akira28/learnaprop');
   await expect(page.locator('html')).toHaveAttribute('lang', 'ca');
   await expect(page.locator('.hero-photos figcaption')).toHaveText([
     'Música',
@@ -50,7 +66,7 @@ test('Spanish homepage and Catalan language switching work without client JavaSc
     'Bricolatge',
   ]);
   await expect(page.locator('.schedule').first()).toHaveText(
-    /^(Dilluns|Dimarts|Dimecres|Dijous|Divendres|Dissabte|Diumenge)\b/,
+    /^(Dilluns|Dimarts|Dimecres|Dijous|Divendres|Dissabte|Diumenge)\b/i,
   );
 });
 
@@ -242,39 +258,6 @@ test('photography aliases share one pill and category choices follow the selecte
   await expect(page.locator('article.course')).toHaveCount(4);
 });
 
-test('Casa del Rellotge links to its official programme separately from imported course filters', async ({
-  page,
-}) => {
-  await page.goto('/');
-  let linked = page.getByRole('complementary', {
-    name: 'Otros espacios para aprender',
-  });
-  await expect(
-    linked.getByRole('link', { name: 'FAB Casa del Rellotge', exact: true }),
-  ).toHaveAttribute('href', 'https://fabcasadelrellotge.cat/formacio/');
-  await expect(linked).toContainText(
-    'Consulta sus talleres y capacitaciones en la web oficial del centro.',
-  );
-  await expect(
-    page
-      .getByRole('navigation', { name: 'Explorar por centro' })
-      .getByRole('link', { name: 'FAB Casa del Rellotge', exact: true }),
-  ).toHaveCount(0);
-  await expect(
-    page.locator('article.course').filter({ hasText: 'FAB Casa del Rellotge' }),
-  ).toHaveCount(0);
-  await page.getByRole('link', { name: 'Català', exact: true }).click();
-  linked = page.getByRole('complementary', {
-    name: 'Altres espais per aprendre',
-  });
-  await expect(
-    linked.getByRole('link', { name: 'FAB Casa del Rellotge', exact: true }),
-  ).toHaveAttribute('href', 'https://fabcasadelrellotge.cat/formacio/');
-  await expect(linked).toContainText(
-    'Consulta els seus tallers i capacitacions al web oficial del centre.',
-  );
-});
-
 test('Golferichs exposes only its own normalized categories and course source links', async ({
   page,
 }) => {
@@ -316,4 +299,64 @@ test('Golferichs exposes only its own normalized categories and course source li
   await expect(page.locator('article.course h3')).toHaveText(
     'Tècniques bàsiques (1r nivell): coneixement de la càmera',
   );
+});
+
+test('new centres offer their own normalized categories in both locales', async ({
+  page,
+}) => {
+  const centres = [
+    [
+      'Centre Cultural La Casa Elizalde',
+      'Actualidad e historia',
+      'Actualitat i història',
+    ],
+    ['Centre Cultural Albareda', 'Música', 'Música'],
+    ['Centre Cívic El Sortidor', 'Talleres familiares', 'Tallers familiars'],
+    ['Centre Cívic Vil·la Urània', 'Arte y creatividad', 'Art i creativitat'],
+    ['Centre Cívic Urgell', 'Humanidades', 'Humanitats'],
+    ['FAB Casa del Rellotge', 'Nuevas tecnologías', 'Noves tecnologies'],
+    ['FAB Casa del Mig', 'Nuevas tecnologías', 'Noves tecnologies'],
+  ];
+  for (const [name, spanish, catalan] of centres) {
+    await page.goto('/');
+    await page
+      .getByRole('navigation', { name: 'Explorar por centro' })
+      .getByRole('link', { name, exact: true })
+      .click();
+    await expect(page.locator('article.course')).toHaveCount(1);
+    await expect(page.locator('article.course .institution')).toHaveText(name!);
+    await expect(
+      page
+        .getByRole('navigation', { name: 'Explorar por categoría' })
+        .getByRole('link'),
+    ).toHaveText(['Todas las categorías', spanish!]);
+    await page.getByRole('link', { name: 'Català', exact: true }).click();
+    await expect(
+      page
+        .getByRole('navigation', { name: 'Explora per categoria' })
+        .getByRole('link'),
+    ).toHaveText(['Totes les categories', catalan!]);
+  }
+});
+
+test('the two FAB centres retain separate course filters and Miram activity types', async ({
+  page,
+}) => {
+  for (const [name, activityType, id] of [
+    ['FAB Casa del Rellotge', 'CR', '675'],
+    ['FAB Casa del Mig', 'CM', '674'],
+  ]) {
+    await page.goto('/');
+    await page
+      .getByRole('navigation', { name: 'Explorar por centro' })
+      .getByRole('link', { name, exact: true })
+      .click();
+    const link = page
+      .locator('article.course')
+      .getByRole('link', { name: /Consultar fuente oficial/ });
+    const url = new URL((await link.getAttribute('href'))!);
+    expect(url.hostname).toBe('fabcasadelmig.miram.cloud');
+    expect(url.searchParams.get('t')).toBe(activityType);
+    expect(url.hash).toBe(`#accordion${id}`);
+  }
 });

@@ -36,6 +36,12 @@ export function parseDateRange(value: string): [string | null, string | null] {
       .toLowerCase()
       .matchAll(/(\d{1,2})\s+d[e’']\s*([\p{L}]+)\s+de\s+(\d{4})/gu),
   ].map((match) => localDate(match[1]!, months[match[2]!] ?? '00', match[3]!));
+  if (
+    /^\d{1,2}\s+d[e’']\s*[\p{L}]+\s+de\s+\d{4}$/u.test(value.trim()) &&
+    dates.length === 1 &&
+    dates[0]
+  )
+    return [dates[0], dates[0]];
   if (dates.length !== 2 || !dates[0] || !dates[1] || dates[0] > dates[1])
     return [null, null];
   return [dates[0], dates[1]];
@@ -43,6 +49,7 @@ export function parseDateRange(value: string): [string | null, string | null] {
 
 // Only the explicitly labelled base price, never a discounted or materials price.
 export function parseEuroPrice(value: string): number | null {
+  if (/^Preu:\s*Gratuït\s*$/iu.test(cleanText(value))) return 0;
   const match = /^Preu:\s*(\d+(?:\.\d{3})*),(\d{2})\s*€/u.exec(
     cleanText(value),
   );

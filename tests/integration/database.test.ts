@@ -209,6 +209,43 @@ describe('SQLite migration and ingestion contract', () => {
         .map((row) => row.category),
     ).toEqual([...aliases].sort());
   });
+  it('merges expression and expression/creativity into one centre-scoped filter', async () => {
+    const expression = ['Expressió', 'Expressió i creativitat'].map(
+      (category, index) => ({
+        ...records[0]!,
+        externalId: String(8500 + index),
+        title: `TEST expression ${index}`,
+        category,
+      }),
+    );
+    await runIngestion(
+      db,
+      { fetchRecords: async () => expression },
+      santAndreu,
+    );
+    expect(
+      await listCategories(db, '2026-11-06', santAndreu.institution.id),
+    ).toEqual(['EXPRESSIÓ']);
+    const filters = {
+      q: '',
+      page: 1,
+      maxPriceCents: null,
+      centre: santAndreu.institution.id,
+      category: 'EXPRESSIÓ',
+    };
+    const grouped = await listCourses(db, filters, '2026-11-06');
+    expect(grouped.courses).toHaveLength(2);
+    expect(
+      grouped.courses.every((course) => course.category === 'EXPRESSIÓ'),
+    ).toBe(true);
+    expect(
+      await listCourses(
+        db,
+        { ...filters, category: 'Expressió i creativitat' },
+        '2026-11-06',
+      ),
+    ).toEqual(grouped);
+  });
   it('imports twice without duplicates, preserves provenance and reviewed titles', async () => {
     const adapter = { fetchRecords: async () => records };
     await runIngestion(db, adapter, santAndreu);

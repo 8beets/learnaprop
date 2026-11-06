@@ -23,3 +23,7 @@ Created with the built-in imagegen tool on 2026-11-06. The open book and welcomi
 Final generation prompt:
 
 > Use case: logo-brand. Asset type: transparent logo symbol for LearnAprop, a friendly nonprofit directory of local in-person learning in Barcelona. Primary request: create one distinctive, simple flat logo symbol combining the idea of an open book with a welcoming neighbourhood doorway. Rounded confident shapes, warm community character, forest green #205846 with a small muted ochre #d4a24c accent. Compact square composition, bold readable silhouette at small header size. Transparent background, no lettering, no words, no mockup, no shadows or gradients. One single logo mark, clean edges, modest padding.
+
+## GitHub footer icon
+
+`public/icons/github.svg` is GitHub's `mark-github-16` from [Primer Octicons](https://github.com/primer/octicons/blob/main/icons/mark-github-16.svg). It is served locally alongside a visible, localized repository link. The MIT copyright and permission notice are preserved in `public/icons/OCTICONS-LICENSE.txt`.

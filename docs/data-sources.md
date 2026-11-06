@@ -65,6 +65,30 @@ Verified on 2026-11-06:
 
 Cloud D1 holds 305 editions and 305 source records across the four imported centres. Discovery omits expired editions; course availability remains unconfirmed.
 
+## Additional Miram sources — verified 2026-11-06
+
+| Centre                | Source ID suffix        | Editions | Verified registration root                                                               |
+| --------------------- | ----------------------- | -------: | ---------------------------------------------------------------------------------------- |
+| La Casa Elizalde      | `casa-elizalde`         |      195 | https://casaelizalde.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=56&t=AC |
+| Albareda              | `albareda`              |       27 | https://albareda.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=13&t=AC     |
+| El Sortidor           | `el-sortidor`           |       50 | https://elsortidor.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=27&t=AC   |
+| Vil·la Urània         | `vil-la-urania`         |      133 | https://vil-laurania.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=49&t=AC |
+| Urgell                | `urgell`                |       42 | https://ccurgell.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=10&t=AC     |
+| FAB Casa del Rellotge | `fab-casa-del-rellotge` |       14 | https://fabcasadelmig.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=9903&t=CR     |
+| FAB Casa del Mig      | `fab-casa-del-mig`      |       11 | https://fabcasadelmig.miram.cloud/MiramModular/buscador/buscador.jsp?g=1&c=9903&t=CM     |
+
+All seven registration hosts returned 404 for `robots.txt`; the adapter rechecks before each live run. Official programme links, public municipal listings, and registration footers were used to establish institution identity and addresses. The same metadata-only collection, unknown availability/language, base-price/supplement, and reuse-review limitations above apply.
+
+Casa Elizalde's main website still disallows general crawlers. Its officially linked `casaelizalde.inscripcionscc.com` host has a separate policy and provides the imported records; the blocked WordPress REST API is not used. Category `CO` is explicitly online-only and excluded. “Balls en línia” in the expression category is line dancing and is retained; online delivery is not inferred from that phrase.
+
+El Sortidor category `TC` contains a musical show and is excluded; its family cooking workshop is included with its explicitly stated free price and single local date. Vil·la Urània exposes an advance-preview card with no stable edition identifier or dates, labelled with a future registration-opening notice. It is reported and omitted; no identity or schedule is invented. Urgell's uppercase headings and all new equivalent categories use the public category map.
+
+The two FAB sources share `c=9903` and a host but use different activity types (`CR` versus `CM`) and separate institution/source IDs. Casa del Mig's meetups/talks category `02` is excluded. The user-supplied Miram URLs replace the former Casa del Rellotge official-link-only integration; its blocked main-site calendar remains unused.
+
+The complete batch was assembled from real pages captured during manual live verification, with only missing pages fetched during subsequent parser validation. This avoided repeatedly fetching the same provider pages while resolving pagination and preview markup. Validated snapshots went through the authoritative ingestion runner for local and cloud persistence. They are not test fixtures or data-only SQL replays.
+
+Cloud and local D1 each contain **777 editions with source records across 11 centres** after this batch. Counts include expired editions; discovery omits those. The first four sources retain their earlier first-seen history. No fictional courses or inferred availability are published.
+
 ## Investigated and deferred
 
 ### FAB Casa del Rellotge — official programme link
@@ -88,12 +112,6 @@ Investigated on 2026-11-06. The official site links to `canverdaguer.inscripcion
 https://opendata-ajuntament.barcelona.cat/data/dataset/centres-civics-formacio
 
 The dataset metadata describes annual aggregate statistics (activities, attendance, available area), not bookable course editions. It is unsuitable as a course feed. Its robots policy also disallows API paths and query-string crawling; no automated importer was implemented.
-
-### Casa Elizalde / WordPress REST API
-
-https://www.casaelizalde.com/
-
-The public REST type index exposes a `cursos_i_tallers` type. However, `robots.txt` disallows all paths for general user agents. Collection stopped; no course adapter was implemented. Use a permitted institutional feed or obtain an explicit source agreement before pursuing it.
 
 ## Adding an institution
 

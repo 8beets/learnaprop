@@ -8,7 +8,6 @@ import {
 import type { DiscoveryPageData } from '../lib/courses/page';
 import { formatSchedule } from '../i18n/schedule';
 import { sources } from '../lib/sources';
-import { linkedCentres } from '../lib/institutions/linked-centres';
 import '../styles/global.css';
 
 interface Props {
@@ -118,7 +117,7 @@ function filterUrl(key: string, value: string) {
       </section>
       <div id="discovery" class="discovery-anchor"></div>
       {(centres.length > 0 || filters.centre) && (
-        <nav class="categories" aria-label={t.centres}>
+        <nav class="categories centres" aria-label={t.centres}>
           <a
             href={filterUrl('centre', '')}
             aria-current={!filters.centre ? 'true' : undefined}
@@ -267,24 +266,15 @@ function filterUrl(key: string, value: string) {
           )}
         </nav>
       </section>
-      <aside class="linked-centres" aria-labelledby="linked-centres-title">
-        <h2 id="linked-centres-title">{t.linkedCentres}</h2>
-        {linkedCentres.map((centre) => (
-          <article class="programme-link">
-            <h3>
-              <a href={centre.programmeUrl}>
-                {centre.name} <span aria-hidden="true">↗</span>
-              </a>
-            </h3>
-            <p>{t.linkedCentreHelp}</p>
-          </article>
-        ))}
-      </aside>
       <aside class="notice">{t.notice}</aside>
     </main>
     <footer class="shell footer">
       <p>LearnAprop</p>
       <p>{t.footer}</p>
+      <a class="github-link" href="https://github.com/akira28/learnaprop">
+        <img src="/icons/github.svg" alt="" width="20" height="20" />
+        {t.githubRepo}
+      </a>
       <p class="photo-credit">
         {t.photoNote} <a href="https://www.pexels.com/">{t.photoCredits}</a>.
       </p>

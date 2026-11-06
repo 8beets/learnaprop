@@ -4,7 +4,7 @@ A free, open-source directory of affordable, in-person courses and workshops fro
 
 LearnAprop helps people discover courses and visit the organizer's official listing. It does not handle bookings, payments, or learning management.
 
-**Public preview:** https://learnaprop.learnaprop.workers.dev/ — deployed on 2026-11-06 with 305 source-verified course editions from Sant Andreu, Can Basté, Pati Llimona, and Casa Golferichs. This is a preview; availability remains unconfirmed and automated refresh is not configured.
+**Public preview:** https://learnaprop.learnaprop.workers.dev/ — 777 source-verified course editions across 11 Barcelona centres. This is a preview; availability remains unconfirmed and automated refresh is not configured.
 
 ## Current milestone
 
@@ -15,11 +15,25 @@ LearnAprop helps people discover courses and visit the organizer's official list
 - Browse by civic centre and normalized course category; category pills reflect the selected centre, and equivalent provider categories share one filter. Combine both with search and price using shareable URLs.
 - Deterministic unit/SQLite contract tests, a separate D1 runtime suite, Playwright tests, and CI.
 
-The sources were live-verified and refreshed on 2026-11-06: **37 Sant Andreu**, **99 Can Basté**, **56 Pati Llimona**, and **113 Casa Golferichs** course editions. All use the reusable Miram adapter. The pagination fix discovers numbered links that the initial importer missed. Explicitly reviewed concerts, film screenings, and cancelled activities are excluded. Stored totals include expired editions; availability remains unknown. Local D1 starts empty until a live import runs.
+Sources verified on 2026-11-06:
 
-The interface includes locally served stock photographs, a generated logo, and localized weekday labels. Course titles and stored source text retain their original language. See [asset credits and logo prompt](docs/assets.md).
+| Centre                | Stored editions |
+| --------------------- | --------------: |
+| Sant Andreu           |              37 |
+| Can Basté             |              99 |
+| Pati Llimona          |              56 |
+| Casa Golferichs       |             113 |
+| La Casa Elizalde      |             195 |
+| Albareda              |              27 |
+| El Sortidor           |              50 |
+| Vil·la Urània         |             133 |
+| Urgell                |              42 |
+| FAB Casa del Rellotge |              14 |
+| FAB Casa del Mig      |              11 |
 
-FAB Casa del Rellotge is included as a direct official-programme link. Its course import is deferred because the source blocks general crawlers; no unverified editions are published.
+All use the reusable Miram adapter, with deterministic category grouping and separate institution/source configuration. Online-only workshops, reviewed shows/meetups, and unidentified advance previews are excluded. Stored totals include expired editions; availability remains unknown. Local D1 starts empty until a real import runs.
+
+The interface includes locally served stock photographs, a generated logo, readable weekday labels, amber centre pills, green category pills, and an accessible GitHub footer link. Course titles and stored source text retain their original language. See [asset credits](docs/assets.md).
 
 ## Local setup
 
@@ -62,7 +76,7 @@ npm run test:e2e
 
 `npm test` uses saved source fixtures and real Node SQLite for SQL contract tests. It does **not** emulate or prove the Cloudflare runtime. `test:d1` exercises actual local D1 separately. Routine tests never contact source websites. [Linux CI passed](https://github.com/akira28/learnaprop/actions/runs/42078396499) for the initial foundation, including D1 and desktop/mobile browser checks.
 
-The expanded suite is covered by 60 unit/SQLite tests, 1 D1 runtime test, and 16 desktop/mobile browser tests. The Docker suite also checks formatting, lint, TypeScript, migrations, and the build. Browser tests cover image delivery, localized captions and weekdays, stable search width after filtering, and navigation across all four imported centres. See [Docker verification](docs/docker.md#verified-locally).
+The expanded suite is covered by 74 unit/SQLite tests, 1 D1 runtime test, and 18 desktop/mobile browser tests. The Docker suite also checks formatting, lint, TypeScript, migrations, and the build. Browser tests cover image delivery, localized captions and weekdays, stable search width after filtering, and navigation across all 11 imported centres. See [Docker verification](docs/docker.md#verified-locally).
 
 ## Documentation
 

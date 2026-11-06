@@ -24,4 +24,6 @@ D1 keeps original category values and source payloads for provenance. Queries ex
 
 Spanish and Catalan dictionaries provide readable group labels. Unknown all-caps labels receive sentence casing without inventing a translation. Known brand/acronym spelling is retained explicitly. Source titles and descriptions are unaffected. Selecting a different centre retains other filters; an incompatible category can yield an empty result and can be removed using the all-categories link or clear-filters action.
 
-Centres whose courses cannot yet be imported can be listed as direct official-programme links in `src/lib/institutions/linked-centres.ts`. This registry is separate from ingestion sources and course filters. The interface does not publish guessed editions or imply their programme has been imported. FAB Casa del Rellotge uses this path because its crawling policy disallows general crawlers.
+Centre navigation uses amber pills and category navigation uses green pills. Both retain text labels, accessible navigation names, selected-state semantics, keyboard focus indicators, and minimum touch-target sizing. The footer links to the GitHub repository with a locally served Octicons mark and a localized text label.
+
+`EXPRESSIÓ`, `Expressió`, and `Expressió i creativitat` share the canonical expression group. Its public label is “Expresión y creatividad” / “Expressió i creativitat”, and both canonical and legacy alias filters include every member before pagination. Source labels remain unchanged in D1.

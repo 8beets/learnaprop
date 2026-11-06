@@ -72,3 +72,11 @@ On 2026-11-06, `npm run ingest:production -- --live --source miram-golferichs` i
 The interface adds a separate official-programme link for FAB Casa del Rellotge. Its `robots.txt` disallows general crawlers, so no course importer or D1 course records were added for that centre. See [source research](data-sources.md) for the policy and integration boundary.
 
 The complete Docker suite passed 60 unit/SQLite tests, 1 actual D1 test, and 16 desktop/mobile browser tests, including Golferichs category normalization, centre filtering, source links, and Spanish/Catalan programme-link copy. The production build and deployment dry run passed with only the existing DB and ASSETS bindings.
+
+## Eleven-centre directory update
+
+The seven-source expansion added 195 Casa Elizalde, 27 Albareda, 50 El Sortidor, 133 Vil·la Urània, 42 Urgell, 14 FAB Casa del Rellotge, and 11 FAB Casa del Mig editions. Manually validated real snapshots went through the authoritative ingestion runner sequentially, preserving identity, provenance, and reviewed corrections. Cloud D1 now holds 777 source records/editions across 11 centres, with no `TEST` courses or foreign-key violations. No migration or additional cloud service was needed.
+
+Casa Elizalde's blocked main-site API is unused; its separate public registration host is the source. The user-supplied FAB Miram roots replaced Casa del Rellotge's former link-only integration and keep the two FABs separate by source/institution and activity type. Source exclusions and unpublished-preview handling are documented in [source research](data-sources.md).
+
+The production build and dry run passed with only DB/ASSETS bindings. Docker passed formatting, lint, binding generation, TypeScript, D1/migrations, build, and 18 desktop/mobile browser tests. The final deterministic suite passed 74 tests, including the strict single-date guard and a database regression for merging expression/creativity categories. Local Docker was populated with the same 777 real editions; local desktop/mobile checks verified image delivery and no horizontal overflow. The interface includes localized category labels, amber centre pills, green category pills, and the GitHub footer icon/link.

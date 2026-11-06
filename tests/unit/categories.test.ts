@@ -14,6 +14,7 @@ describe('reviewed category grouping', () => {
     ['Creativitat', 'ART I CREATIVITAT'],
     ['Salut', 'ACTIVITAT FÍSICA I BENESTAR'],
     ['Recursos', 'RECURSOS I CREATIVITAT'],
+    ['Expressió i creativitat', 'EXPRESSIÓ'],
     [' espai   fotogràfic ', 'FOTOGRAFIA'],
     ['DANSA', 'BALL'],
     ['PLÀSTICA', 'ART I CREATIVITAT'],

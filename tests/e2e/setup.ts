@@ -6,6 +6,7 @@ import { santAndreu } from '../../src/lib/sources/sant-andreu';
 import { canBaste } from '../../src/lib/sources/can-baste';
 import { patiLlimona } from '../../src/lib/sources/pati-llimona';
 import { golferichs } from '../../src/lib/sources/golferichs';
+import { selectSources } from '../../src/lib/sources';
 
 async function setup() {
   const platform = await getPlatformProxy<Cloudflare.Env>({
@@ -146,6 +147,35 @@ async function setup() {
       { fetchRecords: async () => golferichsRecords },
       golferichs,
     );
+    const newFixtures = [
+      ['miram-casa-elizalde', 'miram-casa-elizalde.html', 'H2'],
+      ['miram-albareda', 'miram-albareda-music-first.html', '02'],
+      ['miram-el-sortidor', 'miram-sortidor-family.html', 'TI'],
+      ['miram-vil-la-urania', 'miram-vil-la-urania.html', 'AC'],
+      ['miram-urgell', 'miram-urgell.html', 'H'],
+      ['miram-fab-casa-del-rellotge', 'miram-fab-casa-del-rellotge.html', '01'],
+      ['miram-fab-casa-del-mig', 'miram-fab-casa-del-mig.html', '01'],
+    ];
+    for (const [id, file, category] of newFixtures) {
+      const source = selectSources(id)[0]!;
+      const html = readFileSync(
+        new URL(`../fixtures/${file}`, import.meta.url),
+        'utf8',
+      );
+      const fixtureRecords = parseMiramPage(
+        html,
+        `${source.listingUrl}&f=${category}`,
+      ).records.map((record) => ({
+        ...record,
+        startDate: '2099-01-01',
+        endDate: '2099-12-31',
+      }));
+      await runIngestion(
+        db,
+        { fetchRecords: async () => fixtureRecords },
+        source,
+      );
+    }
   } finally {
     await platform.dispose();
   }

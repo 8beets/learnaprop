@@ -78,3 +78,5 @@ On 2026-11-06, the expanded navigation suite passed 21 unit/SQLite tests, 1 D1 r
 References: [Playwright Docker setup](https://playwright.dev/docs/docker), [Docker bind mounts](https://docs.docker.com/engine/storage/bind-mounts/).
 
 After updating to Docker Desktop 4.41.2 on 2026-11-06, `docker` resolves through the user's shell PATH (CLI 28.1.1, Linux engine 28.1.1, Compose v2.36.0-desktop.1). The complete refreshed suite passed: 44 unit/SQLite tests, 1 actual D1 test, and 10 desktop/mobile browser tests, plus formatting, lint, binding generation, TypeScript, migrations, and build. A separate native production build and Wrangler deployment dry run also passed. Visual review confirmed all four local photographs and the logo load without horizontal overflow at 1440px and 390px widths.
+
+The subsequent category-normalization update passed the full Docker suite with 53 unit/SQLite tests, 1 actual D1 test, and 12 desktop/mobile browser tests. It verifies merged photography aliases before pagination, unchanged stored source categories, and category pills restricted to the selected centre.

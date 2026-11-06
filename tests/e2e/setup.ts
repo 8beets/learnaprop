@@ -80,6 +80,12 @@ async function setup() {
             externalId: '99998',
             title: 'TEST second centre language workshop',
           },
+          {
+            ...first,
+            externalId: '99995',
+            title: 'TEST photo Can Basté',
+            category: 'ESPAI FOTOGRÀFIC',
+          },
         ],
       },
       canBaste,
@@ -98,7 +104,23 @@ async function setup() {
     }));
     await runIngestion(
       db,
-      { fetchRecords: async () => patiRecords },
+      {
+        fetchRecords: async () => [
+          ...patiRecords,
+          {
+            ...first,
+            externalId: '99996',
+            title: 'TEST photo general',
+            category: 'FOTOGRAFIA',
+          },
+          {
+            ...first,
+            externalId: '99997',
+            title: 'TEST photo Pati Llimona',
+            category: 'ESPAI FOTOGRÀFIC PATI LLIMONA',
+          },
+        ],
+      },
       patiLlimona,
     );
   } finally {

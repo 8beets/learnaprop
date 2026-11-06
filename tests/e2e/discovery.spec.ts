@@ -130,7 +130,7 @@ test('categories compose with search, pagination, and locale switching without J
   ).toBe(true);
   await page
     .getByRole('navigation', { name: 'Explora per categoria' })
-    .getByRole('link', { name: 'Ball', exact: true })
+    .getByRole('link', { name: 'Ball i dansa', exact: true })
     .click();
   await expect(page).toHaveURL(/category=BALL/);
   await expect(
@@ -183,4 +183,60 @@ test('centre navigation combines with categories and survives search and languag
   await expect(page.locator('article.course .institution')).toHaveText(
     'Centre Cívic Pati Llimona',
   );
+});
+
+test('photography aliases share one pill and category choices follow the selected centre', async ({
+  page,
+}) => {
+  await page.goto('/?category=ESPAI+FOTOGR%C3%80FIC+PATI+LLIMONA');
+  let categories = page.getByRole('navigation', {
+    name: 'Explorar por categoría',
+  });
+  await expect(
+    categories.getByRole('link', { name: 'Fotografía', exact: true }),
+  ).toHaveCount(1);
+  await expect(
+    categories.getByRole('link', { name: 'Fotografía', exact: true }),
+  ).toHaveAttribute('aria-current', 'true');
+  await expect(page.locator('article.course')).toHaveCount(3);
+  await expect(page.locator('article.course .course-category')).toHaveText([
+    'Fotografía',
+    'Fotografía',
+    'Fotografía',
+  ]);
+  await page
+    .getByRole('navigation', { name: 'Explorar por centro' })
+    .getByRole('link', { name: 'Centre Cívic Pati Llimona', exact: true })
+    .click();
+  await expect(categories.getByRole('link')).toHaveText([
+    'Todas las categorías',
+    'Cine',
+    'Fotografía',
+  ]);
+  await expect(page.locator('article.course')).toHaveCount(2);
+  await page.getByRole('link', { name: 'Català', exact: true }).click();
+  categories = page.getByRole('navigation', { name: 'Explora per categoria' });
+  await expect(categories.getByRole('link')).toHaveText([
+    'Totes les categories',
+    'Cinema',
+    'Fotografia',
+  ]);
+  await page
+    .getByRole('navigation', { name: 'Explora per centre' })
+    .getByRole('link', { name: 'Centre Cívic Can Basté', exact: true })
+    .click();
+  await expect(categories.getByRole('link')).toHaveText([
+    'Totes les categories',
+    'Fotografia',
+    'Idiomes',
+  ]);
+  await expect(page.locator('article.course')).toHaveCount(1);
+  await page
+    .getByRole('navigation', { name: 'Explora per centre' })
+    .getByRole('link', { name: 'Tots els centres', exact: true })
+    .click();
+  await expect(
+    categories.getByRole('link', { name: 'Ball i dansa', exact: true }),
+  ).toBeVisible();
+  await expect(page.locator('article.course')).toHaveCount(3);
 });

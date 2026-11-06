@@ -4,6 +4,7 @@ import {
   listCentres,
   type DiscoveryFilters,
 } from '../db/courses';
+import { canonicalCategory } from './categories';
 
 export function parseFilters(params: URLSearchParams): DiscoveryFilters {
   const page = params.get('page') ?? '1';
@@ -30,7 +31,7 @@ export function parseFilters(params: URLSearchParams): DiscoveryFilters {
     throw new Error('Invalid price');
   return {
     q,
-    category,
+    category: canonicalCategory(category),
     centre,
     page: Number(page),
     maxPriceCents: maxPrice ? Math.round(Number(maxPrice) * 100) : null,
@@ -41,7 +42,7 @@ export async function discoverCourses(db: D1Database, params: URLSearchParams) {
   const filters = parseFilters(params);
   const [listing, categories, centres] = await Promise.all([
     listCourses(db, filters),
-    listCategories(db),
+    listCategories(db, undefined, filters.centre),
     listCentres(db),
   ]);
   return { filters, ...listing, categories, centres };

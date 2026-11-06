@@ -1,3 +1,5 @@
+import { canonicalCategory, sourceCategories } from '../courses/categories';
+
 export interface DiscoveryFilters {
   q: string;
   page: number;
@@ -29,8 +31,9 @@ export async function listCourses(
   const conditions: string[] = [];
   const values: (string | number)[] = [];
   if (filters.category) {
-    conditions.push('c.category = ?');
-    values.push(filters.category);
+    const categories = sourceCategories(filters.category);
+    conditions.push(`c.category IN (${categories.map(() => '?').join(', ')})`);
+    values.push(...categories);
   }
   if (filters.centre) {
     conditions.push('c.institution_id = ?');
@@ -60,7 +63,11 @@ export async function listCourses(
     .bind(...values, PAGE_SIZE + 1, (filters.page - 1) * PAGE_SIZE)
     .all<CourseListing>();
   return {
-    courses: result.results.slice(0, PAGE_SIZE),
+    courses: result.results.slice(0, PAGE_SIZE).map((course) => ({
+      ...course,
+      category:
+        course.category === null ? null : canonicalCategory(course.category),
+    })),
     hasNext: result.results.length > PAGE_SIZE,
   };
 }
@@ -68,18 +75,21 @@ export async function listCourses(
 export async function listCategories(
   db: D1Database,
   today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Madrid' }),
+  centre = '',
 ): Promise<string[]> {
   const result = await db
     .prepare(
       `SELECT DISTINCT c.category FROM courses c
-    WHERE c.category IS NOT NULL AND c.category <> '' AND EXISTS (
+    WHERE c.category IS NOT NULL AND c.category <> '' ${centre ? 'AND c.institution_id = ?' : ''} AND EXISTS (
       SELECT 1 FROM course_editions e WHERE e.course_id=c.id
       AND (e.end_date IS NULL OR e.end_date >= ?)
     ) ORDER BY c.category LIMIT 100`,
     )
-    .bind(today)
+    .bind(...(centre ? [centre] : []), today)
     .all<{ category: string }>();
-  return result.results.map((row) => row.category);
+  return [
+    ...new Set(result.results.map((row) => canonicalCategory(row.category))),
+  ].sort();
 }
 
 export interface CentreListing {

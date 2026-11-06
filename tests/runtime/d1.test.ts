@@ -4,6 +4,7 @@ import { expect, it } from 'vitest';
 import { runIngestion } from '../../src/lib/ingestion/run';
 import { parseMiramPage } from '../../src/lib/ingestion/adapters/miram';
 import { santAndreu } from '../../src/lib/sources/sant-andreu';
+import { listCategories, listCourses } from '../../src/lib/db/courses';
 
 it('applies the migration and imports idempotently in the actual local D1 runtime', async () => {
   const platform = await getPlatformProxy<Cloudflare.Env>({
@@ -39,6 +40,39 @@ it('applies the migration and imports idempotently in the actual local D1 runtim
     expect(
       await db.prepare('SELECT count(*) AS n FROM source_records').first('n'),
     ).toBe(4);
+    await runIngestion(
+      db,
+      {
+        fetchRecords: async () =>
+          records.map((record, index) => ({
+            ...record,
+            category:
+              index % 2 ? 'FOTOGRAFIA' : 'ESPAI FOTOGRÀFIC PATI LLIMONA',
+          })),
+      },
+      santAndreu,
+    );
+    expect(
+      await listCategories(db, '2026-11-06', santAndreu.institution.id),
+    ).toEqual(['FOTOGRAFIA']);
+    expect(await listCategories(db, '2026-11-06', 'unknown-centre')).toEqual(
+      [],
+    );
+    const grouped = await listCourses(
+      db,
+      {
+        q: '',
+        page: 1,
+        maxPriceCents: null,
+        category: 'ESPAI FOTOGRÀFIC',
+        centre: santAndreu.institution.id,
+      },
+      '2026-11-06',
+    );
+    expect(grouped.courses).toHaveLength(4);
+    expect(
+      grouped.courses.every((course) => course.category === 'FOTOGRAFIA'),
+    ).toBe(true);
     await expect(
       runIngestion(
         db,

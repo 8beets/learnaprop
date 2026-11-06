@@ -1,3 +1,5 @@
+import { canonicalCategory } from '../lib/courses/categories';
+
 export const messages = {
   es: {
     title: 'Aprende cerca de casa',
@@ -91,13 +93,13 @@ export const messages = {
 
 export type Locale = keyof typeof messages;
 
-// Interface labels for verified source categories; original values stay in D1 and URLs.
+// Interface labels for canonical categories; original provider labels stay in D1.
 const categoryLabels: Record<string, Record<Locale, string>> = {
   'ACTIVITAT FÍSICA I BENESTAR': {
     es: 'Actividad física y bienestar',
     ca: 'Activitat física i benestar',
   },
-  BALL: { es: 'Baile', ca: 'Ball' },
+  BALL: { es: 'Baile y danza', ca: 'Ball i dansa' },
   'ESPECIAL GENT GRAN': { es: 'Personas mayores', ca: 'Gent gran' },
   IDIOMES: { es: 'Idiomas', ca: 'Idiomes' },
   "ISA: FESTIVAL D'IL·LUSTRACIÓ": {
@@ -111,27 +113,24 @@ const categoryLabels: Record<string, Record<Locale, string>> = {
   ALTRES: { es: 'Otros', ca: 'Altres' },
   'ART I CREATIVITAT': { es: 'Arte y creatividad', ca: 'Art i creativitat' },
   CUINA: { es: 'Cocina', ca: 'Cuina' },
-  DANSA: { es: 'Danza', ca: 'Dansa' },
-  'ESPAI FOTOGRÀFIC': { es: 'Fotografía', ca: 'Fotografia' },
   'INFANTILS i JUVENILS': { es: 'Infancia y juventud', ca: 'Infants i joves' },
   MÚSICA: { es: 'Música', ca: 'Música' },
   'NOVES TECNOLOGIES': { es: 'Nuevas tecnologías', ca: 'Noves tecnologies' },
-  'SALUT I ESPORT': { es: 'Salud y deporte', ca: 'Salut i esport' },
   FOTOGRAFIA: { es: 'Fotografía', ca: 'Fotografia' },
   CINEMA: { es: 'Cine', ca: 'Cinema' },
-  COS: { es: 'Cuerpo', ca: 'Cos' },
-  'ESPAI FOTOGRÀFIC PATI LLIMONA': {
-    es: 'Espacio fotográfico Pati Llimona',
-    ca: 'Espai fotogràfic Pati Llimona',
-  },
   'MÉS ECO': { es: 'Más eco', ca: 'Més eco' },
   PARAULA: { es: 'Palabra', ca: 'Paraula' },
-  PLÀSTICA: { es: 'Artes plásticas', ca: 'Plàstica' },
   "ReGENERA'T": { es: 'ReGENERA’T', ca: 'ReGENERA’T' },
 };
 
 export function categoryLabel(category: string, locale: Locale): string {
-  return categoryLabels[category]?.[locale] ?? category;
+  const canonical = canonicalCategory(category);
+  const label = categoryLabels[canonical]?.[locale];
+  if (label) return label;
+  // Unknown all-caps source categories get readable casing, without invented translation.
+  if (canonical !== canonical.toLocaleUpperCase(locale)) return canonical;
+  const lower = canonical.toLocaleLowerCase(locale);
+  return lower.charAt(0).toLocaleUpperCase(locale) + lower.slice(1);
 }
 
 export function formatLocalDate(value: string, locale: Locale): string {

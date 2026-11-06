@@ -12,7 +12,7 @@ LearnAprop helps people discover courses and visit the organizer's official list
 - Reusable Miram adapter with institution configuration separated from extraction.
 - Versioned relational schema, atomic imports, stable identifiers, provenance, and failed-run tracking.
 - Server-rendered Spanish (`/`) and Catalan (`/ca/`) discovery with title search, maximum price, and pagination.
-- Browse by civic centre and course category; combine both with search and price, using shareable URLs.
+- Browse by civic centre and normalized course category; category pills reflect the selected centre, and equivalent provider categories share one filter. Combine both with search and price using shareable URLs.
 - Deterministic unit/SQLite contract tests, a separate D1 runtime suite, Playwright tests, and CI.
 
 The sources were live-verified and refreshed on 2026-11-06: **37 Sant Andreu**, **99 Can Basté**, and **56 Pati Llimona** course editions. All use the reusable Miram adapter. The pagination fix discovers numbered links that the initial importer missed. Explicitly reviewed concerts, film screenings, and cancelled activities are excluded. Stored totals include expired editions; availability remains unknown. Local D1 starts empty until a live import runs.
@@ -60,7 +60,7 @@ npm run test:e2e
 
 `npm test` uses saved source fixtures and real Node SQLite for SQL contract tests. It does **not** emulate or prove the Cloudflare runtime. `test:d1` exercises actual local D1 separately. Routine tests never contact source websites. [Linux CI passed](https://github.com/akira28/learnaprop/actions/runs/42078396499) for the initial foundation, including D1 and desktop/mobile browser checks.
 
-The expanded suite is covered by 44 unit/SQLite tests, 1 D1 runtime test, and 10 desktop/mobile browser tests. The Docker suite also checks formatting, lint, TypeScript, migrations, and the build. Browser tests cover image delivery, localized captions and weekdays, stable search width after filtering, and navigation across all three centres. See [Docker verification](docs/docker.md#verified-locally).
+The expanded suite is covered by 53 unit/SQLite tests, 1 D1 runtime test, and 12 desktop/mobile browser tests. The Docker suite also checks formatting, lint, TypeScript, migrations, and the build. Browser tests cover image delivery, localized captions and weekdays, stable search width after filtering, and navigation across all three centres. See [Docker verification](docs/docker.md#verified-locally).
 
 ## Documentation
 

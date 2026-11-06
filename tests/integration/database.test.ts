@@ -78,10 +78,16 @@ describe('SQLite migration and ingestion contract', () => {
       { fetchRecords: async () => [{ ...records[0]!, category: 'DANSA' }] },
       canBaste,
     );
-    expect(await listCategories(db, '2026-11-05')).toEqual([
-      'DANSA',
-      'IDIOMES',
-    ]);
+    expect(await listCategories(db, '2026-11-05')).toEqual(['BALL', 'IDIOMES']);
+    expect(
+      await listCategories(db, '2026-11-05', santAndreu.institution.id),
+    ).toEqual(['IDIOMES']);
+    expect(
+      await listCategories(db, '2026-11-05', canBaste.institution.id),
+    ).toEqual(['BALL']);
+    expect(await listCategories(db, '2026-11-05', 'unknown-centre')).toEqual(
+      [],
+    );
     expect(await listCentres(db, '2026-11-05')).toEqual([
       { id: canBaste.institution.id, name: canBaste.institution.name },
       { id: santAndreu.institution.id, name: santAndreu.institution.name },
@@ -128,6 +134,80 @@ describe('SQLite migration and ingestion contract', () => {
     expect(
       sqlite.prepare('SELECT count(*) AS n FROM course_editions').get()?.n,
     ).toBe(5);
+  });
+  it('groups photography aliases before pagination while preserving source labels', async () => {
+    const aliases = [
+      'FOTOGRAFIA',
+      'ESPAI FOTOGRÀFIC',
+      'ESPAI FOTOGRÀFIC PATI LLIMONA',
+    ];
+    const photos = Array.from({ length: 15 }, (_, index) => ({
+      ...records[0]!,
+      externalId: String(8000 + index),
+      title: `TEST photo ${index}`,
+      category: aliases[index % 3]!,
+    }));
+    await runIngestion(
+      db,
+      {
+        fetchRecords: async () => [
+          ...photos,
+          {
+            ...records[0]!,
+            externalId: '9000',
+            title: 'TEST other',
+            category: 'CUINA',
+          },
+          {
+            ...records[0]!,
+            externalId: '9001',
+            title: 'TEST expired',
+            category: 'EXPIRED',
+            endDate: '2020-01-01',
+            startDate: '2019-01-01',
+          },
+        ],
+      },
+      santAndreu,
+    );
+    const filters = {
+      q: 'TEST photo',
+      page: 1,
+      maxPriceCents: 6000,
+      category: 'FOTOGRAFIA',
+      centre: santAndreu.institution.id,
+    };
+    const firstPage = await listCourses(db, filters, '2026-11-05');
+    expect(firstPage.courses).toHaveLength(12);
+    expect(firstPage.hasNext).toBe(true);
+    expect(
+      firstPage.courses.every((course) => course.category === 'FOTOGRAFIA'),
+    ).toBe(true);
+    const secondPage = await listCourses(
+      db,
+      { ...filters, page: 2 },
+      '2026-11-05',
+    );
+    expect(secondPage.courses).toHaveLength(3);
+    expect(secondPage.hasNext).toBe(false);
+    expect(
+      await listCourses(
+        db,
+        { ...filters, category: aliases[2]!, page: 2 },
+        '2026-11-05',
+      ),
+    ).toEqual(secondPage);
+    expect(
+      await listCategories(db, '2026-11-05', santAndreu.institution.id),
+    ).toEqual(['CUINA', 'FOTOGRAFIA']);
+    expect(
+      sqlite
+        .prepare(
+          "SELECT DISTINCT category FROM courses WHERE category LIKE '%FOTOG%' ORDER BY category",
+        )
+        .all()
+        .map((row) => row.category),
+    ).toEqual([...aliases].sort());
   });
   it('imports twice without duplicates, preserves provenance and reviewed titles', async () => {
     const adapter = { fetchRecords: async () => records };

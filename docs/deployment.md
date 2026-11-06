@@ -116,3 +116,26 @@ Docker checks passed formatting, lint, TypeScript, 80 unit/SQLite tests, 1 actua
 D1 runtime test, the build and 40 desktop/mobile browser cases. The production
 build and Wrangler deployment dry run passed. This release requires no database
 migration or data refresh.
+
+## Automatic deployment from GitHub
+
+The `Checks and deployment` workflow runs the existing checks for pushes and pull
+requests. After all checks pass, a push to `main` deploys the exact tested commit.
+The deployment job rebuilds with `npm run build:production` and deploys the generated
+`dist/server/wrangler.json`, selecting the existing production D1 binding at build time.
+Pull requests and other branches run checks only.
+
+Configure these repository Actions secrets in GitHub:
+
+- `CLOUDFLARE_API_TOKEN`: a Cloudflare deployment token scoped to the target account.
+- `CLOUDFLARE_ACCOUNT_ID`: the account ID used by the production configuration.
+
+Secrets are passed only to the deployment step. Production jobs are serialized,
+and a job skips deployment if its commit is no longer the head of `main`. An active
+deployment is allowed to finish before the next job starts. The workflow does not
+apply remote migrations, import course data, or synchronize centre metadata;
+those remain separate operations requiring explicit approval. Worker and database
+names continue to come from `wrangler.jsonc`.
+
+See [Cloudflare GitHub Actions authentication](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/)
+and [GitHub concurrency](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency).

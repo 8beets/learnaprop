@@ -113,7 +113,9 @@ URLs, language switching, legacy redirects, and desktop/mobile behaviour. Routin
 tests do not contact source websites or map services.
 
 The [CI workflow](https://github.com/8beets/urbanlabs/actions/workflows/ci.yml)
-runs the repository checks on Linux. The [Docker check suite](docs/docker.md#run-checks)
+runs the repository checks on Linux and deploys successful pushes to `main` to
+Cloudflare. See [deployment setup](docs/deployment.md#automatic-deployment-from-github)
+for the required GitHub secrets. The [Docker check suite](docs/docker.md#run-checks)
 also includes binding generation and local migrations. For hosts without Chromium's
 system dependencies, use Docker or follow Playwright's browser installation guidance.
 

@@ -81,3 +81,9 @@ casing changes. Database queries expose whether a title was manually reviewed;
 reviewed titles bypass formatting. Original titles and source-record payloads stay
 unchanged. Future course detail pages should reuse the formatter and preserve
 manual review intent in the same way.
+
+The shared page shell uses the viewport width with 20px side gutters, rather than a
+fixed desktop maximum. Header, main content and footer align at every viewport size.
+Course/directory grids add columns as space permits; text paragraphs and decorative
+hero images retain readable bounds. The filter sidebar keeps its existing desktop
+width and mobile disclosure behaviour.

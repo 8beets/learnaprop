@@ -119,8 +119,12 @@ migration or data refresh.
 
 ## Automatic deployment from GitHub
 
-The `Checks and deployment` workflow runs the existing checks for pushes and pull
-requests. After all checks pass, a push to `main` deploys the exact tested commit.
+The `Checks and deployment` workflow runs formatting, lint, binding generation,
+TypeScript, unit/SQLite tests, actual D1 tests, local migrations and the build for
+pushes and pull requests. Playwright installation and browser tests are temporarily
+skipped in GitHub Actions; run `npm run test:e2e` locally or the complete Docker
+check suite for browser coverage. After the CI checks pass, a push to `main`
+deploys the exact tested commit.
 The deployment job rebuilds with `npm run build:production` and deploys the generated
 `dist/server/wrangler.json`, selecting the existing production D1 binding at build time.
 Pull requests and other branches run checks only.

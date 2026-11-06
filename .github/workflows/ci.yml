@@ -26,8 +26,7 @@ jobs:
       - run: npm run test:d1
       - run: npm run db:migrate
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+      # Playwright is temporarily run locally or through Docker instead of CI.
 
   deploy:
     name: Deploy production

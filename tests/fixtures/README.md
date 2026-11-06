@@ -19,3 +19,10 @@ Browser tests seed synthetic future dates and extra records in `.wrangler/e2e-st
 https://patillimona.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=1&t=AC&f=2
 
 `miram-pati-llimona-pagination.html` contains one actual photography course, its whitespace-padded heading, and the original unstyled anchors for pages 1–3, from the same host's `f=1` listing. Both excerpts were serialized with Cheerio; contact details, scripts, and unrelated content were removed. E2E dates are changed only in isolated test state.
+
+`miram-golferichs-photography.html` and `miram-golferichs-cooking.html` are one-card excerpts from the public Golferichs listings, retrieved on 2026-11-06:
+
+- https://golferichs.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=29&t=AC&f=XX — photography course `7350`.
+- https://golferichs.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=29&t=AC&f=CU — cooking course `7284`.
+
+They preserve the original category heading, category selector, and course markup, serialized with Cheerio. Scripts, contact details, and unrelated cards were removed; trailing whitespace was stripped. Browser fixtures change dates only in isolated E2E state.

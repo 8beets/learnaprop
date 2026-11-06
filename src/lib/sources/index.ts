@@ -1,8 +1,9 @@
 import { santAndreu } from './sant-andreu';
 import { canBaste } from './can-baste';
 import { patiLlimona } from './pati-llimona';
+import { golferichs } from './golferichs';
 
-export const sources = [santAndreu, canBaste, patiLlimona];
+export const sources = [santAndreu, canBaste, patiLlimona, golferichs];
 
 export function selectSources(sourceId?: string) {
   if (!sourceId) return sources;

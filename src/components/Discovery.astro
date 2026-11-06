@@ -8,6 +8,7 @@ import {
 import type { DiscoveryPageData } from '../lib/courses/page';
 import { formatSchedule } from '../i18n/schedule';
 import { sources } from '../lib/sources';
+import { linkedCentres } from '../lib/institutions/linked-centres';
 import '../styles/global.css';
 
 interface Props {
@@ -266,6 +267,19 @@ function filterUrl(key: string, value: string) {
           )}
         </nav>
       </section>
+      <aside class="linked-centres" aria-labelledby="linked-centres-title">
+        <h2 id="linked-centres-title">{t.linkedCentres}</h2>
+        {linkedCentres.map((centre) => (
+          <article class="programme-link">
+            <h3>
+              <a href={centre.programmeUrl}>
+                {centre.name} <span aria-hidden="true">↗</span>
+              </a>
+            </h3>
+            <p>{t.linkedCentreHelp}</p>
+          </article>
+        ))}
+      </aside>
       <aside class="notice">{t.notice}</aside>
     </main>
     <footer class="shell footer">

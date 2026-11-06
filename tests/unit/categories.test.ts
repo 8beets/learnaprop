@@ -9,6 +9,11 @@ import { parseFilters } from '../../src/lib/courses/discovery';
 describe('reviewed category grouping', () => {
   it.each([
     ['ESPAI FOTOGRÀFIC PATI LLIMONA', 'FOTOGRAFIA'],
+    ['Espai de fotografia F. Català-Roca', 'FOTOGRAFIA'],
+    ['Cuina', 'CUINA'],
+    ['Creativitat', 'ART I CREATIVITAT'],
+    ['Salut', 'ACTIVITAT FÍSICA I BENESTAR'],
+    ['Recursos', 'RECURSOS I CREATIVITAT'],
     [' espai   fotogràfic ', 'FOTOGRAFIA'],
     ['DANSA', 'BALL'],
     ['PLÀSTICA', 'ART I CREATIVITAT'],
@@ -25,6 +30,7 @@ describe('reviewed category grouping', () => {
       'FOTOGRAFIA',
       'ESPAI FOTOGRÀFIC',
       'ESPAI FOTOGRÀFIC PATI LLIMONA',
+      'Espai de fotografia F. Català-Roca',
     ]);
     expect(categoryLabel('ESPAI FOTOGRÀFIC PATI LLIMONA', 'es')).toBe(
       'Fotografía',

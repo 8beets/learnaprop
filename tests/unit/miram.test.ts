@@ -10,6 +10,8 @@ import {
 } from '../../src/lib/ingestion/normalization/values';
 import { createSourceFetcher } from '../../src/lib/ingestion/http';
 import { santAndreu } from '../../src/lib/sources/sant-andreu';
+import { golferichs } from '../../src/lib/sources/golferichs';
+import { categoryLabel } from '../../src/i18n/ui';
 import { parseFilters } from '../../src/lib/courses/discovery';
 
 const fixture = readFileSync(
@@ -19,6 +21,44 @@ const fixture = readFileSync(
 const url = `${santAndreu.listingUrl}&f=ID`;
 
 describe('Miram source fixture', () => {
+  it('extracts actual Golferichs photography facts without changing their source category', () => {
+    const html = readFileSync(
+      new URL('../fixtures/miram-golferichs-photography.html', import.meta.url),
+      'utf8',
+    );
+    const { records } = parseMiramPage(html, `${golferichs.listingUrl}&f=XX`);
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({
+      externalId: '7350',
+      title: 'Tècniques bàsiques (1r nivell): coneixement de la càmera',
+      category: 'Espai de fotografia F. Català-Roca',
+      startDate: '2026-09-21',
+      endDate: '2026-11-16',
+      priceCents: 9332,
+      availability: null,
+    });
+    expect(records[0]?.officialUrl).toBe(
+      `${golferichs.listingUrl}&f=XX#accordion7350`,
+    );
+    expect(categoryLabel(records[0]!.category!, 'es')).toBe('Fotografía');
+  });
+  it('extracts Golferichs cooking with its base price and localized category label', () => {
+    const html = readFileSync(
+      new URL('../fixtures/miram-golferichs-cooking.html', import.meta.url),
+      'utf8',
+    );
+    const { records } = parseMiramPage(html, `${golferichs.listingUrl}&f=CU`);
+    expect(records[0]).toMatchObject({
+      externalId: '7284',
+      title: 'Cuina i maridatge. Sorprèn a la colla',
+      category: 'Cuina',
+      startDate: '2026-10-13',
+      endDate: '2026-11-24',
+      priceCents: 8165,
+      availability: null,
+    });
+    expect(categoryLabel(records[0]!.category!, 'es')).toBe('Cocina');
+  });
   it('extracts Pati Llimona course facts with the shared parser', () => {
     const html = readFileSync(
       new URL('../fixtures/miram-pati-llimona-cinema.html', import.meta.url),

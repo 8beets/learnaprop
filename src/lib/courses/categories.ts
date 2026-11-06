@@ -4,14 +4,20 @@ export const categoryGroups: Readonly<Record<string, readonly string[]>> = {
     'FOTOGRAFIA',
     'ESPAI FOTOGRÀFIC',
     'ESPAI FOTOGRÀFIC PATI LLIMONA',
+    'Espai de fotografia F. Català-Roca',
   ],
   BALL: ['BALL', 'DANSA'],
-  'ART I CREATIVITAT': ['ART I CREATIVITAT', 'PLÀSTICA'],
+  'ART I CREATIVITAT': ['ART I CREATIVITAT', 'PLÀSTICA', 'Creativitat'],
   'ACTIVITAT FÍSICA I BENESTAR': [
     'ACTIVITAT FÍSICA I BENESTAR',
     'SALUT I ESPORT',
     'COS',
+    'Salut',
   ],
+  CUINA: ['CUINA', 'Cuina'],
+  'RECURSOS I CREATIVITAT': ['RECURSOS I CREATIVITAT', 'Recursos'],
+  'CIÈNCIES I HUMANITATS': ['CIÈNCIES I HUMANITATS', 'Ciències i humanitats'],
+  EXPRESSIÓ: ['EXPRESSIÓ', 'Expressió'],
 };
 
 function comparisonKey(value: string): string {

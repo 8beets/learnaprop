@@ -64,3 +64,11 @@ An authorized refresh using `npm run ingest:production -- --live` persisted 37 S
 The accompanying interface adds illustrative stock photos and the generated logo, fixes search-input width after choosing filters, and translates weekday labels for the Spanish interface while retaining original stored source text. Asset licenses and the logo prompt are documented in [assets](assets.md).
 
 The category follow-up groups photography, dance, arts, and physical-activity categories through an explicit map, uses readable localized labels, and limits category pills to the chosen centre. This is a query/presentation change; no migration or source-data rewrite is needed. Original provider categories and legacy alias URLs remain supported. The full Docker suite passed 53 unit/SQLite tests, 1 D1 runtime test, and 12 desktop/mobile browser tests; the production build and deployment dry run passed.
+
+## Golferichs and Casa del Rellotge
+
+On 2026-11-06, `npm run ingest:production -- --live --source miram-golferichs` imported 113 actual Golferichs editions through the unchanged Miram adapter. Cloud D1 now has 305 editions and provenance records across four imported centres, zero `TEST` courses, and no foreign-key violations. No schema migration or paid infrastructure was introduced.
+
+The interface adds a separate official-programme link for FAB Casa del Rellotge. Its `robots.txt` disallows general crawlers, so no course importer or D1 course records were added for that centre. See [source research](data-sources.md) for the policy and integration boundary.
+
+The complete Docker suite passed 60 unit/SQLite tests, 1 actual D1 test, and 16 desktop/mobile browser tests, including Golferichs category normalization, centre filtering, source links, and Spanish/Catalan programme-link copy. The production build and deployment dry run passed with only the existing DB and ASSETS bindings.

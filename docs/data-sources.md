@@ -48,9 +48,34 @@ Verified on 2026-11-06:
 - Minimal real fixtures cover cinema course `5005` and the photography category's plain numbered pagination links. Whitespace around category headings is normalized.
 - The same metadata-only collection and source reuse limitations above apply. Stock photography in the interface is separately licensed and is not scraped from course providers.
 
-Cloud D1 now holds 192 editions and 192 source records across three centres. Discovery omits expired editions; stored totals can exceed visible totals.
+## Centre Cívic Casa Golferichs
+
+Verified on 2026-11-06:
+
+- Requested listing: https://golferichs.inscripcionscc.com/MiramModular/buscador/buscador.jsp
+- Official centre programme: https://www.golferichs.org/cursos-i-tallers/ links directly to this registration host.
+- Canonical course root: https://golferichs.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=29&t=AC
+- Institution address: Gran Via de les Corts Catalanes, 491, 08015 Barcelona, confirmed on the official site and registration footer.
+- Registration `robots.txt` returned 404. The existing adapter rechecks before each import.
+- The unchanged shared Miram adapter validated **113 distinct course editions** over 40 pages within the existing 60-page/1,000-record bounds. The seven course categories are Ciències i humanitats, Cuina, Recursos, Creativitat, Expressió, Salut, and Espai de fotografia F. Català-Roca.
+- Course scope is explicitly `g=1&c=29&t=AC`; the separate shows/conferences group is not crawled.
+- Minimal real fixtures cover photography `7350` and cooking `7284`, including prices, local dates, and original mixed-case category values.
+- The public category map folds photography into Fotografía/Fotografia, Cuina into Cocina/Cuina, Creativitat into art/creativity, Salut into physical activity/wellbeing, and Recursos into resources/creativity. Expression and sciences/humanities remain distinct, with Spanish/Catalan interface labels.
+- The existing metadata-only collection, unknown availability/language, base-price/supplement, and reuse-review limitations also apply. No provider descriptions or photographs are published.
+
+Cloud D1 holds 305 editions and 305 source records across the four imported centres. Discovery omits expired editions; course availability remains unconfirmed.
 
 ## Investigated and deferred
+
+### FAB Casa del Rellotge — official programme link
+
+Requested programme: https://fabcasadelrellotge.cat/formacio/
+
+Reviewed on 2026-11-06. The official page identifies training sections for capacitacions, maker workshops, older people, and families/young people. It uses WordPress/EventON calendars loaded dynamically; the initial HTML does not provide individual course records. No external registration feed was linked in the inspected page.
+
+The host's `robots.txt` returned HTTP 200 with `User-agent: *`, `Disallow: /`, and `Crawl-delay: 300`. Its separate Googlebot/Bingbot exceptions do not apply to LearnAprop. Automated collection stopped after that policy was read. No REST/AJAX endpoint, PDF, browser automation, or alternate user agent was used to collect courses.
+
+The discovery page links directly to the official programme under “Otros espacios para aprender” / “Altres espais per aprendre”. The link is configured in `src/lib/institutions/linked-centres.ts`, outside the approved ingestion registry. No course dates, prices, availability, or D1 records were invented; this centre is not offered as a course filter. Importing individual editions requires permission from the centre or a permitted official feed. This linked-only centre does not contribute imported course editions or course-filter categories.
 
 ### Can Verdaguer
 

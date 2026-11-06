@@ -198,8 +198,9 @@ test('photography aliases share one pill and category choices follow the selecte
   await expect(
     categories.getByRole('link', { name: 'Fotografía', exact: true }),
   ).toHaveAttribute('aria-current', 'true');
-  await expect(page.locator('article.course')).toHaveCount(3);
+  await expect(page.locator('article.course')).toHaveCount(4);
   await expect(page.locator('article.course .course-category')).toHaveText([
+    'Fotografía',
     'Fotografía',
     'Fotografía',
     'Fotografía',
@@ -238,5 +239,81 @@ test('photography aliases share one pill and category choices follow the selecte
   await expect(
     categories.getByRole('link', { name: 'Ball i dansa', exact: true }),
   ).toBeVisible();
-  await expect(page.locator('article.course')).toHaveCount(3);
+  await expect(page.locator('article.course')).toHaveCount(4);
+});
+
+test('Casa del Rellotge links to its official programme separately from imported course filters', async ({
+  page,
+}) => {
+  await page.goto('/');
+  let linked = page.getByRole('complementary', {
+    name: 'Otros espacios para aprender',
+  });
+  await expect(
+    linked.getByRole('link', { name: 'FAB Casa del Rellotge', exact: true }),
+  ).toHaveAttribute('href', 'https://fabcasadelrellotge.cat/formacio/');
+  await expect(linked).toContainText(
+    'Consulta sus talleres y capacitaciones en la web oficial del centro.',
+  );
+  await expect(
+    page
+      .getByRole('navigation', { name: 'Explorar por centro' })
+      .getByRole('link', { name: 'FAB Casa del Rellotge', exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.locator('article.course').filter({ hasText: 'FAB Casa del Rellotge' }),
+  ).toHaveCount(0);
+  await page.getByRole('link', { name: 'Català', exact: true }).click();
+  linked = page.getByRole('complementary', {
+    name: 'Altres espais per aprendre',
+  });
+  await expect(
+    linked.getByRole('link', { name: 'FAB Casa del Rellotge', exact: true }),
+  ).toHaveAttribute('href', 'https://fabcasadelrellotge.cat/formacio/');
+  await expect(linked).toContainText(
+    'Consulta els seus tallers i capacitacions al web oficial del centre.',
+  );
+});
+
+test('Golferichs exposes only its own normalized categories and course source links', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page
+    .getByRole('navigation', { name: 'Explorar por centro' })
+    .getByRole('link', { name: 'Centre Cívic Casa Golferichs', exact: true })
+    .click();
+  const categories = page.getByRole('navigation', {
+    name: 'Explorar por categoría',
+  });
+  await expect(categories.getByRole('link')).toHaveText([
+    'Todas las categorías',
+    'Cocina',
+    'Fotografía',
+  ]);
+  await expect(page.locator('article.course')).toHaveCount(2);
+  await categories
+    .getByRole('link', { name: 'Fotografía', exact: true })
+    .click();
+  await expect(page.locator('article.course')).toHaveCount(1);
+  await expect(page.locator('article.course .institution')).toHaveText(
+    'Centre Cívic Casa Golferichs',
+  );
+  await expect(
+    page
+      .locator('article.course')
+      .getByRole('link', { name: /Consultar fuente oficial/ }),
+  ).toHaveAttribute(
+    'href',
+    /https:\/\/golferichs\.inscripcionscc\.com\/.*#accordion7350$/,
+  );
+  await page.getByRole('link', { name: 'Català', exact: true }).click();
+  await expect(
+    page
+      .getByRole('navigation', { name: 'Explora per categoria' })
+      .getByRole('link'),
+  ).toHaveText(['Totes les categories', 'Cuina', 'Fotografia']);
+  await expect(page.locator('article.course h3')).toHaveText(
+    'Tècniques bàsiques (1r nivell): coneixement de la càmera',
+  );
 });

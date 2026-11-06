@@ -23,6 +23,9 @@ export const messages = {
     explore: 'Encuentra tu próximo taller',
     centres: 'Explorar por centro',
     allCentres: 'Todos los centros',
+    linkedCentres: 'Otros espacios para aprender',
+    linkedCentreHelp:
+      'Consulta sus talleres y capacitaciones en la web oficial del centro.',
     programming: 'Programación oficial',
     empty: 'Todavía no hay cursos que coincidan con tu búsqueda.',
     emptyHelp:
@@ -67,6 +70,9 @@ export const messages = {
     explore: 'Troba el teu pròxim taller',
     centres: 'Explora per centre',
     allCentres: 'Tots els centres',
+    linkedCentres: 'Altres espais per aprendre',
+    linkedCentreHelp:
+      'Consulta els seus tallers i capacitacions al web oficial del centre.',
     programming: 'Programació oficial',
     empty: 'Encara no hi ha cursos que coincideixin amb la teva cerca.',
     emptyHelp:
@@ -118,6 +124,11 @@ const categoryLabels: Record<string, Record<Locale, string>> = {
   'NOVES TECNOLOGIES': { es: 'Nuevas tecnologías', ca: 'Noves tecnologies' },
   FOTOGRAFIA: { es: 'Fotografía', ca: 'Fotografia' },
   CINEMA: { es: 'Cine', ca: 'Cinema' },
+  'CIÈNCIES I HUMANITATS': {
+    es: 'Ciencias y humanidades',
+    ca: 'Ciències i humanitats',
+  },
+  EXPRESSIÓ: { es: 'Expresión', ca: 'Expressió' },
   'MÉS ECO': { es: 'Más eco', ca: 'Més eco' },
   PARAULA: { es: 'Palabra', ca: 'Paraula' },
   "ReGENERA'T": { es: 'ReGENERA’T', ca: 'ReGENERA’T' },

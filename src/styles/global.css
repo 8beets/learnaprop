@@ -199,7 +199,8 @@ h2 {
   gap: 20px;
 }
 .course,
-.empty {
+.empty,
+.programme-link {
   border: 1px solid #d3ded5;
   background: white;
   border-radius: 10px;

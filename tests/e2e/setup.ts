@@ -5,6 +5,7 @@ import { parseMiramPage } from '../../src/lib/ingestion/adapters/miram';
 import { santAndreu } from '../../src/lib/sources/sant-andreu';
 import { canBaste } from '../../src/lib/sources/can-baste';
 import { patiLlimona } from '../../src/lib/sources/pati-llimona';
+import { golferichs } from '../../src/lib/sources/golferichs';
 
 async function setup() {
   const platform = await getPlatformProxy<Cloudflare.Env>({
@@ -122,6 +123,28 @@ async function setup() {
         ],
       },
       patiLlimona,
+    );
+    const golferichsRecords = ['photography', 'cooking'].flatMap((category) => {
+      const html = readFileSync(
+        new URL(
+          `../fixtures/miram-golferichs-${category}.html`,
+          import.meta.url,
+        ),
+        'utf8',
+      );
+      return parseMiramPage(
+        html,
+        `${golferichs.listingUrl}&f=${category === 'photography' ? 'XX' : 'CU'}`,
+      ).records.map((record) => ({
+        ...record,
+        startDate: '2099-01-01',
+        endDate: '2099-12-31',
+      }));
+    });
+    await runIngestion(
+      db,
+      { fetchRecords: async () => golferichsRecords },
+      golferichs,
     );
   } finally {
     await platform.dispose();

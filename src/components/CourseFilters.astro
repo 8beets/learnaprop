@@ -1,0 +1,111 @@
+---
+import { messages, categoryLabel, type Locale } from '../i18n/ui';
+import type { DiscoveryPageData } from '../lib/courses/page';
+
+interface Props {
+  locale: Locale;
+  data: Pick<DiscoveryPageData, 'filters' | 'centres' | 'categories' | 'error'>;
+}
+const { locale, data } = Astro.props;
+const { filters, centres, categories, error } = data;
+const t = messages[locale];
+const base = locale === 'es' ? '/' : '/ca/';
+// New filter controls belong in this same GET form. Omit page on submit to reset pagination.
+const formFields = new Set(['q', 'centre', 'category', 'maxPrice', 'page']);
+const preservedParams = [...Astro.url.searchParams].filter(
+  ([key]) => !formFields.has(key),
+);
+---
+
+<aside class="filter-sidebar" aria-label={t.filters}>
+  <details
+    id="filter-panel"
+    class="filter-panel"
+    open
+    data-invalid={error === 'invalid' ? 'true' : undefined}
+  >
+    <summary>{t.filters}</summary>
+    <form action={base} method="get" class="filter-form" aria-label={t.submit}>
+      {preservedParams.map(([key, value]) => (
+        <input type="hidden" name={key} value={value} />
+      ))}
+      <div>
+        <label for="q">{t.search}</label>
+        <input
+          id="q"
+          name="q"
+          type="search"
+          value={filters.q}
+          aria-describedby={error === 'invalid' ? 'filter-error' : undefined}
+        />
+      </div>
+      <fieldset class="filter-group">
+        <legend>{t.refine}</legend>
+        <div>
+          <label for="centre">{t.centre}</label>
+          <select id="centre" name="centre">
+            <option value="" selected={!filters.centre}>
+              {t.allCentres}
+            </option>
+            {filters.centre &&
+              !centres.some((centre) => centre.id === filters.centre) && (
+                <option value={filters.centre} selected>
+                  {t.currentSelection}
+                </option>
+              )}
+            {centres.map((centre) => (
+              <option value={centre.id} selected={filters.centre === centre.id}>
+                {centre.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label for="category">{t.category}</label>
+          <select id="category" name="category">
+            <option value="" selected={!filters.category}>
+              {t.allCategories}
+            </option>
+            {filters.category && !categories.includes(filters.category) && (
+              <option value={filters.category} selected>
+                {categoryLabel(filters.category, locale)} ({t.currentSelection})
+              </option>
+            )}
+            {categories.map((category) => (
+              <option value={category} selected={filters.category === category}>
+                {categoryLabel(category, locale)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label for="maxPrice">{t.price}</label>
+          <input
+            id="maxPrice"
+            name="maxPrice"
+            type="number"
+            min="0"
+            max="9999.99"
+            step="0.01"
+            value={
+              filters.maxPriceCents === null ? '' : filters.maxPriceCents / 100
+            }
+          />
+        </div>
+      </fieldset>
+      <button type="submit">{t.submit}</button>
+    </form>
+  </details>
+</aside>
+
+<script>
+  const panel = document.querySelector<HTMLDetailsElement>('#filter-panel');
+  if (panel) {
+    const desktop = window.matchMedia('(min-width: 800px)');
+    const updateLayout = () => {
+      panel.open = desktop.matches || panel.dataset.invalid === 'true';
+    };
+    updateLayout();
+    desktop.addEventListener('change', updateLayout);
+  }
+</script>

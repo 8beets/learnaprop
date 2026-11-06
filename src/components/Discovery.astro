@@ -8,6 +8,7 @@ import {
 import type { DiscoveryPageData } from '../lib/courses/page';
 import { formatSchedule } from '../i18n/schedule';
 import { sources } from '../lib/sources';
+import CourseFilters from './CourseFilters.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -16,7 +17,7 @@ interface Props {
 }
 const { locale, data } = Astro.props;
 const t = messages[locale];
-const { courses, categories, centres, filters, hasNext, error } = data;
+const { courses, centres, filters, hasNext, error } = data;
 const officialSources = sources.filter(
   (source) => !filters.centre || source.institution.id === filters.centre,
 );
@@ -27,6 +28,24 @@ const themes = [
   { image: 'electronics', label: t.photoElectronics },
   { image: 'woodworking', label: t.photoWoodworking },
 ];
+const appliedFilters: { key: string; label: string }[] = [];
+if (filters.q)
+  appliedFilters.push({ key: 'q', label: `${t.search}: ${filters.q}` });
+if (filters.centre)
+  appliedFilters.push({
+    key: 'centre',
+    label: `${t.centre}: ${centres.find((centre) => centre.id === filters.centre)?.name ?? t.currentSelection}`,
+  });
+if (filters.category)
+  appliedFilters.push({
+    key: 'category',
+    label: `${t.category}: ${categoryLabel(filters.category, locale)}`,
+  });
+if (filters.maxPriceCents !== null)
+  appliedFilters.push({
+    key: 'maxPrice',
+    label: `${t.price}: ${new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(filters.maxPriceCents / 100)}`,
+  });
 function pageUrl(page: number) {
   const params = new URLSearchParams(Astro.url.searchParams);
   params.set('page', String(page));
@@ -115,157 +134,121 @@ function filterUrl(key: string, value: string) {
           ))}
         </div>
       </section>
-      <div id="discovery" class="discovery-anchor"></div>
-      {(centres.length > 0 || filters.centre) && (
-        <nav class="categories centres" aria-label={t.centres}>
-          <a
-            href={filterUrl('centre', '')}
-            aria-current={!filters.centre ? 'true' : undefined}
-          >
-            {t.allCentres}
-          </a>
-          {centres.map((centre) => (
-            <a
-              href={filterUrl('centre', centre.id)}
-              aria-current={filters.centre === centre.id ? 'true' : undefined}
-            >
-              {centre.name}
-            </a>
-          ))}
-        </nav>
-      )}
-      {(categories.length > 0 || filters.category) && (
-        <nav class="categories" aria-label={t.categories}>
-          <a
-            href={categoryUrl('')}
-            aria-current={!filters.category ? 'true' : undefined}
-          >
-            {t.allCategories}
-          </a>
-          {categories.map((category) => (
-            <a
-              href={categoryUrl(category)}
-              aria-current={filters.category === category ? 'true' : undefined}
-            >
-              {categoryLabel(category, locale)}
-            </a>
-          ))}
-        </nav>
-      )}
-      <form action={base} method="get" class="search" aria-label={t.submit}>
-        {filters.category && (
-          <input type="hidden" name="category" value={filters.category} />
-        )}
-        {filters.centre && (
-          <input type="hidden" name="centre" value={filters.centre} />
-        )}
-        <div class="search-query">
-          <label for="q">{t.search}</label>
-          <input
-            id="q"
-            name="q"
-            type="search"
-            value={filters.q}
-            aria-describedby={error === 'invalid' ? 'filter-error' : undefined}
-          />
-        </div>
-        <div>
-          <label for="maxPrice">{t.price}</label>
-          <input
-            id="maxPrice"
-            name="maxPrice"
-            type="number"
-            min="0"
-            max="9999.99"
-            step="0.01"
-            value={
-              filters.maxPriceCents === null ? '' : filters.maxPriceCents / 100
-            }
-          />
-        </div>
-        <button type="submit">{t.submit}</button>
-        <a href={base}>{t.clear}</a>
-      </form>
-      {error && (
-        <p role="alert" id="filter-error" class="error">
-          {t[error]}
-        </p>
-      )}
-      <section aria-labelledby="results" class="results">
-        <h2 id="results">{t.results}</h2>
-        {!error && courses.length === 0 && (
-          <div class="empty">
-            <h3>{t.empty}</h3>
-            <p>{t.emptyHelp}</p>
-            {officialSources.map((source) => (
-              <p>
-                <a href={source.listingUrl}>
-                  {t.programming}: {source.institution.name} ↗
-                </a>
-              </p>
-            ))}
-          </div>
-        )}
-        <div class="grid">
-          {courses.map((course) => (
-            <article class="course">
-              <p class="institution">
-                <a href={filterUrl('centre', course.institution_id)}>
-                  {course.institution}
-                </a>
-              </p>
-              {course.category && (
-                <a class="course-category" href={categoryUrl(course.category)}>
-                  {categoryLabel(course.category, locale)}
-                </a>
-              )}
-              <h3>{course.title}</h3>
-              <p>
-                {course.start_date
-                  ? formatLocalDate(course.start_date, locale)
-                  : t.unknownDates}
-                {course.end_date &&
-                  ` – ${formatLocalDate(course.end_date, locale)}`}
-              </p>
-              {course.schedule_text && (
-                <p class="schedule">
-                  {formatSchedule(course.schedule_text, locale)}
-                </p>
-              )}
-              <p class="price">
-                {course.price_cents === null
-                  ? t.unknownPrice
-                  : new Intl.NumberFormat(locale, {
-                      style: 'currency',
-                      currency: course.currency ?? 'EUR',
-                    }).format(course.price_cents / 100)}
-              </p>
-              <a href={course.official_url}>{t.source} ↗</a>
-              <p class="verified">
-                {t.verified}{' '}
-                <time datetime={course.last_successfully_verified_at}>
-                  {formatLocalDate(
-                    course.last_successfully_verified_at.slice(0, 10),
-                    locale,
+      <div id="discovery" class="discovery-layout">
+        <CourseFilters locale={locale} data={data} />
+        <div class="discovery-content">
+          {error && (
+            <p role="alert" id="filter-error" class="error">
+              {t[error]}
+            </p>
+          )}
+          <section aria-labelledby="results" class="results">
+            <div class="results-heading">
+              <h2 id="results">{t.results}</h2>
+              {(appliedFilters.length > 0 ||
+                filters.page > 1 ||
+                error === 'invalid') && <a href={base}>{t.clear}</a>}
+            </div>
+            {appliedFilters.length > 0 && (
+              <div
+                class="applied-filters"
+                aria-label={t.appliedFilters}
+                role="group"
+              >
+                <p>{t.appliedFilters}</p>
+                <ul>
+                  {appliedFilters.map((filter) => (
+                    <li>
+                      <a
+                        href={filterUrl(filter.key, '')}
+                        aria-label={`${t.removeFilter}: ${filter.label}`}
+                      >
+                        {filter.label}
+                        <span aria-hidden="true"> ×</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {!error && courses.length === 0 && (
+              <div class="empty">
+                <h3>{t.empty}</h3>
+                <p>{t.emptyHelp}</p>
+                {officialSources.map((source) => (
+                  <p>
+                    <a href={source.listingUrl}>
+                      {t.programming}: {source.institution.name} ↗
+                    </a>
+                  </p>
+                ))}
+              </div>
+            )}
+            <div class="grid">
+              {courses.map((course) => (
+                <article class="course">
+                  <p class="institution">
+                    <a href={filterUrl('centre', course.institution_id)}>
+                      {course.institution}
+                    </a>
+                  </p>
+                  {course.category && (
+                    <a
+                      class="course-category"
+                      href={categoryUrl(course.category)}
+                    >
+                      {categoryLabel(course.category, locale)}
+                    </a>
                   )}
-                </time>
-              </p>
-            </article>
-          ))}
+                  <h3>{course.title}</h3>
+                  <p>
+                    {course.start_date
+                      ? formatLocalDate(course.start_date, locale)
+                      : t.unknownDates}
+                    {course.end_date &&
+                      ` – ${formatLocalDate(course.end_date, locale)}`}
+                  </p>
+                  {course.schedule_text && (
+                    <p class="schedule">
+                      {formatSchedule(course.schedule_text, locale)}
+                    </p>
+                  )}
+                  <p class="price">
+                    {course.price_cents === null
+                      ? t.unknownPrice
+                      : new Intl.NumberFormat(locale, {
+                          style: 'currency',
+                          currency: course.currency ?? 'EUR',
+                        }).format(course.price_cents / 100)}
+                  </p>
+                  <a href={course.official_url}>{t.source} ↗</a>
+                  <p class="verified">
+                    {t.verified}{' '}
+                    <time datetime={course.last_successfully_verified_at}>
+                      {formatLocalDate(
+                        course.last_successfully_verified_at.slice(0, 10),
+                        locale,
+                      )}
+                    </time>
+                  </p>
+                </article>
+              ))}
+            </div>
+            <nav class="pagination" aria-label={t.pagination}>
+              {filters.page > 1 && (
+                <a href={pageUrl(filters.page - 1)} rel="prev">
+                  ← {t.previous}
+                </a>
+              )}
+              {hasNext && filters.page < 1000 && (
+                <a href={pageUrl(filters.page + 1)} rel="next">
+                  {t.next} →
+                </a>
+              )}
+            </nav>
+          </section>
         </div>
-        <nav class="pagination" aria-label={t.pagination}>
-          {filters.page > 1 && (
-            <a href={pageUrl(filters.page - 1)} rel="prev">
-              ← {t.previous}
-            </a>
-          )}
-          {hasNext && filters.page < 1000 && (
-            <a href={pageUrl(filters.page + 1)} rel="next">
-              {t.next} →
-            </a>
-          )}
-        </nav>
-      </section>
+      </div>
       <aside class="notice">{t.notice}</aside>
     </main>
     <footer class="shell footer">

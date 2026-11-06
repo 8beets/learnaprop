@@ -33,7 +33,7 @@ Sources verified on 2026-11-06:
 
 All use the reusable Miram adapter, with deterministic category grouping and separate institution/source configuration. Online-only workshops, reviewed shows/meetups, and unidentified advance previews are excluded. Stored totals include expired editions; availability remains unknown. Local D1 starts empty until a real import runs.
 
-The interface includes locally served stock photographs, a generated logo, readable weekday labels, amber centre pills, green category pills, and an accessible GitHub footer link. Course titles and stored source text retain their original language. See [asset credits](docs/assets.md).
+The interface includes locally served stock photographs, a generated logo, readable weekday labels, a responsive filter sidebar, removable applied filters, and an accessible GitHub footer link. Course titles and stored source text retain their original language. See [asset credits](docs/assets.md).
 
 ## Local setup
 
@@ -76,7 +76,7 @@ npm run test:e2e
 
 `npm test` uses saved source fixtures and real Node SQLite for SQL contract tests. It does **not** emulate or prove the Cloudflare runtime. `test:d1` exercises actual local D1 separately. Routine tests never contact source websites. [Linux CI passed](https://github.com/8beets/learnaprop/actions/runs/42078396499) for the initial foundation, including D1 and desktop/mobile browser checks.
 
-The expanded suite is covered by 74 unit/SQLite tests, 1 D1 runtime test, and 18 desktop/mobile browser tests. The Docker suite also checks formatting, lint, TypeScript, migrations, and the build. Browser tests cover image delivery, localized captions and weekdays, stable search width after filtering, and navigation across all 11 imported centres. See [Docker verification](docs/docker.md#verified-locally).
+The expanded suite is covered by 74 unit/SQLite tests, 1 D1 runtime test, and 28 desktop/mobile browser tests. The Docker suite also checks formatting, lint, TypeScript, migrations, and the build. Browser tests cover image delivery, localized captions and weekdays, stable search width after filtering, and navigation across all 11 imported centres. See [Docker verification](docs/docker.md#verified-locally).
 
 ## Documentation
 

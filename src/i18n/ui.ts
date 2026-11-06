@@ -74,7 +74,7 @@ export const messages = {
     unavailable:
       'El directorio no está disponible temporalmente. Vuelve a intentarlo más tarde.',
     language: 'Idioma',
-    pageTitle: 'LearnAprop · Cursos y talleres en Barcelona',
+    pageTitle: 'UrbanLabs · Cursos y talleres en Barcelona',
     footer:
       'Un proyecto gratuito y de código abierto para descubrir oportunidades de aprendizaje en la comunidad.',
   },
@@ -151,7 +151,7 @@ export const messages = {
     unavailable:
       'El directori no està disponible temporalment. Torna-ho a provar més tard.',
     language: 'Idioma',
-    pageTitle: 'LearnAprop · Cursos i tallers a Barcelona',
+    pageTitle: 'UrbanLabs · Cursos i tallers a Barcelona',
     footer:
       'Un projecte gratuït i de codi obert per descobrir oportunitats d’aprenentatge a la comunitat.',
   },

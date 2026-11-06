@@ -13,14 +13,14 @@ Retrieved on 2026-11-06 from the free collection on Pexels. The [Pexels license]
 
 The downloaded versions are 800 × 600 JPEGs, approximately 240 KB combined, using Pexels' image-resizing endpoint. Images are served locally; browsing does not contact a stock-photo service. The layout reserves their dimensions, uses empty alt text alongside descriptive captions, and lazily loads secondary images. The interface explicitly identifies them as illustrative; they do not depict verified courses, centres, instructors, or availability. They are independent of ingestion data.
 
-## LearnAprop logo
+## UrbanLabs logo
 
 Created with the built-in imagegen tool on 2026-11-06. The open book and welcoming doorway represent learning nearby. The wordmark remains real HTML text.
 
 - Original: `docs/brand/learnaprop-logo-original.png` (transparent, 1280 × 1280).
 - Web asset and favicon: `public/images/brand/learnaprop-logo.png` (transparent, 192 × 192; resized for delivery).
 
-Final generation prompt:
+Original generation prompt, recorded before the project was renamed to UrbanLabs:
 
 > Use case: logo-brand. Asset type: transparent logo symbol for LearnAprop, a friendly nonprofit directory of local in-person learning in Barcelona. Primary request: create one distinctive, simple flat logo symbol combining the idea of an open book with a welcoming neighbourhood doorway. Rounded confident shapes, warm community character, forest green #205846 with a small muted ochre #d4a24c accent. Compact square composition, bold readable silhouette at small header size. Transparent background, no lettering, no words, no mockup, no shadows or gradients. One single logo mark, clean edges, modest padding.
 

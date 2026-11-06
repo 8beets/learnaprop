@@ -97,7 +97,7 @@ Requested programme: https://fabcasadelrellotge.cat/formacio/
 
 Reviewed on 2026-11-06. The official page identifies training sections for capacitacions, maker workshops, older people, and families/young people. It uses WordPress/EventON calendars loaded dynamically; the initial HTML does not provide individual course records. No external registration feed was linked in the inspected page.
 
-The host's `robots.txt` returned HTTP 200 with `User-agent: *`, `Disallow: /`, and `Crawl-delay: 300`. Its separate Googlebot/Bingbot exceptions do not apply to LearnAprop. Automated collection stopped after that policy was read. No REST/AJAX endpoint, PDF, browser automation, or alternate user agent was used to collect courses.
+The host's `robots.txt` returned HTTP 200 with `User-agent: *`, `Disallow: /`, and `Crawl-delay: 300`. Its separate Googlebot/Bingbot exceptions do not apply to UrbanLabs. Automated collection stopped after that policy was read. No REST/AJAX endpoint, PDF, browser automation, or alternate user agent was used to collect courses.
 
 The discovery page links directly to the official programme under “Otros espacios para aprender” / “Altres espais per aprendre”. The link is configured in `src/lib/institutions/linked-centres.ts`, outside the approved ingestion registry. No course dates, prices, availability, or D1 records were invented; this centre is not offered as a course filter. Importing individual editions requires permission from the centre or a permitted official feed. This linked-only centre does not contribute imported course editions or course-filter categories.
 

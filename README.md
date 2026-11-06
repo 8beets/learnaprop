@@ -1,8 +1,8 @@
-# LearnAprop
+# UrbanLabs
 
 A free, open-source directory of affordable, in-person courses and workshops from local community organizations. Starting in Barcelona, with Spanish and Catalan interfaces.
 
-LearnAprop helps people discover courses and visit the organizer's official listing. It does not handle bookings, payments, or learning management.
+UrbanLabs helps people discover courses and visit the organizer's official listing. It does not handle bookings, payments, or learning management.
 
 **Public preview:** https://learnaprop.learnaprop.workers.dev/es/ — 777 source-verified course editions across 11 Barcelona centres. This is a preview; availability remains unconfirmed and automated refresh is not configured.
 

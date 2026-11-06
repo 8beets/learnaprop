@@ -1,19 +1,20 @@
-# AGENTS.md — LearnAprop
+# AGENTS.md — UrbanLabs
 
 ## Project overview
 
-LearnAprop is a free, open-source, nonprofit-oriented platform for discovering affordable, in-person courses and workshops offered by local community organizations.
+UrbanLabs is a free, open-source, nonprofit-oriented platform for discovering affordable, in-person courses and workshops offered by local community organizations.
 
 The project starts in Barcelona, Spain, with an architecture designed to support additional cities and countries.
 
-**Product name:** LearnAprop  
+**Product name:** UrbanLabs
+
 **Repository/package name:** `learnaprop`  
 **Default locale:** Spanish (`es`)  
 **Secondary locale:** Catalan (`ca`)
 
 **Mission:** Make local learning opportunities easier to discover, regardless of category, institution, or technical ability.
 
-LearnAprop is a discovery platform, not a learning management system, booking platform, or commercial marketplace.
+UrbanLabs is a discovery platform, not a learning management system, booking platform, or commercial marketplace.
 
 ## 1. Agent operating principles
 
@@ -387,7 +388,7 @@ Avoid duplicate indexed pages for equivalent course editions.
 
 ## 12. Security and privacy
 
-LearnAprop should collect as little personal data as possible.
+UrbanLabs should collect as little personal data as possible.
 
 - Do not add tracking cookies.
 - Do not add advertising trackers.
@@ -608,4 +609,4 @@ When requirements conflict, prioritize:
 7. Performance.
 8. Visual polish.
 
-**The guiding principle: LearnAprop should be a trustworthy, low-cost, community-maintained directory of real learning opportunities—not a visually impressive website filled with unreliable data.**
+**The guiding principle: UrbanLabs should be a trustworthy, low-cost, community-maintained directory of real learning opportunities—not a visually impressive website filled with unreliable data.**

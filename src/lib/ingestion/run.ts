@@ -1,9 +1,10 @@
 import { registerSource, saveSnapshot } from '../db/ingestion';
 import { courseRecordSchema } from './validation/record';
 import type { SourceAdapter, SourceConfig } from './types';
+import type { IngestionDatabase } from '../db/ingestion-port';
 
 export async function runIngestion(
-  db: D1Database,
+  db: IngestionDatabase,
   adapter: SourceAdapter,
   source: SourceConfig,
 ): Promise<{ count: number; runId: string }> {

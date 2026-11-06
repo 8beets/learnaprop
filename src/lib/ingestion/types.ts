@@ -3,6 +3,7 @@ export interface SourceConfig {
   name: string;
   listingUrl: string;
   excludedCategoryCodes?: string[];
+  excludedExternalIds?: string[];
   institution: {
     id: string;
     name: string;

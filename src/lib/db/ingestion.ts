@@ -1,8 +1,9 @@
 import type { CourseRecord, SourceConfig } from '../ingestion/types';
 import { cleanText, hash } from '../ingestion/normalization/values';
+import type { IngestionDatabase, IngestionStatement } from './ingestion-port';
 
 export async function registerSource(
-  db: D1Database,
+  db: IngestionDatabase,
   source: SourceConfig,
 ): Promise<void> {
   const institution = source.institution;
@@ -33,13 +34,13 @@ export async function registerSource(
 }
 
 export async function saveSnapshot(
-  db: D1Database,
+  db: IngestionDatabase,
   source: SourceConfig,
   records: CourseRecord[],
   runId: string,
   now: string,
 ): Promise<void> {
-  const statements: D1PreparedStatement[] = [];
+  const statements: IngestionStatement[] = [];
   const existing = await db
     .prepare(
       `SELECT sr.external_id, e.course_id FROM source_records sr

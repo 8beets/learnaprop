@@ -27,7 +27,8 @@
     "test:d1": "vitest run --config vitest.d1.config.ts",
     "source:verify": "tsx scripts/verify-source.ts",
     "ingest": "tsx scripts/ingest.ts",
-    "ingest:live": "tsx scripts/ingest.ts --live"
+    "ingest:live": "tsx scripts/ingest.ts --live",
+    "ingest:production": "tsx scripts/ingest-production.ts"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.5",

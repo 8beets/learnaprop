@@ -19,6 +19,43 @@ const fixture = readFileSync(
 const url = `${santAndreu.listingUrl}&f=ID`;
 
 describe('Miram source fixture', () => {
+  it('extracts Pati Llimona course facts with the shared parser', () => {
+    const html = readFileSync(
+      new URL('../fixtures/miram-pati-llimona-cinema.html', import.meta.url),
+      'utf8',
+    );
+    const { records } = parseMiramPage(
+      html,
+      'https://patillimona.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=1&t=AC&f=2',
+    );
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({
+      externalId: '5005',
+      title: 'Darrere de la pantalla - Secrets, trucs i eines del cinema',
+      category: 'CINEMA',
+      priceCents: 7531,
+      startDate: '2026-10-01',
+      endDate: '2026-11-19',
+    });
+  });
+  it('discovers actual unstyled Miram pagination links and trims category labels', () => {
+    const html = readFileSync(
+      new URL(
+        '../fixtures/miram-pati-llimona-pagination.html',
+        import.meta.url,
+      ),
+      'utf8',
+    );
+    const pageUrl =
+      'https://patillimona.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=1&t=AC&f=1';
+    const { records, links } = parseMiramPage(html, pageUrl);
+    expect(records[0]?.category).toBe('FOTOGRAFIA');
+    expect(links).toEqual([
+      `${pageUrl}&p=1`,
+      `${pageUrl}&p=2`,
+      `${pageUrl}&p=3`,
+    ]);
+  });
   it('reuses the adapter for actual Can Basté markup', () => {
     const html = readFileSync(
       new URL('../fixtures/miram-can-baste-languages.html', import.meta.url),
@@ -123,6 +160,41 @@ describe('normalization', () => {
 });
 
 describe('bounded fetching', () => {
+  it('stops an endless pagination chain at the explicit page bound', async () => {
+    let calls = 0;
+    const adapter = createMiramAdapter({
+      intervalMs: 0,
+      sleep: async () => {},
+      fetch: async (input) => {
+        if (String(input).endsWith('/robots.txt'))
+          return new Response('', { status: 404 });
+        calls++;
+        return new Response(
+          `${fixture}<a rel="next" href="${santAndreu.listingUrl}&p=${calls}">next</a>`,
+        );
+      },
+    });
+    await expect(adapter.fetchRecords(santAndreu)).rejects.toThrow(
+      '60-page limit',
+    );
+    expect(calls).toBe(60);
+  });
+  it('excludes reviewed non-course records using institution configuration', async () => {
+    const adapter = createMiramAdapter({
+      intervalMs: 0,
+      sleep: async () => {},
+      fetch: async (input) =>
+        String(input).endsWith('/robots.txt')
+          ? new Response('', { status: 404 })
+          : new Response(fixture),
+    });
+    const records = await adapter.fetchRecords({
+      ...santAndreu,
+      excludedExternalIds: ['1725'],
+    });
+    expect(records).toHaveLength(3);
+    expect(records.some((record) => record.externalId === '1725')).toBe(false);
+  });
   it('retries a rate limit and respects Retry-After', async () => {
     const delays: number[] = [];
     let requests = 0;

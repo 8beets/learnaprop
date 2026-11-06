@@ -13,3 +13,9 @@ Tests mutate this saved fixture in memory to exercise missing IDs, malformed pri
 https://canbaste.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=30&t=AC&f=07
 
 Browser tests seed synthetic future dates and extra records in `.wrangler/e2e-state`, served only by the isolated test server on port 4322. They never seed `.wrangler/state`, which holds the app's real browsing data.
+
+`miram-pati-llimona-cinema.html` contains actual course `5005` from Pati Llimona's public CINEMA listing, retrieved 2026-11-06:
+
+https://patillimona.inscripcionscc.com/MiramModular/buscador/buscador.jsp?g=1&c=1&t=AC&f=2
+
+`miram-pati-llimona-pagination.html` contains one actual photography course, its whitespace-padded heading, and the original unstyled anchors for pages 1–3, from the same host's `f=1` listing. Both excerpts were serialized with Cheerio; contact details, scripts, and unrelated content were removed. E2E dates are changed only in isolated test state.

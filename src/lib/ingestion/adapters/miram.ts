@@ -16,7 +16,9 @@ export function parseMiramPage(
   if (!$('#eFamilia').length)
     throw new Error('Miram listing structure changed or access page returned');
   const category =
-    cleanText($('h4').first().text()).match(/\((.+)\)$/u)?.[1] ?? null;
+    cleanText($('h4').first().text())
+      .match(/\((.+)\)$/u)?.[1]
+      ?.trim() ?? null;
   const records: CourseRecord[] = [];
   $('.card.overh').each((_, element) => {
     const card = $(element);
@@ -56,9 +58,19 @@ export function parseMiramPage(
   const links = $('a.card[href], .pagination a[href], a[rel="next"][href]')
     .map((_, a) => new URL($(a).attr('href')!, pageUrl).href)
     .get();
+  // Miram also renders numbered anchors without a pagination class or rel attribute.
+  const current = new URL(pageUrl);
+  $('a[href]').each((_, anchor) => {
+    const href = $(anchor).attr('href')!;
+    if (!href.includes('?')) return; // In-page session tabs inherit the current page query.
+    const target = new URL(href, current);
+    target.hash = '';
+    if (target.searchParams.has('p') && approvedPage(target.href, current))
+      links.push(target.href);
+  });
   if (!records.length && !links.length)
     throw new Error('Empty Miram listing; manual review required');
-  return { records, links };
+  return { records, links: [...new Set(links)] };
 }
 
 function approvedPage(url: string, root: URL): boolean {
@@ -92,11 +104,13 @@ export function createMiramAdapter(options: FetchOptions = {}): SourceAdapter {
         const url = queue.shift()!;
         if (visited.has(url)) continue;
         if (!approvedPage(url, root)) throw new Error('Unapproved source page');
-        if (visited.size >= 30)
-          throw new Error('Miram pagination exceeded 30-page limit');
+        // Can Basté has nine eligible categories and six photography pages alone.
+        if (visited.size >= 60)
+          throw new Error('Miram pagination exceeded 60-page limit');
         visited.add(url);
         const page = parseMiramPage((await get(url))!, url);
         for (const record of page.records) {
+          if (source.excludedExternalIds?.includes(record.externalId)) continue;
           const existing = records.get(record.externalId);
           if (
             existing &&

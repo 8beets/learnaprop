@@ -4,6 +4,7 @@ import { runIngestion } from '../../src/lib/ingestion/run';
 import { parseMiramPage } from '../../src/lib/ingestion/adapters/miram';
 import { santAndreu } from '../../src/lib/sources/sant-andreu';
 import { canBaste } from '../../src/lib/sources/can-baste';
+import { patiLlimona } from '../../src/lib/sources/pati-llimona';
 
 async function setup() {
   const platform = await getPlatformProxy<Cloudflare.Env>({
@@ -82,6 +83,23 @@ async function setup() {
         ],
       },
       canBaste,
+    );
+    const patiFixture = readFileSync(
+      new URL('../fixtures/miram-pati-llimona-cinema.html', import.meta.url),
+      'utf8',
+    );
+    const patiRecords = parseMiramPage(
+      patiFixture,
+      `${patiLlimona.listingUrl}&f=2`,
+    ).records.map((record) => ({
+      ...record,
+      startDate: '2099-01-01',
+      endDate: '2099-12-31',
+    }));
+    await runIngestion(
+      db,
+      { fetchRecords: async () => patiRecords },
+      patiLlimona,
     );
   } finally {
     await platform.dispose();

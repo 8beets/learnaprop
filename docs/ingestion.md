@@ -2,7 +2,7 @@
 
 Run `npm run source:verify` for a live extraction smoke check without persistence, or `npm run ingest:live` after local migrations to write local D1. Neither runs in ordinary CI. Do not repeatedly poll the provider: one manually triggered run is sufficient for this milestone.
 
-These commands now process both approved sources sequentially. To select a single source, use `npm run source:verify -- miram-can-baste` or `npm run ingest:live -- --source miram-can-baste` (also available: `miram-sant-andreu`). The CLI continues to the next source if one fails and exits unsuccessfully after recording all failures. Can Basté excludes category code `14` because it includes concerts; excluded codes are institution configuration, not hardcoded adapter behavior.
+These commands now process all three approved sources sequentially. To select a single source, use `npm run source:verify -- miram-can-baste` or `npm run ingest:live -- --source miram-can-baste` (also available: `miram-sant-andreu` and `miram-pati-llimona`). The CLI continues to the next source if one fails and exits unsuccessfully after recording all failures. Can Basté excludes category code `14` because it includes concerts; excluded codes are institution configuration, not hardcoded adapter behavior.
 
 The typed adapter contract lives in `src/lib/ingestion/types.ts`. Miram-specific HTML extraction is isolated from source configuration and SQL. Zod validates every record at the boundary. A new provider should implement the same explicit interface, not a dynamically loaded plugin framework.
 
@@ -11,7 +11,7 @@ The typed adapter contract lives in `src/lib/ingestion/types.ts`. Miram-specific
 - Sequential requests, at least one second apart.
 - Fifteen-second request timeout, three attempts for connection errors, HTTP 429, and HTTP 5xx.
 - Exponential backoff and bounded `Retry-After`; delays beyond 60 seconds abort for a later run.
-- Maximum 2 MB per page, 30 pages, and 1,000 records per snapshot.
+- Maximum 2 MB per page, 60 pages, and 1,000 records per snapshot.
 - HTTPS only, no redirects, approved origin/path/group/centre/activity type only.
 - A newly present robots policy, malformed page, missing stable ID, conflicting duplicate, empty listing, or exceeded limit fails the run.
 
@@ -34,3 +34,17 @@ Local scheduled dates remain ISO dates, not UTC instants. Times are retained in 
 ## Adapter acceptance
 
 Verify real source behavior; save a minimal provenance-labelled fixture; test parsing, validation, pagination, retries, identity, atomic persistence, repeat imports, failure recovery, and manual correction preservation. Keep deterministic tests separate from live verification. Document unknowns and unsupported variants rather than silently guessing.
+
+## Authorized cloud refresh
+
+After explicit approval for production updates and signing in with Wrangler:
+
+```sh
+npm run ingest:production -- --live
+# Or one approved source:
+npm run ingest:production -- --live --source miram-pati-llimona
+```
+
+Without `--live`, the command makes no requests. It uses the same adapter, validation, snapshot persistence, identities, and reviewed-correction handling as local ingestion. A minimal database port allows the Node-only Wrangler bridge to reuse the authoritative persistence code. This bridge is never imported by the Worker; authentication stays in Wrangler. It works on this Mac without native workerd or mounting Cloudflare credentials into Docker.
+
+Prepared values are serialized as escaped SQL literals for Wrangler's file-import transport and tested with real SQLite. Each snapshot uses D1's atomic file import; a failed import rolls back, though the database can be briefly unavailable during an import. The runner validates CLI JSON results, including file-import progress prefixes, and records a failed run without advancing previous verification timestamps when a source fetch fails. Run only one remote importer at a time. No scheduler is configured.

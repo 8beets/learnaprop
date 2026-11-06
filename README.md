@@ -41,8 +41,8 @@ The interface includes locally served stock photographs, a generated logo, reada
 Clone the repository:
 
 ```sh
-git clone https://github.com/8beets/learnaprop.git
-cd learnaprop
+git clone https://github.com/8beets/urbanlabs.git
+cd urbanlabs
 ```
 
 Choose Docker Compose or a native Node.js environment. Both use local D1 storage;
@@ -112,7 +112,7 @@ Spanish and Catalan discovery, filtering, pagination, centre pages, embedded-map
 URLs, language switching, legacy redirects, and desktop/mobile behaviour. Routine
 tests do not contact source websites or map services.
 
-The [CI workflow](https://github.com/8beets/learnaprop/actions/workflows/ci.yml)
+The [CI workflow](https://github.com/8beets/urbanlabs/actions/workflows/ci.yml)
 runs the repository checks on Linux. The [Docker check suite](docs/docker.md#run-checks)
 also includes binding generation and local migrations. For hosts without Chromium's
 system dependencies, use Docker or follow Playwright's browser installation guidance.

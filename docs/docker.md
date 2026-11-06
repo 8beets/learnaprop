@@ -68,7 +68,7 @@ Avoid `docker compose down --volumes` unless you deliberately want to delete the
 The repository's full check suite has been exercised in the Linux Docker environment,
 including actual D1 persistence and desktop/mobile browser tests. Test results are
 specific to the checkout and environment: run the checks for your changes and use
-[CI](https://github.com/8beets/learnaprop/actions/workflows/ci.yml) for commit-level results.
+[CI](https://github.com/8beets/urbanlabs/actions/workflows/ci.yml) for commit-level results.
 
 References: [Playwright Docker setup](https://playwright.dev/docs/docker),
 [Docker bind mounts](https://docs.docker.com/engine/storage/bind-mounts/).

@@ -8,7 +8,8 @@ The project starts in Barcelona, Spain, with an architecture designed to support
 
 **Product name:** UrbanLabs
 
-**Repository/package name:** `learnaprop`  
+**Repository/package name:** `urbanlabs`
+
 **Default locale:** Spanish (`es`)  
 **Secondary locale:** Catalan (`ca`)
 

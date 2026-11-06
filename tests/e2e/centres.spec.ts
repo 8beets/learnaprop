@@ -6,6 +6,9 @@ import { centreProfile } from '../../src/lib/institutions/profiles';
 test.setTimeout(120000);
 
 test.beforeEach(async ({ page }) => {
+  await page.route('https://tile.openstreetmap.org/**', (route) =>
+    route.abort(),
+  );
   await page.route('https://www.openstreetmap.org/**', (route) =>
     route.fulfill({
       contentType: 'text/html',
@@ -15,7 +18,7 @@ test.beforeEach(async ({ page }) => {
 });
 for (const locale of ['es', 'ca'] as const) {
   const base = locale === 'es' ? '/es/centros' : '/ca/centres';
-  test(`${locale}: directory links to all centres and exact embedded verified markers`, async ({
+  test(`${locale}: directory links to all centres and exact verified Leaflet markers`, async ({
     page,
   }) => {
     await page.goto(locale === 'es' ? '/es/' : '/ca/');
@@ -44,21 +47,27 @@ for (const locale of ['es', 'ca'] as const) {
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(
         source.institution.name,
       );
-      const frame = page.locator('.centre-map iframe');
-      await expect(frame).toHaveCount(1);
-      await expect(frame).toHaveAttribute(
-        'title',
-        new RegExp(
-          source.institution.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
-        ),
-      );
-      const embed = new URL((await frame.getAttribute('src'))!);
-      expect(embed.searchParams.get('marker')).toBe(
-        `${profile.location!.latitude},${profile.location!.longitude}`,
+      const map = page.locator('.centre-map [data-centre-map]');
+      await map.scrollIntoViewIfNeeded();
+      await expect(map).toHaveAttribute('data-map-ready', 'true');
+      await expect(map.locator('.centre-map-marker')).toHaveCount(1);
+      const points = JSON.parse((await map.getAttribute('data-centres'))!);
+      expect(points).toEqual([
+        {
+          id: source.institution.id,
+          slug: profile.slug,
+          name: source.institution.name,
+          latitude: profile.location!.latitude,
+          longitude: profile.location!.longitude,
+        },
+      ]);
+      await expect(map.getByRole('region')).toHaveAttribute(
+        'aria-label',
+        `Mapa de ${source.institution.name}`,
       );
       await expect(
         page
-          .locator('.centre-map a')
+          .locator('.centre-map > p a')
           .filter({ hasText: 'OpenStreetMap contributors' }),
       ).toHaveAttribute('href', 'https://www.openstreetmap.org/copyright');
       await expect(
@@ -90,8 +99,8 @@ for (const locale of ['es', 'ca'] as const) {
       `${locale === 'es' ? '/ca/centres' : '/es/centros'}/sant-andreu?page=2`,
     );
     await page.goto(`${base}/test-no-location`);
-    await expect(page.locator('.centre-map iframe')).toHaveCount(0);
-    const fallback = page.locator('.centre-map a');
+    await expect(page.locator('.centre-map [data-centre-map]')).toHaveCount(0);
+    const fallback = page.locator('.centre-map > a');
     expect(new URL((await fallback.getAttribute('href'))!).pathname).toBe(
       '/search',
     );

@@ -48,3 +48,21 @@ Catalan discovery is `/ca/`. Filters, pagination, centre links and language
 switching retain that prefix. Legacy `/`, `/centros` and `/centros/[slug]` routes
 return HTTP 308 redirects to their Spanish equivalents, preserving query strings.
 Static assets and third-party source/map URLs retain their own paths.
+
+Directory and individual centre maps use `InteractiveCentreMap.astro` and the shared
+`src/lib/institutions/centre-map.ts` browser initializer. Stable Leaflet 1.9 is the
+small map dependency; no UI framework is introduced. Its code and styles are bundled
+locally and imported when a map approaches the viewport. Keyboard markers open
+localized centre links using DOM text nodes, rather than source HTML. Zoom/pan
+animations and scroll-wheel zoom are disabled; native lists remain usable without
+JavaScript. Tile failures retain the markers, directory and external map links.
+
+A separate bounded D1 query supplies map points across directory pages, including
+centres with no courses. It selects only verified HTTPS-sourced coordinates and
+caps the browser payload at 500 points plus a sentinel. If that cap is exceeded,
+the map explicitly indicates it is partial; the 24-item paginated directory remains
+complete. Add geographic selection before expanding the map beyond that bound.
+Single-centre pages reuse the same component with one verified point and retain
+municipal provenance. This change needs no schema migration or additional cloud
+resource. Tile requests use the browser cache and Referer; there is no tile proxy,
+bulk download or offline prefetch.

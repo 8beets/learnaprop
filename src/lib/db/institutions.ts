@@ -52,3 +52,31 @@ export async function findInstitution(
     .all<Centre>();
   return result.results[0] ?? null;
 }
+
+export interface CentreMapPoint {
+  id: string;
+  slug: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+}
+
+export const MAP_CENTRES_LIMIT = 500;
+
+export async function listMapCentres(db: D1Database) {
+  const result = await db
+    .prepare(
+      `SELECT i.id, p.slug, i.name, p.latitude, p.longitude
+    FROM institution_profiles p JOIN institutions i ON i.id=p.institution_id
+    WHERE p.latitude BETWEEN -90 AND 90 AND p.longitude BETWEEN -180 AND 180
+      AND p.coordinates_source_url LIKE 'https://%'
+      AND p.coordinates_verified_at IS NOT NULL AND p.coordinates_verified_at <> ''
+    ORDER BY i.name, i.id LIMIT ?`,
+    )
+    .bind(MAP_CENTRES_LIMIT + 1)
+    .all<CentreMapPoint>();
+  return {
+    mapCentres: result.results.slice(0, MAP_CENTRES_LIMIT),
+    mapHasMore: result.results.length > MAP_CENTRES_LIMIT,
+  };
+}

@@ -129,10 +129,11 @@ or estimating an address. Public detail pages were fetched respecting the guide'
 course extraction. FAB Casa del Mig's municipal entry currently reports temporary
 closure; its page displays that notice without assuming courses are cancelled.
 
-Centre pages embed OpenStreetMap's standard export iframe with the verified marker,
-OSM attribution, a larger-map link and the municipal location source. Unknown
-locations show an address-search link and an explicit unverified-location message.
-There is no runtime geocoding, map API key, paid service or map JavaScript dependency.
-The embedded map loads from OpenStreetMap when the browser approaches it; its
-standard map scripts and tiles run within the third-party iframe. Routine E2E tests
-intercept that iframe request and assert URLs/markers without using live services.
+Directory and individual centre pages share a locally bundled Leaflet map component,
+with OpenStreetMap raster tiles, verified markers and visible attribution. Centre
+pages retain larger-map links and municipal location provenance. Unknown locations
+show an address-search link and an explicit unverified-location message. There is
+no runtime geocoding, map API key or paid map service. Leaflet and its CSS load only
+when a map approaches the viewport. Without JavaScript, directory links and centre
+location links remain available. Routine E2E tests intercept tile requests and
+verify markers without contacting live map services.

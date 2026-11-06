@@ -2,6 +2,21 @@ import { canonicalCategory } from '../lib/courses/categories';
 
 export const messages = {
   es: {
+    mapTilesFailed: 'No se ha podido cargar el fondo del mapa.',
+    directoryMapTitle: 'Mapa de centros',
+    directoryMapIntro:
+      'Centros con ubicación verificada. Selecciona un marcador para consultar el centro y sus cursos.',
+    directoryMapFallback: 'Consulta todos los centros en el listado.',
+    mapLoading: 'Cargando el mapa…',
+    mapFailed: 'No se ha podido cargar el mapa.',
+    directoryMapNoLocations:
+      'Todavía no hay ubicaciones verificadas para mostrar en el mapa.',
+    directoryMapLimited:
+      'El mapa muestra una parte de los centros. Consulta el listado para ver los demás.',
+    mapKeyboard:
+      'Usa las flechas para mover el mapa y + o − para acercar o alejar. Con Tab puedes seleccionar marcadores y con Intro abrirlos.',
+    zoomIn: 'Acercar',
+    zoomOut: 'Alejar',
     primaryNavigation: 'Navegación principal',
     coursesNav: 'Cursos',
     centresNav: 'Centros',
@@ -79,6 +94,21 @@ export const messages = {
       'Un proyecto gratuito y de código abierto para descubrir oportunidades de aprendizaje en la comunidad.',
   },
   ca: {
+    mapTilesFailed: 'No s’ha pogut carregar el fons del mapa.',
+    directoryMapTitle: 'Mapa de centres',
+    directoryMapIntro:
+      'Centres amb ubicació verificada. Selecciona un marcador per consultar el centre i els seus cursos.',
+    directoryMapFallback: 'Consulta tots els centres al llistat.',
+    mapLoading: 'S’està carregant el mapa…',
+    mapFailed: 'No s’ha pogut carregar el mapa.',
+    directoryMapNoLocations:
+      'Encara no hi ha ubicacions verificades per mostrar al mapa.',
+    directoryMapLimited:
+      'El mapa mostra una part dels centres. Consulta el llistat per veure la resta.',
+    mapKeyboard:
+      'Fes servir les fletxes per moure el mapa i + o − per apropar o allunyar. Amb Tab pots seleccionar marcadors i amb Retorn obrir-los.',
+    zoomIn: 'Apropa',
+    zoomOut: 'Allunya',
     primaryNavigation: 'Navegació principal',
     coursesNav: 'Cursos',
     centresNav: 'Centres',

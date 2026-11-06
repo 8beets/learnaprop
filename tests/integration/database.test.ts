@@ -1,6 +1,8 @@
 import { registerSource } from '../../src/lib/db/ingestion';
 import {
   listInstitutions,
+  listMapCentres,
+  MAP_CENTRES_LIMIT,
   findInstitution,
 } from '../../src/lib/db/institutions';
 import {
@@ -163,6 +165,80 @@ describe('SQLite migration and ingestion contract', () => {
     expect(
       (await loadDirectoryPage(unavailable, new URLSearchParams())).status,
     ).toBe(503);
+  });
+  it('maps verified centres across directory pages, including centres without courses', async () => {
+    await registerSource(db, santAndreu);
+    for (let index = 0; index < 25; index++) {
+      const id = `test-map-${index}`;
+      sqlite
+        .prepare(
+          'INSERT INTO institutions (id,name,official_url,city,country,address,timezone) VALUES (?,?,?,?,?,?,?)',
+        )
+        .run(
+          id,
+          `TEST centre ${index}`,
+          'https://example.org',
+          'Barcelona',
+          'ES',
+          'TEST address',
+          'Europe/Madrid',
+        );
+      sqlite
+        .prepare(
+          'INSERT INTO institution_profiles (institution_id,slug,latitude,longitude,coordinates_source_url,coordinates_verified_at) VALUES (?,?,?,?,?,?)',
+        )
+        .run(id, id, 41.4, 2.1, 'https://example.org/source', '2026-11-06');
+    }
+    const page = await loadDirectoryPage(db, new URLSearchParams('page=2'));
+    expect(page.centres).toHaveLength(2);
+    expect(page.mapCentres).toHaveLength(26);
+    expect(
+      page.mapCentres.some(
+        (c) => !page.centres.some((listed) => listed.id === c.id),
+      ),
+    ).toBe(true);
+    expect(page.mapHasMore).toBe(false);
+    sqlite.exec(
+      "UPDATE institution_profiles SET latitude=NULL,longitude=NULL,coordinates_source_url=NULL,coordinates_verified_at=NULL WHERE institution_id='test-map-0'",
+    );
+    sqlite.exec(
+      "UPDATE institution_profiles SET coordinates_source_url='http://example.org/unverified' WHERE institution_id='test-map-1'",
+    );
+    sqlite.exec(
+      "UPDATE institution_profiles SET coordinates_verified_at='' WHERE institution_id='test-map-2'",
+    );
+    const map = await listMapCentres(db);
+    expect(map.mapCentres).toHaveLength(23);
+    expect(map.mapCentres.find((c) => c.id === 'cc-sant-andreu')).toMatchObject(
+      { latitude: 41.43088018380354, longitude: 2.1894124386376466 },
+    );
+    expect((await listInstitutions(db, 1)).centres).toHaveLength(24);
+  });
+  it('bounds map data and reports truncation explicitly', async () => {
+    for (let index = 0; index < MAP_CENTRES_LIMIT + 1; index++) {
+      const id = `test-limit-${index}`;
+      sqlite
+        .prepare(
+          'INSERT INTO institutions (id,name,official_url,city,country,address,timezone) VALUES (?,?,?,?,?,?,?)',
+        )
+        .run(
+          id,
+          id,
+          'https://example.org',
+          'Barcelona',
+          'ES',
+          'TEST address',
+          'Europe/Madrid',
+        );
+      sqlite
+        .prepare(
+          'INSERT INTO institution_profiles (institution_id,slug,latitude,longitude,coordinates_source_url,coordinates_verified_at) VALUES (?,?,?,?,?,?)',
+        )
+        .run(id, id, 41.4, 2.1, 'https://example.org/source', '2026-11-06');
+    }
+    const map = await listMapCentres(db);
+    expect(map.mapCentres).toHaveLength(MAP_CENTRES_LIMIT);
+    expect(map.mapHasMore).toBe(true);
   });
   it('backfills stable centre slugs when upgrading existing data', () => {
     const legacy = new DatabaseSync(':memory:');

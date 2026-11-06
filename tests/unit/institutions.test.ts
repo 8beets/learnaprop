@@ -25,21 +25,13 @@ describe('verified centre locations', () => {
     expect(centreProfile('cc-unknown')).toEqual({ slug: 'unknown' });
     expect(centreProfile('fab-casa-del-mig').notice).toBe('temporary_closure');
   });
-  it('embeds the exact verified marker and a bounded viewport', () => {
+  it('links to the exact verified marker on OpenStreetMap', () => {
     const map = openStreetMapLocation(41.43088018380354, 2.1894124386376466)!;
-    const embed = new URL(map.embedUrl);
-    expect(embed.origin + embed.pathname).toBe(
-      'https://www.openstreetmap.org/export/embed.html',
-    );
-    expect(embed.searchParams.get('marker')).toBe(
-      '41.43088018380354,2.1894124386376466',
-    );
-    const bounds = embed.searchParams.get('bbox')!.split(',').map(Number);
-    expect(bounds[0]).toBeLessThan(2.1894124386376466);
-    expect(bounds[2]).toBeGreaterThan(2.1894124386376466);
-    expect(new URL(map.mapUrl).searchParams.get('mlat')).toBe(
-      '41.43088018380354',
-    );
+    const url = new URL(map.mapUrl);
+    expect(url.origin).toBe('https://www.openstreetmap.org');
+    expect(url.searchParams.get('mlat')).toBe('41.43088018380354');
+    expect(url.searchParams.get('mlon')).toBe('2.1894124386376466');
+    expect(url.hash).toBe('#map=17/41.43088018380354/2.1894124386376466');
   });
   it('keeps missing and invalid coordinates unknown', () => {
     for (const [lat, lon] of [

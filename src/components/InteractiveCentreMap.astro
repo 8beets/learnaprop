@@ -1,0 +1,45 @@
+---
+import { messages, type Locale } from '../i18n/ui';
+import type { CentreMapLabels } from '../lib/institutions/centre-map';
+import type { CentreMapPoint } from '../lib/db/institutions';
+interface Props {
+  locale: Locale;
+  centres: CentreMapPoint[];
+  id: string;
+  title: string;
+}
+const { locale, centres, id, title } = Astro.props;
+const t = messages[locale];
+const labels: CentreMapLabels = {
+  loading: t.mapLoading,
+  failed: t.mapFailed,
+  tilesFailed: t.mapTilesFailed,
+  zoomIn: t.zoomIn,
+  zoomOut: t.zoomOut,
+};
+---
+
+<div
+  class="interactive-centre-map"
+  data-centre-map
+  data-centres={JSON.stringify(centres)}
+  data-locale={locale}
+  data-labels={JSON.stringify(labels)}
+>
+  <div
+    class="centre-map-canvas"
+    data-map-canvas
+    role="region"
+    aria-label={title}
+    aria-describedby={`${id}-keyboard`}
+    hidden
+  ></div>
+  <p data-map-status role="status" hidden></p>
+  <p id={`${id}-keyboard`} data-map-help hidden>
+    {t.mapKeyboard}
+  </p>
+</div>
+<script>
+  import { initializeCentreMaps } from '../lib/institutions/centre-map';
+  initializeCentreMaps();
+</script>

@@ -1,5 +1,7 @@
 import {
   listInstitutions,
+  listMapCentres,
+  type CentreMapPoint,
   findInstitution,
   type Centre,
 } from '../db/institutions';
@@ -8,6 +10,8 @@ import { parsePage } from '../pagination';
 
 export type CentrePageError = 'invalid' | 'unavailable' | 'notFound' | null;
 export interface DirectoryPageData {
+  mapCentres: CentreMapPoint[];
+  mapHasMore: boolean;
   centres: Centre[];
   page: number;
   hasNext: boolean;
@@ -33,6 +37,8 @@ export async function loadDirectoryPage(
   } catch {
     return {
       centres: [],
+      mapCentres: [],
+      mapHasMore: false,
       page: 1,
       hasNext: false,
       error: 'invalid',
@@ -40,8 +46,13 @@ export async function loadDirectoryPage(
     };
   }
   try {
+    const [listing, locations] = await Promise.all([
+      listInstitutions(db, page),
+      listMapCentres(db),
+    ]);
     return {
-      ...(await listInstitutions(db, page)),
+      ...listing,
+      ...locations,
       page,
       error: null,
       status: 200,
@@ -50,6 +61,8 @@ export async function loadDirectoryPage(
     console.error(JSON.stringify({ event: 'centre_directory_unavailable' }));
     return {
       centres: [],
+      mapCentres: [],
+      mapHasMore: false,
       page,
       hasNext: false,
       error: 'unavailable',

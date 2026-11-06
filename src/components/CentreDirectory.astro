@@ -1,6 +1,7 @@
 ---
 import { messages, type Locale } from '../i18n/ui';
 import type { DirectoryPageData } from '../lib/institutions/pages';
+import CentreDirectoryMap from './CentreDirectoryMap.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 interface Props {
   locale: Locale;
@@ -31,7 +32,14 @@ const base = locale === 'es' ? '/es/centros' : '/ca/centres';
     </p>
   )}
   {!data.error && !data.centres.length && <p>{t.noCentres}</p>}
-  <div class="grid centre-directory">
+  {!data.error && (
+    <CentreDirectoryMap
+      locale={locale}
+      centres={data.mapCentres}
+      limited={data.mapHasMore}
+    />
+  )}
+  <div id="centre-list" class="grid centre-directory">
     {data.centres.map((centre) => (
       <article class="course">
         <h2>

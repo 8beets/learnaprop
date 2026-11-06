@@ -4,7 +4,7 @@ A free, open-source directory of affordable, in-person courses and workshops fro
 
 UrbanLabs helps people discover courses and visit the organizer's official listing. It does not handle bookings, payments, or learning management.
 
-**Public preview:** https://learnaprop.learnaprop.workers.dev/es/ — 777 source-verified course editions across 11 Barcelona centres. This is a preview; availability remains unconfirmed and automated refresh is not configured.
+**Public preview:** https://urbanlabs.fyi — 777 source-verified course editions across 11 Barcelona centres. This is a preview; availability remains unconfirmed and automated refresh is not configured.
 
 ## Features
 
@@ -13,7 +13,7 @@ UrbanLabs helps people discover courses and visit the organizer's official listi
 - Versioned relational schema, atomic imports, stable identifiers, provenance, and failed-run tracking.
 - Server-rendered Spanish (`/es/`) and Catalan (`/ca/`) discovery with title search, maximum price, and pagination.
 - Browse by civic centre and normalized course category; category options reflect the selected centre, and equivalent provider categories share one filter. Combine both with search and price using shareable URLs.
-- Localized centre directories and individual centre pages with verified contact details, embedded OpenStreetMap maps, and upcoming courses.
+- Localized centre directories and individual centre pages with verified contact details, shared Leaflet/OpenStreetMap maps, and upcoming courses.
 - Deterministic unit/SQLite contract tests, a separate D1 runtime suite, Playwright tests, and CI.
 
 Sources verified on 2026-11-06:

@@ -1,5 +1,6 @@
 ---
 import { messages, formatLocalDate, type Locale } from '../i18n/ui';
+import InteractiveCentreMap from './InteractiveCentreMap.astro';
 import type { Centre } from '../lib/db/institutions';
 import {
   openStreetMapLocation,
@@ -21,14 +22,20 @@ const map =
   <h2 id="location">{t.location}</h2>
   {map ? (
     <>
-      <iframe
-        src={map.embedUrl}
+      <InteractiveCentreMap
+        locale={locale}
+        centres={[
+          {
+            id: centre.id,
+            slug: centre.slug,
+            name: centre.name,
+            latitude: centre.latitude!,
+            longitude: centre.longitude!,
+          },
+        ]}
+        id="centre-location"
         title={`${t.mapOf} ${centre.name}`}
-        loading="lazy"
-        referrerpolicy="strict-origin-when-cross-origin"
-        width="800"
-        height="340"
-      ></iframe>
+      />
       <p>
         <a href={map.mapUrl}>{t.largerMap} ↗</a> · ©{' '}
         <a href="https://www.openstreetmap.org/copyright">

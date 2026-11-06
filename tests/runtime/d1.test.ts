@@ -6,6 +6,7 @@ import { parseMiramPage } from '../../src/lib/ingestion/adapters/miram';
 import { santAndreu } from '../../src/lib/sources/sant-andreu';
 import {
   findInstitution,
+  listMapCentres,
   listInstitutions,
 } from '../../src/lib/db/institutions';
 import { listCategories, listCourses } from '../../src/lib/db/courses';
@@ -44,6 +45,13 @@ it('applies the migration and imports idempotently in the actual local D1 runtim
       41.43088018380354,
     );
     expect((await listInstitutions(db, 1)).centres).toHaveLength(1);
+    expect((await listMapCentres(db)).mapCentres).toMatchObject([
+      {
+        slug: 'sant-andreu',
+        latitude: 41.43088018380354,
+        longitude: 2.1894124386376466,
+      },
+    ]);
     await runIngestion(db, adapter, santAndreu);
     expect(
       await db.prepare('SELECT count(*) AS n FROM source_records').first('n'),

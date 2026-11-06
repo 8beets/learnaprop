@@ -27,3 +27,11 @@ Original generation prompt, recorded before the project was renamed to UrbanLabs
 ## GitHub footer icon
 
 `public/icons/github.svg` is GitHub's `mark-github-16` from [Primer Octicons](https://github.com/primer/octicons/blob/main/icons/mark-github-16.svg). It is served locally alongside a visible, localized repository link. The MIT copyright and permission notice are preserved in `public/icons/OCTICONS-LICENSE.txt`.
+
+## Leaflet maps
+
+The directory and centre pages bundle [Leaflet](https://leafletjs.com/) under its
+BSD 2-Clause license. The full notice is included at
+[`public/licenses/leaflet.txt`](../public/licenses/leaflet.txt). OpenStreetMap tiles
+retain visible [OpenStreetMap attribution](https://www.openstreetmap.org/copyright)
+and follow the [tile usage policy](https://operations.osmfoundation.org/policies/tiles/).

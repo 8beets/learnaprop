@@ -1,0 +1,31 @@
+---
+import { messages, type Locale } from '../i18n/ui';
+import type { CentreMapPoint } from '../lib/db/institutions';
+import InteractiveCentreMap from './InteractiveCentreMap.astro';
+interface Props {
+  locale: Locale;
+  centres: CentreMapPoint[];
+  limited: boolean;
+}
+const { locale, centres, limited } = Astro.props;
+const t = messages[locale];
+---
+
+<section class="directory-map" aria-labelledby="directory-map-title">
+  <h2 id="directory-map-title">{t.directoryMapTitle}</h2>
+  {centres.length ? (
+    <>
+      <p>{t.directoryMapIntro}</p>
+      <InteractiveCentreMap
+        locale={locale}
+        centres={centres}
+        id="directory-map"
+        title={t.directoryMapTitle}
+      />
+      {limited && <p>{t.directoryMapLimited}</p>}
+    </>
+  ) : (
+    <p>{t.directoryMapNoLocations}</p>
+  )}
+  <a href="#centre-list">{t.directoryMapFallback}</a>
+</section>

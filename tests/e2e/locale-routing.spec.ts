@@ -2,6 +2,9 @@ import { expect, test } from '@playwright/test';
 
 test.use({ javaScriptEnabled: false });
 test.beforeEach(async ({ page }) => {
+  await page.route('https://tile.openstreetmap.org/**', (route) =>
+    route.abort(),
+  );
   await page.route('https://www.openstreetmap.org/**', (route) =>
     route.fulfill({
       contentType: 'text/html',

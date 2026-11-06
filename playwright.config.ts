@@ -9,10 +9,11 @@ export default defineConfig({
   ],
   webServer: {
     command:
-      'node --import tsx tests/e2e/setup.ts && npm run dev -- --port 4322',
+      'node --import tsx tests/e2e/setup.ts && npm run dev -- --host 127.0.0.1 --port 4322',
     env: { LEARNAPROP_E2E: '1' },
     url: 'http://127.0.0.1:4322',
     reuseExistingServer: false,
+    stdout: 'pipe',
     // Fixture migration/seeding and workerd compilation share the startup budget.
     timeout: 120000,
   },

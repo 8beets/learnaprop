@@ -123,6 +123,8 @@ system dependencies, use Docker or follow Playwright's browser installation guid
 ## Documentation
 
 - [Asset credits and logo](docs/assets.md)
+- [Design screenshots (test fixtures)](docs/screenshots/README.md)
+- [Page and static asset cache policy](docs/caching.md)
 - [Source research](docs/data-sources.md)
 - [Architecture](docs/architecture.md)
 - [Adapter development](docs/ingestion.md)

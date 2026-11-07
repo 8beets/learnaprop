@@ -11,7 +11,7 @@ UrbanLabs helps people discover courses and visit the organizer's official listi
 - Astro + strict TypeScript, Tailwind CSS, Cloudflare Workers, and D1 configuration.
 - Reusable Miram adapter with institution configuration separated from extraction.
 - Versioned relational schema, atomic imports, stable identifiers, provenance, and failed-run tracking.
-- Server-rendered Spanish (`/es/`) and Catalan (`/ca/`) discovery with title search, maximum price, and pagination.
+- Spanish (`/es/`) and Catalan (`/ca/`) homepages show the latest 20 added, unexpired course editions. Dedicated search pages (`/es/buscar`, `/ca/cerca`) offer filters and pagination.
 - Browse by civic centre and normalized course category; category options reflect the selected centre, and equivalent provider categories share one filter. Combine both with search and price using shareable URLs.
 - Localized centre directories and individual centre pages with verified contact details, shared Leaflet/OpenStreetMap maps, and upcoming courses.
 - Deterministic unit/SQLite contract tests, a separate D1 runtime suite, Playwright tests, and CI.

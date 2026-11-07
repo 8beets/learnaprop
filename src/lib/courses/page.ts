@@ -1,3 +1,4 @@
+import { listLatestCourses } from '../db/courses';
 import { discoverCourses, parseFilters } from './discovery';
 import type {
   CourseListing,
@@ -52,5 +53,20 @@ export async function loadDiscoveryPage(
       error: 'unavailable',
       status: 503,
     };
+  }
+}
+
+export interface HomepagePageData {
+  courses: CourseListing[];
+  error: 'unavailable' | null;
+  status: number;
+}
+
+export async function loadHomepage(db: D1Database): Promise<HomepagePageData> {
+  try {
+    return { courses: await listLatestCourses(db), error: null, status: 200 };
+  } catch {
+    console.error(JSON.stringify({ event: 'latest_courses_unavailable' }));
+    return { courses: [], error: 'unavailable', status: 503 };
   }
 }

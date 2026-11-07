@@ -29,7 +29,7 @@ test('legacy Spanish URLs redirect permanently and retain query parameters', asy
     expect(response.headers().location).toBe(newPath + query);
   }
   await page.goto('/?centre=cc-sant-andreu#discovery');
-  await expect(page).toHaveURL('/es/?centre=cc-sant-andreu#discovery');
+  await expect(page).toHaveURL('/es/buscar?centre=cc-sant-andreu#discovery');
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
   await expect(page.locator('#centre')).toHaveValue('cc-sant-andreu');
 });
@@ -40,7 +40,8 @@ test('all page links and search forms use explicit locale prefixes', async ({
   for (const locale of ['es', 'ca']) {
     const centres = locale === 'es' ? 'centros' : 'centres';
     for (const path of [
-      `/${locale}/?centre=cc-sant-andreu`,
+      `/${locale}/`,
+      `${locale === 'es' ? '/es/buscar' : '/ca/cerca'}?centre=cc-sant-andreu`,
       `/${locale}/${centres}`,
       `/${locale}/${centres}/sant-andreu?page=2`,
     ]) {

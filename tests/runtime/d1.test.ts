@@ -9,7 +9,11 @@ import {
   listMapCentres,
   listInstitutions,
 } from '../../src/lib/db/institutions';
-import { listCategories, listCourses } from '../../src/lib/db/courses';
+import {
+  listCategories,
+  listCourses,
+  listLatestCourses,
+} from '../../src/lib/db/courses';
 
 it('applies the migration and imports idempotently in the actual local D1 runtime', async () => {
   const platform = await getPlatformProxy<Cloudflare.Env>({
@@ -86,6 +90,7 @@ it('applies the migration and imports idempotently in the actual local D1 runtim
       '2026-11-06',
     );
     expect(grouped.courses).toHaveLength(4);
+    expect(await listLatestCourses(db, '2026-11-06')).toHaveLength(4);
     expect(
       grouped.courses.every((course) => course.category === 'FOTOGRAFIA'),
     ).toBe(true);

@@ -55,6 +55,8 @@ describe('public page cache', () => {
       '/es/',
       '/ca/',
       '/es/?q=yoga',
+      '/es/buscar?q=yoga',
+      '/ca/cerca?category=BALL',
       '/es/?q=music',
       '/es/?page=2',
       '/es/?category=BALL',

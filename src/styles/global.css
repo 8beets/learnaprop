@@ -735,3 +735,10 @@ h3 {
     height: 340px;
   }
 }
+
+.search-heading {
+  padding-block: 36px 24px;
+}
+.latest-courses {
+  padding-bottom: 24px;
+}

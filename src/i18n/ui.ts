@@ -2,6 +2,16 @@ import { canonicalCategory } from '../lib/courses/categories';
 
 export const messages = {
   es: {
+    homeNav: 'Inicio',
+    searchTitle: 'Busca cursos y talleres',
+    searchIntro: 'Encuentra cursos por centro, categoría y precio.',
+    searchPageTitle: 'Buscar cursos y talleres · UrbanLabs',
+    latestCourses: 'Últimos cursos añadidos',
+    latestCoursesIntro:
+      'Las últimas incorporaciones con ediciones vigentes, consultadas en fuentes oficiales.',
+    viewAllCourses: 'Ver todos los cursos',
+    latestEmpty:
+      'Todavía no hay cursos publicados. Consulta los centros o vuelve más tarde.',
     mapTilesFailed: 'No se ha podido cargar el fondo del mapa.',
     directoryMapTitle: 'Mapa de centros',
     directoryMapIntro:
@@ -97,6 +107,16 @@ export const messages = {
       'Un proyecto gratuito y de código abierto para descubrir oportunidades de aprendizaje en la comunidad.',
   },
   ca: {
+    homeNav: 'Inici',
+    searchTitle: 'Cerca cursos i tallers',
+    searchIntro: 'Troba cursos per centre, categoria i preu.',
+    searchPageTitle: 'Cerca cursos i tallers · UrbanLabs',
+    latestCourses: 'Últims cursos afegits',
+    latestCoursesIntro:
+      'Les últimes incorporacions amb edicions vigents, consultades en fonts oficials.',
+    viewAllCourses: 'Veure tots els cursos',
+    latestEmpty:
+      'Encara no hi ha cursos publicats. Consulta els centres o torna més tard.',
     mapTilesFailed: 'No s’ha pogut carregar el fons del mapa.',
     directoryMapTitle: 'Mapa de centres',
     directoryMapIntro:

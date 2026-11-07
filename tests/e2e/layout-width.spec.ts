@@ -7,6 +7,7 @@ test('page layouts fill desktop widths while retaining gutters and mobile bounds
   for (const locale of ['es', 'ca']) {
     for (const path of [
       `/${locale}/`,
+      locale === 'es' ? '/es/buscar' : '/ca/cerca',
       locale === 'es' ? '/es/centros' : '/ca/centres',
       `${locale === 'es' ? '/es/centros' : '/ca/centres'}/sant-andreu`,
     ]) {
@@ -29,6 +30,8 @@ test('page layouts fill desktop widths while retaining gutters and mobile bounds
         if (path === `/${locale}/`) {
           const photos = (await page.locator('.hero-photos').boundingBox())!;
           expect(photos.width).toBeLessThanOrEqual(560);
+        }
+        if (path === (locale === 'es' ? '/es/buscar' : '/ca/cerca')) {
           const sidebar = (await page
             .locator('.filter-sidebar')
             .boundingBox())!;

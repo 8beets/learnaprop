@@ -29,3 +29,8 @@ production update, use `npm run db:migrate:production` followed by
 `npm run centres:sync:production`. These commands update centre metadata only and
 preserve existing course data and provenance. New source imports also register
 profiles automatically.
+
+`0004_source_records_first_seen.sql` indexes the homepage's first-seen ordering.
+It does not change source timestamps, records or course identities. Latest additions
+are bounded to 20 non-expired editions; ordinary searches retain their own filters
+and pagination. Apply this additive migration before deploying the homepage split.

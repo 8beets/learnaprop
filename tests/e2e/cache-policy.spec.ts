@@ -7,6 +7,8 @@ test('localized public pages declare a bounded shared cache policy', async ({
     '/es/',
     '/ca/',
     '/es/?q=TEST&category=IDIOMES',
+    '/es/buscar?q=TEST&category=IDIOMES',
+    '/ca/cerca?centre=cc-sant-andreu',
     '/es/centros',
     '/ca/centres',
     '/es/centros/sant-andreu',

@@ -25,6 +25,39 @@ export interface CourseListing {
 }
 export const PAGE_SIZE = 12;
 
+const courseColumns = `e.id, coalesce(c.reviewed_title, c.title) AS title,
+  c.reviewed_title IS NOT NULL AS title_reviewed, c.category,
+  i.name AS institution, i.id AS institution_id, coalesce(p.slug, i.id) AS institution_slug,
+  e.start_date, e.end_date, e.schedule_text, e.price_cents, e.currency,
+  sr.official_url, sr.last_successfully_verified_at`;
+
+function canonicalListing(course: CourseListing): CourseListing {
+  return {
+    ...course,
+    category:
+      course.category === null ? null : canonicalCategory(course.category),
+  };
+}
+
+export const LATEST_COURSES_LIMIT = 20;
+export async function listLatestCourses(
+  db: D1Database,
+  today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Madrid' }),
+): Promise<CourseListing[]> {
+  const result = await db
+    .prepare(
+      `SELECT ${courseColumns} FROM source_records sr
+    JOIN course_editions e ON e.id=sr.edition_id
+    JOIN courses c ON c.id=e.course_id JOIN institutions i ON i.id=c.institution_id
+    LEFT JOIN institution_profiles p ON p.institution_id=i.id
+    WHERE e.end_date IS NULL OR e.end_date >= ?
+    ORDER BY sr.first_seen_at DESC, sr.source_id, sr.external_id LIMIT ?`,
+    )
+    .bind(today, LATEST_COURSES_LIMIT)
+    .all<CourseListing>();
+  return result.results.map(canonicalListing);
+}
+
 export async function listCourses(
   db: D1Database,
   filters: DiscoveryFilters,
@@ -54,9 +87,7 @@ export async function listCourses(
   values.push(today);
   const result = await db
     .prepare(
-      `SELECT e.id, coalesce(c.reviewed_title, c.title) AS title, c.reviewed_title IS NOT NULL AS title_reviewed, c.category,
-    i.name AS institution, i.id AS institution_id, coalesce(p.slug, i.id) AS institution_slug, e.start_date, e.end_date, e.schedule_text, e.price_cents, e.currency,
-    sr.official_url, sr.last_successfully_verified_at FROM course_editions e
+      `SELECT ${courseColumns} FROM course_editions e
     JOIN courses c ON c.id=e.course_id JOIN institutions i ON i.id=c.institution_id
     LEFT JOIN institution_profiles p ON p.institution_id=i.id
     JOIN source_records sr ON sr.edition_id=e.id
@@ -66,11 +97,7 @@ export async function listCourses(
     .bind(...values, PAGE_SIZE + 1, (filters.page - 1) * PAGE_SIZE)
     .all<CourseListing>();
   return {
-    courses: result.results.slice(0, PAGE_SIZE).map((course) => ({
-      ...course,
-      category:
-        course.category === null ? null : canonicalCategory(course.category),
-    })),
+    courses: result.results.slice(0, PAGE_SIZE).map(canonicalListing),
     hasNext: result.results.length > PAGE_SIZE,
   };
 }

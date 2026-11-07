@@ -83,7 +83,7 @@ function query(page: import('@playwright/test').Page) {
 test('search uses shareable URL filters and an honest empty state', async ({
   page,
 }) => {
-  await page.goto('/es/');
+  await page.goto('/es/buscar');
   await page.getByLabel('Buscar por título').fill('no-such-course-abc123');
   await page.getByLabel('Precio máximo (€)').fill('20');
   await submit(page);
@@ -109,7 +109,7 @@ test('search uses shareable URL filters and an honest empty state', async ({
 test('invalid URL filters return an accessible error and HTTP 400', async ({
   page,
 }) => {
-  expect((await page.goto('/es/?page=-1'))?.status()).toBe(400);
+  expect((await page.goto('/es/buscar?page=-1'))?.status()).toBe(400);
   await expect(page.getByRole('alert')).toContainText('Revisa los filtros');
   await expect(page.locator('#q')).toHaveAttribute(
     'aria-describedby',
@@ -120,7 +120,7 @@ test('invalid URL filters return an accessible error and HTTP 400', async ({
 test('categories compose with search, pagination, and locale switching without JavaScript', async ({
   page,
 }) => {
-  await page.goto('/es/?page=2');
+  await page.goto('/es/buscar?page=2');
   const width = (await page.locator('#q').boundingBox())!.width;
   await page.getByLabel('Categoría', { exact: true }).selectOption('IDIOMES');
   await submit(page);
@@ -154,7 +154,7 @@ test('categories compose with search, pagination, and locale switching without J
 test('centre selection composes with categories, keyword, and language switching', async ({
   page,
 }) => {
-  await page.goto('/es/?category=IDIOMES&page=2');
+  await page.goto('/es/buscar?category=IDIOMES&page=2');
   await page.getByLabel('Centro', { exact: true }).selectOption('cc-can-baste');
   await submit(page);
   expect(query(page).get('centre')).toBe('cc-can-baste');
@@ -193,7 +193,7 @@ test('centre selection composes with categories, keyword, and language switching
 test('photography aliases share one option and categories follow the selected centre', async ({
   page,
 }) => {
-  await page.goto('/es/?category=ESPAI+FOTOGR%C3%80FIC+PATI+LLIMONA');
+  await page.goto('/es/buscar?category=ESPAI+FOTOGR%C3%80FIC+PATI+LLIMONA');
   await expect(page.locator('#category')).toHaveValue('FOTOGRAFIA');
   await expect(
     page.locator('#category option[value="FOTOGRAFIA"]'),
@@ -237,7 +237,7 @@ test('photography aliases share one option and categories follow the selected ce
 test('Golferichs filters its own normalized categories and retains official source links', async ({
   page,
 }) => {
-  await page.goto('/es/');
+  await page.goto('/es/buscar');
   await page
     .getByLabel('Centro', { exact: true })
     .selectOption('cc-golferichs');
@@ -309,7 +309,7 @@ test('every added centre offers its own categories in both locales', async ({
       'Noves tecnologies',
     ],
   ]) {
-    await page.goto('/es/');
+    await page.goto('/es/buscar');
     await page.getByLabel('Centro', { exact: true }).selectOption(id!);
     await submit(page);
     await expect(page.locator('article.course')).toHaveCount(1);
@@ -333,7 +333,7 @@ test('FAB centres retain separate filters and Miram activity types', async ({
     ['fab-casa-del-rellotge', 'CR', '675'],
     ['fab-casa-del-mig', 'CM', '674'],
   ]) {
-    await page.goto('/es/');
+    await page.goto('/es/buscar');
     await page.getByLabel('Centro', { exact: true }).selectOption(centre!);
     await submit(page);
     const link = page
@@ -350,7 +350,7 @@ test('applied filters can be removed individually or cleared, preserving other U
   page,
 }) => {
   await page.goto(
-    '/es/?q=TEST&centre=cc-can-baste&category=IDIOMES&maxPrice=100&page=2&region=catalunya&city=barcelona',
+    '/es/buscar?q=TEST&centre=cc-can-baste&category=IDIOMES&maxPrice=100&page=2&region=catalunya&city=barcelona',
   );
   await expect(
     page
@@ -376,7 +376,7 @@ test('applied filters can be removed individually or cleared, preserving other U
   await page
     .getByRole('link', { name: 'Limpiar filtros', exact: true })
     .click();
-  await expect(page).toHaveURL('http://127.0.0.1:4322/es/');
+  await expect(page).toHaveURL('http://127.0.0.1:4322/es/buscar');
   await expect(
     page.getByRole('group', { name: 'Filtros aplicados', exact: true }),
   ).toHaveCount(0);
@@ -389,7 +389,7 @@ test('applied filters can be removed individually or cleared, preserving other U
 test('incompatible selected categories remain visible and removable', async ({
   page,
 }) => {
-  await page.goto('/es/?centre=cc-pati-llimona&category=IDIOMES');
+  await page.goto('/es/buscar?centre=cc-pati-llimona&category=IDIOMES');
   await expect(page.locator('#category')).toHaveValue('IDIOMES');
   await expect(page.locator('#category option:checked')).toHaveText(
     'Idiomas (Selección actual)',
@@ -407,7 +407,7 @@ test('incompatible selected categories remain visible and removable', async ({
 test('native filters are keyboard-collapsible without JavaScript and sit beside desktop results', async ({
   page,
 }) => {
-  await page.goto('/es/');
+  await page.goto('/es/buscar');
   const panel = page.locator('#filter-panel');
   const sidebar = (await page.locator('.filter-sidebar').boundingBox())!;
   const results = (await page.locator('.discovery-content').boundingBox())!;
@@ -438,7 +438,7 @@ test.describe('progressive filter panel', () => {
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/es/');
+    await page.goto('/es/buscar');
     const panel = page.locator('#filter-panel');
     await expect(panel).not.toHaveAttribute('open');
     await panel.locator('summary').focus();
@@ -466,7 +466,9 @@ test.describe('progressive filter panel', () => {
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    expect((await page.goto('/es/?maxPrice=invalid'))?.status()).toBe(400);
+    expect((await page.goto('/es/buscar?maxPrice=invalid'))?.status()).toBe(
+      400,
+    );
     await expect(page.locator('#filter-panel')).toHaveAttribute('open', '');
     await expect(page.getByRole('alert')).toBeVisible();
     await expect(page.locator('#q')).toBeVisible();

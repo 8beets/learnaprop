@@ -1,10 +1,12 @@
 ---
 import { env } from 'cloudflare:workers';
-import Discovery from '../../components/Discovery.astro';
-import { loadDiscoveryPage } from '../../lib/courses/page';
-
-const data = await loadDiscoveryPage(env.DB, Astro.url.searchParams);
+import Homepage from '../../components/Homepage.astro';
+import { loadHomepage } from '../../lib/courses/page';
+import { courseSearchPath, hasDiscoveryParams } from '../../i18n/paths';
+if (hasDiscoveryParams(Astro.url.searchParams))
+  return Astro.redirect(`${courseSearchPath('ca')}${Astro.url.search}`, 308);
+const data = await loadHomepage(env.DB);
 Astro.response.status = data.status;
 ---
 
-<Discovery locale="ca" data={data} />
+<Homepage locale="ca" data={data} />

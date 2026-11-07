@@ -1,4 +1,5 @@
 ---
+import { courseSearchPath } from '../i18n/paths';
 import { messages, categoryLabel, type Locale } from '../i18n/ui';
 import type { DiscoveryPageData } from '../lib/courses/page';
 import Icon from './Icon.astro';
@@ -10,7 +11,7 @@ interface Props {
 const { locale, data } = Astro.props;
 const { filters, centres, categories, error } = data;
 const t = messages[locale];
-const base = `/${locale}/`;
+const base = courseSearchPath(locale);
 // New filter controls belong in this same GET form. Omit page on submit to reset pagination.
 const formFields = new Set(['q', 'centre', 'category', 'maxPrice', 'page']);
 const preservedParams = [...Astro.url.searchParams].filter(

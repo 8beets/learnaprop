@@ -87,3 +87,20 @@ fixed desktop maximum. Header, main content and footer align at every viewport s
 Course/directory grids add columns as space permits; text paragraphs and decorative
 hero images retain readable bounds. The filter sidebar keeps its existing desktop
 width and mobile disclosure behaviour.
+
+## Homepage and dedicated search
+
+The localized homepages load at most 20 unexpired course editions through
+`listLatestCourses`, ordered by source-record `first_seen_at` descending, then stable
+source/external identifiers for ties. Reimports preserve `first_seen_at`, so refreshes
+do not promote older courses. Unknown end dates remain eligible without inferring
+availability. Migration `0004_source_records_first_seen.sql` adds the ordering index.
+
+Search and filters live at `/es/buscar` and `/ca/cerca`, retaining the existing
+12-item pagination, sidebar, validation and URL state. The homepage has no filters
+or pagination. Its primary action, header Courses link and course-category links
+lead to search. Recognized filter parameters on old homepage URLs redirect with
+HTTP 308 to the corresponding search page, preserving the query string. Unrelated
+homepage parameters, such as campaign links, do not cause a redirect. Both homepage
+and search pages retain shared course cards, verified source links, title casing
+and language switching. The current visual design and centre routes are preserved.

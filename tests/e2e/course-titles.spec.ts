@@ -6,7 +6,7 @@ for (const locale of ['es', 'ca']) {
     page,
   }) => {
     for (const path of [
-      `/${locale}/?centre=cc-sant-andreu&q=TERTÚLIA`,
+      `${locale === 'es' ? '/es/buscar' : '/ca/cerca'}?centre=cc-sant-andreu&q=TERTÚLIA`,
       `${locale === 'es' ? '/es/centros' : '/ca/centres'}/sant-andreu`,
     ]) {
       await page.goto(path);
@@ -28,21 +28,27 @@ for (const locale of ['es', 'ca']) {
         ),
       ).toBe('none');
     }
-    await page.goto(`/${locale}/?q=TEST+REVIEWED`);
+    await page.goto(
+      `${locale === 'es' ? '/es/buscar' : '/ca/cerca'}?q=TEST+REVIEWED`,
+    );
     await expect(
       page.getByRole('heading', {
         name: 'TEST REVIEWED COURSE: JOAN',
         exact: true,
       }),
     ).toBeVisible();
-    await page.goto(`/${locale}/?centre=fab-casa-del-mig`);
+    await page.goto(
+      `${locale === 'es' ? '/es/buscar' : '/ca/cerca'}?centre=fab-casa-del-mig`,
+    );
     await expect(
       page.getByRole('heading', {
         name: 'Control de LEDs amb TouchDesigner',
         exact: true,
       }),
     ).toBeVisible();
-    await page.goto(`/${locale}/?centre=cc-golferichs&category=CUINA`);
+    await page.goto(
+      `${locale === 'es' ? '/es/buscar' : '/ca/cerca'}?centre=cc-golferichs&category=CUINA`,
+    );
     await expect(
       page.getByRole('heading', {
         name: 'Cuina i maridatge. Sorprèn a la colla',

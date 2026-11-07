@@ -1,6 +1,6 @@
 const PAGE_CACHE_CONTROL = 'public, max-age=0, s-maxage=300, must-revalidate';
 const PUBLIC_PAGE =
-  /^\/(?:es\/(?:centros(?:\/[a-z0-9-]+)?\/?)?|ca\/(?:centres(?:\/[a-z0-9-]+)?\/?)?)$/;
+  /^\/(?:es\/(?:buscar\/?|centros(?:\/[a-z0-9-]+)?\/?)?|ca\/(?:cerca\/?|centres(?:\/[a-z0-9-]+)?\/?)?)$/;
 
 interface PageCache {
   match(request: Request): Promise<Response | undefined>;

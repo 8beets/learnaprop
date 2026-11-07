@@ -1,3 +1,4 @@
+import { loadHomepage } from '../../src/lib/courses/page';
 import { formatCourseTitle } from '../../src/lib/courses/title';
 import { registerSource } from '../../src/lib/db/ingestion';
 import {
@@ -12,13 +13,14 @@ import {
 } from '../../src/lib/institutions/pages';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, readdirSync } from 'node:fs';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { runIngestion } from '../../src/lib/ingestion/run';
 import { parseMiramPage } from '../../src/lib/ingestion/adapters/miram';
 import { santAndreu } from '../../src/lib/sources/sant-andreu';
 import { canBaste } from '../../src/lib/sources/can-baste';
 import {
   listCourses,
+  listLatestCourses,
   listCategories,
   listCentres,
 } from '../../src/lib/db/courses';
@@ -82,7 +84,10 @@ describe('SQLite migration and ingestion contract', () => {
     sqlite.exec(migration);
     db = sqliteContract(sqlite);
   });
-  afterEach(() => sqlite.close());
+  afterEach(() => {
+    sqlite.close();
+    vi.restoreAllMocks();
+  });
   it('registers verified profiles independently of courses and preserves reviewed descriptions', async () => {
     await registerSource(db, santAndreu);
     await registerSource(db, canBaste);
@@ -281,6 +286,92 @@ describe('SQLite migration and ingestion contract', () => {
         .prepare('SELECT title FROM courses WHERE title=?')
         .get('CONVERSA EN ANGLÈS')?.title,
     ).toBe('CONVERSA EN ANGLÈS');
+  });
+  it('shows the latest 20 unexpired additions by first seen, without refreshes reordering them', async () => {
+    const clock = vi.spyOn(Date.prototype, 'toISOString');
+    const ingestAt = async (items: typeof records, timestamp: string) => {
+      clock.mockReturnValue(timestamp);
+      await runIngestion(db, { fetchRecords: async () => items }, santAndreu);
+    };
+    const first = records[0]!;
+    const older = [
+      {
+        ...first,
+        externalId: '10000',
+        title: 'TEST older',
+        startDate: '2099-01-01',
+        endDate: '2099-12-31',
+      },
+    ];
+    await ingestAt(older, '2026-10-01T00:00:00.000Z');
+    const added = Array.from({ length: 25 }, (_, index) => ({
+      ...first,
+      externalId: String(20000 + index),
+      title: `TEST newly added ${index}`,
+      startDate: '2099-01-01',
+      endDate: '2099-12-31',
+    }));
+    await ingestAt([...older, ...added], '2026-11-01T00:00:00.000Z');
+    const latest = await listLatestCourses(db, '2026-11-07');
+    expect(latest).toHaveLength(20);
+    expect(latest.map((c) => c.title)).toEqual(
+      added.slice(0, 20).map((c) => c.title),
+    );
+    await ingestAt(older, '2026-11-07T00:00:00.000Z');
+    expect(
+      (await listLatestCourses(db, '2026-11-07')).map((c) => c.id),
+    ).toEqual(latest.map((c) => c.id));
+    await ingestAt(
+      [
+        {
+          ...first,
+          externalId: '30000',
+          title: 'TEST expired addition',
+          startDate: '2020-01-01',
+          endDate: '2020-01-02',
+        },
+        {
+          ...first,
+          externalId: '30001',
+          title: 'TEST unknown date',
+          startDate: null,
+          endDate: null,
+        },
+      ],
+      '2026-11-07T01:00:00.000Z',
+    );
+    const withUnknown = await listLatestCourses(db, '2026-11-07');
+    expect(withUnknown[0]?.title).toBe('TEST unknown date');
+    expect(withUnknown.some((c) => c.title === 'TEST expired addition')).toBe(
+      false,
+    );
+    const plan = sqlite
+      .prepare(
+        'EXPLAIN QUERY PLAN SELECT external_id FROM source_records ORDER BY first_seen_at DESC,source_id,external_id LIMIT 20',
+      )
+      .all();
+    expect(
+      plan.some((row) =>
+        String(row.detail).includes('source_records_first_seen'),
+      ),
+    ).toBe(true);
+  });
+  it('handles empty and unavailable latest-course lists explicitly', async () => {
+    expect(await loadHomepage(db)).toEqual({
+      courses: [],
+      error: null,
+      status: 200,
+    });
+    const broken = {
+      prepare: () => {
+        throw new Error('database unavailable');
+      },
+    } as unknown as D1Database;
+    expect(await loadHomepage(broken)).toEqual({
+      courses: [],
+      error: 'unavailable',
+      status: 503,
+    });
   });
   it('backfills stable centre slugs when upgrading existing data', () => {
     const legacy = new DatabaseSync(':memory:');

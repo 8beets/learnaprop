@@ -143,3 +143,13 @@ names continue to come from `wrangler.jsonc`.
 
 See [Cloudflare GitHub Actions authentication](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/)
 and [GitHub concurrency](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency).
+
+## Latest-course homepage — issue #11
+
+Apply `0004_source_records_first_seen.sql` before this release with
+`npm run db:migrate:production`. The migration only adds an index; there is no
+production reimport or metadata rewrite. The homepage shows up to 20 newly added,
+unexpired course editions. Search and filtering move to `/es/buscar` and `/ca/cerca`;
+old homepage filter URLs redirect to preserve shared links. Existing public caching
+also covers search, with complete query strings as keys. GitHub Actions continues
+to deploy only after the configured checks pass, with Playwright run locally/Docker.
